@@ -7,6 +7,7 @@ io.on('connection', function (socket){
 
   socket.on('CH01', function (data) {
     console.log('MSG', data['user'], ' saying ', data['msg']);
+    socket.send({data: "I hear you"});
   });
 });
 
