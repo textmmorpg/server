@@ -5,7 +5,17 @@ var io = require('socket.io')(http);
 io.on('connection', function (socket){
   console.log('connection');
 
-  socket.on('CH01', function (data) {
+  socket.on('sound', function (data) {
+    console.log('MSG', data['user'], ' saying ', data['msg']);
+    socket.send({data: "I hear you"});
+  });
+
+  socket.on('sight', function (data) {
+    console.log('MSG', data['user'], ' saying ', data['msg']);
+    socket.send({data: "I hear you"});
+  });
+
+  socket.on('action', function (data) {
     console.log('MSG', data['user'], ' saying ', data['msg']);
     socket.send({data: "I hear you"});
   });
