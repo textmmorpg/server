@@ -52,6 +52,22 @@ function start_playing() {
             socket.emit('say', {msg: input});
         } else if(input.startsWith('walk forward')) {
             socket.emit('walk forward', {});
+        } else if(input.startsWith('walk left')) {
+            socket.emit('walk left', {});
+        } else if(input.startsWith('walk right')) {
+            socket.emit('walk right', {});
+        } else if(input.startsWith('run forward')) {
+            socket.emit('run forward', {});
+        } else if(input.startsWith('run left')) {
+            socket.emit('run left', {});
+        } else if(input.startsWith('run right')) {
+            socket.emit('run right', {});
+        } else if(input.startsWith('turn left')) {
+            socket.emit('turn left', {});
+        } else if(input.startsWith('turn right')) {
+            socket.emit('turn right', {});
+        } else if(input.startsWith('turn around')) {
+            socket.emit('turn around', {});
         }
     });
 }

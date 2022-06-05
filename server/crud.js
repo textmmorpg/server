@@ -72,14 +72,15 @@ async function get_other_connections(socket_id, distance) {
 }
 
 
-async function move(socket_id, distance) {
+async function move(socket_id, distance, turn) {
     await get_user(socket_id).catch(console.dir).then( (user) => {
         database.collection('user').updateOne({
             socket_id: socket_id
         }, {
             $set: {
-                loc_x: user["loc_x"] + distance * Math.cos(user["angle"]),
-                loc_y: user["loc_y"] + distance * Math.sin(user["angle"])
+                angle: user["angle"] + turn,
+                loc_x: user["loc_x"] + distance * Math.cos(user["angle"] + turn),
+                loc_y: user["loc_y"] + distance * Math.sin(user["angle"] + turn)
             }
         });
     });

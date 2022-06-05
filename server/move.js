@@ -16,48 +16,52 @@ module.exports = {
     turn_around: turn_around
 }
 
-function walk_forward(data, socket, io) {
+function move_forward(socket, io, type, speed, turn) {
     // move the player
-    crud.move(socket.id, walk_speed);
+    crud.move(socket.id, speed, turn);
     // get sockets of the close players
     crud.get_other_connections(
         socket.id, seeing_distance
     ).catch(console.dir).then( (other_users) => {
         // send the message to the socket of each close player
         other_users.forEach( (other_user) => {
-            io.to(other_user["socket_id"]).emit('message', {data: 'player walked nearby'});
+            io.to(other_user["socket_id"]).emit('message', {data: 'player ' + type + ' nearby'});
         });
     });
 }
 
-function walk_left(data, socket) {
-
+function walk_forward(socket, io) {
+    move_forward(socket, io, 'walked', walk_speed, 0);
 }
 
-function walk_right(data, socket) {
-
+function walk_left(socket, io) {
+    move_forward(socket, io, 'walked', walk_speed, Math.PI/2);
 }
 
-function run_forward(data, socket) {
-
+function walk_right(socket, io) {
+    move_forward(socket, io, 'walked', walk_speed, Math.PI/2 * -1);
 }
 
-function run_left(data, socket) {
-
+function run_forward(socket, io) {
+    move_forward(socket, io, 'ran', run_speed, 0);
 }
 
-function run_right(data, socket) {
-
+function run_left(socket, io) {
+    move_forward(socket, io, 'run', run_speed, Math.PI/2);
 }
 
-function turn_left(data, socket) {
-
+function run_right(socket, io) {
+    move_forward(socket, io, 'run', run_speed, Math.PI/2 * -1);
 }
 
-function turn_right(data, socket) {
-
+function turn_left(socket, io) {
+    move_forward(socket, io, 'turned', 0, Math.PI/2);
 }
 
-function turn_around(data, socket) {
+function turn_right(socket, io) {
+    move_forward(socket, io, 'turned', 0, Math.PI/2 * -1);
+}
 
+function turn_around(socket, io) {
+    move_forward(socket, io, 'turned', 0, Math.PI);
 }
