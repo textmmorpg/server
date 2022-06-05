@@ -15,7 +15,7 @@ module.exports = {
     add_connection: add_connection,
     delete_connection: delete_connection,
     get_other_connections: get_other_connections,
-  };
+};
 
 async function get_login(user, pass) {
     return await database.collection('user').findOne({
