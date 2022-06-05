@@ -30,49 +30,49 @@ io.on('connection', function (socket){
   });
 
   socket.on('say', function(data) {
-    announce.announce(socket.id, io, data['msg'], hearing_distance);
+    announce.announce(socket.id, io, data['msg'], hearing_distance, false);
   });
   
   socket.on('walk forward', function (data) {
     crud.move(socket.id, walk_speed, 0);
-    announce.announce(socket.id, io, 'walked forward', seeing_distance);
+    announce.announce(socket.id, io, 'walked forward', seeing_distance, true);
   });
 
   socket.on('walk left', function (data) {
     crud.move(socket.id, walk_speed, Math.PI/2);
-    announce.announce(socket.id, io, 'walked left', seeing_distance);
+    announce.announce(socket.id, io, 'walked left', seeing_distance, true);
   });
 
   socket.on('walk right', function(data) {
     crud.move(socket.id, walk_speed, Math.PI/2 * -1);
-    announce.announce(socket.id, io, 'walked right', seeing_distance);
+    announce.announce(socket.id, io, 'walked right', seeing_distance, true);
   });
 
   socket.on('run forward', function (data) {
     crud.move(socket.id, run_speed, 0);
-    announce.announce(socket.id, io, 'ran forward', seeing_distance);
+    announce.announce(socket.id, io, 'ran forward', seeing_distance, true);
   });
 
   socket.on('run left', function (data) {
     crud.move(socket.id, run_speed, Math.PI/2);
-    announce.announce(socket.id, io, 'ran left', seeing_distance);
+    announce.announce(socket.id, io, 'ran left', seeing_distance, true);
   });
 
   socket.on('run right', function(data) {
     crud.move(socket.id, run_speed, Math.PI/2 * -1);
-    announce.announce(socket.id, io, 'ran right', seeing_distance);
+    announce.announce(socket.id, io, 'ran right', seeing_distance, true);
   });
   socket.on('turn left', function(data) {
     crud.move(socket.id, 0, Math.PI/2);
-    announce.announce(socket.id, io, 'turned left', seeing_distance);
+    announce.announce(socket.id, io, 'turned left', seeing_distance, true);
   });
   socket.on('turn right', function(data) {
     crud.move(socket.id, 0, Math.PI/2 * -1);
-    announce.announce(socket.id, io, 'turned right', seeing_distance);
+    announce.announce(socket.id, io, 'turned right', seeing_distance, true);
   });
   socket.on('turn around', function(data) {
     crud.move(socket.id, 0, Math.PI);
-    announce.announce(socket.id, io, 'turned around', seeing_distance);
+    announce.announce(socket.id, io, 'turned around', seeing_distance, true);
   });
 });
 
