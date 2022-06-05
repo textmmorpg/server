@@ -3,59 +3,73 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 const { MongoClient } = require("mongodb");
 
-const mongo_uri = "mongodb://localhost/project_title_here_db"
+const uri = "mongodb://localhost/project_title_here_db"
 
-async function get_user_id(user, pass) {
-  const mongo = new MongoClient(mongo_uri);
-  try {
-      await mongo.connect();
-      const database = mongo.db('project_title_here_db');
-      const user_table = database.collection('user');
+// TODO: move to crud file
+async function get_login(user, pass) {
+  const mongo = new MongoClient(uri,
+    {useUnifiedTopology: true}, {useNewUrlParser: true },
+    {connectTimeoutMS: 30000 }, {keepAlive: 1}
+  );
+  await mongo.connect();
+  const database = mongo.db('project_title_here_db');
+  return await database.collection('user').findOne({
+      username: user, password: pass
+  });
+}
 
-      const result = await user_table.findOne({
-          username: user, password: pass
-      });
-
-      return result;
-  } finally {
-      await mongo.close();
-  }
+async function get_user(socket_id) {
+  const mongo = new MongoClient(uri,
+    {useUnifiedTopology: true}, {useNewUrlParser: true },
+    {connectTimeoutMS: 30000 }, {keepAlive: 1}
+  );
+  await mongo.connect();
+  const database = mongo.db('project_title_here_db');
+  return await database.collection('user').findOne({
+      socket_id: socket_id
+  });
 }
 
 async function add_connection(user_id, socket_id) {
-  const mongo = new MongoClient(mongo_uri);
-  try {
-      await mongo.connect();
-      const database = mongo.db('project_title_here_db');
-      const connection_table = database.collection('connection');
-
-      await connection_table.deleteOne({
-          user_id: user_id
-      })
-
-      await connection_table.insertOne({
-          user_id: user_id, socket_id: socket_id
-      });
-
-  } finally {
-      await mongo.close();
-  }
+  const mongo = new MongoClient(uri,
+    {useUnifiedTopology: true}, {useNewUrlParser: true },
+    {connectTimeoutMS: 30000 }, {keepAlive: 1}
+  );
+  await mongo.connect();
+  const database = mongo.db('project_title_here_db');
+  await database.collection('user').updateOne({
+      user_id: user_id
+    }, {
+      $set: {socket_id: socket_id}
+  });
 }
 
 async function delete_connection(socket_id) {
-  const mongo = new MongoClient(mongo_uri);
-  try {
-      await mongo.connect();
-      const database = mongo.db('project_title_here_db');
-      const connection_table = database.collection('connection');
+  const mongo = new MongoClient(uri,
+    {useUnifiedTopology: true}, {useNewUrlParser: true },
+    {connectTimeoutMS: 30000 }, {keepAlive: 1}
+  );
+  await mongo.connect();
+  const database = mongo.db('project_title_here_db');
+  await database.collection('user').updateMany({
+      socket_id: socket_id
+    }, {
+      $set: {socket_id: socket_id}
+  });
+}
 
-      await connection_table.deleteMany({
-          socket_id: socket_id
-      })
-
-  } finally {
-      await mongo.close();
-  }
+async function get_other_connections(socket_id, loc_x, loc_y, distance) {
+  const mongo = new MongoClient(uri,
+    {useUnifiedTopology: true}, {useNewUrlParser: true },
+    {connectTimeoutMS: 30000 }, {keepAlive: 1}
+  );
+  await mongo.connect();
+  const database = mongo.db('project_title_here_db');
+  return await database.collection('user').find({
+      loc_x: { $gt: loc_x - distance, $lt: loc_x + distance},
+      loc_y: { $gt: loc_y - distance, $lt: loc_y + distance},
+      socket_id: { $not: { $eq: socket_id }}
+  });
 }
 
 io.on('connection', function (socket){
@@ -68,13 +82,22 @@ io.on('connection', function (socket){
       socket.close();
     } else {
       console.log('MSG', socket.id, ' saying ', data['msg']);
-      socket.send({data: "I hear you"});
+      // find nearby players and send them the message
+      get_user(socket.id).catch(console.dir).then( (user) => {
+        get_other_connections(
+          socket.id, user["loc_x"], user["loc_y"], 2
+        ).catch(console.dir).then( (other_users) => {
+          other_users.forEach( (other_user) => {
+            io.to(other_user["socket_id"]).emit('message', {data: data['msg']});
+          });
+        });
+      });
     }
   });
 
   // existing user login
   socket.on('login', function (data) {
-    get_user_id(
+    get_login(
       data['username'], data['password']
     ).catch(console.dir).then( (user) => {
       if(user === null) {
@@ -87,7 +110,7 @@ io.on('connection', function (socket){
     });
   });
 
-  // new user login
+  // TODO: new user login
   socket.on('signup', function (data) {
     console.log('signup successful: ' + socket.id);
     socket.send({login_success: true});
