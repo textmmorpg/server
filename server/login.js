@@ -11,14 +11,14 @@ function login(data, socket) {
         data['username'], data['password']
     ).catch(console.dir).then( (user) => {
         if(user === null) {
-        // either the username doesn't exist
-        // or the password is wrong
-        socket.send({login_success: false});
+            // either the username doesn't exist
+            // or the password is wrong
+            socket.send({login_success: false});
         } else {
-        // user found -> login successful
-        user_id = user['user_id'];
-        crud.add_connection(user_id, socket.id).catch(console.dir);
-        socket.send({login_success: true});
+            // user found -> login successful
+            user_id = user['user_id'];
+            crud.add_connection(user_id, socket.id).catch(console.dir);
+            socket.send({login_success: true});
         }
     });
 }
