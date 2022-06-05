@@ -5,6 +5,7 @@ var io = require('socket.io')(http);
 io.on('connection', function (socket){
   console.log('new connection: ' + socket.id);
 
+  // user currently playing
   socket.on('message', function (data) {
     if(data['msg'] === 'exit') {
       socket.send({data: "bye"});
@@ -15,9 +16,16 @@ io.on('connection', function (socket){
     }
   });
 
+  // existing user login
   socket.on('login', function (data) {
     console.log('login successful: ' + socket.id)
-    socket.send({login_success: true})
+    socket.send({login_success: false})
+  });
+
+  // new user login
+  socket.on('signup', function (data) {
+    console.log('signup successful: ' + socket.id)
+    socket.send({login_success: false})
   });
 });
 
