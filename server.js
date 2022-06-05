@@ -1,6 +1,46 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+const { MongoClient } = require("mongodb");
+
+const mongo_uri = "mongodb://localhost/project_title_here_db"
+
+async function get_user_id(user, pass) {
+  const mongo = new MongoClient(mongo_uri);
+  try {
+      await mongo.connect();
+      const database = mongo.db('project_title_here_db');
+      const user_table = database.collection('user');
+
+      const result = await user_table.findOne({
+          username: user, password: pass
+      });
+
+      return result;
+  } finally {
+      await mongo.close();
+  }
+}
+
+async function add_connection(user_id, socket_id) {
+  const mongo = new MongoClient(mongo_uri);
+  try {
+      await mongo.connect();
+      const database = mongo.db('project_title_here_db');
+      const connection_table = database.collection('connection');
+
+      await connection_table.deleteOne({
+          user_id: user_id
+      })
+
+      await connection_table.insertOne({
+          user_id: user_id, socket_id: socket_id
+      });
+
+  } finally {
+      await mongo.close();
+  }
+}
 
 io.on('connection', function (socket){
   console.log('new connection: ' + socket.id);
@@ -18,14 +58,23 @@ io.on('connection', function (socket){
 
   // existing user login
   socket.on('login', function (data) {
-    console.log('login successful: ' + socket.id)
-    socket.send({login_success: false})
+    get_user_id(
+      data['username'], data['password']
+    ).catch(console.dir).then( (user) => {
+      if(user === null) {
+        socket.send({login_success: false});
+      } else {
+        user_id = user['user_id'];
+        add_connection(user_id, socket.id).catch(console.dir);
+        socket.send({login_success: true});
+      }
+    });
   });
 
   // new user login
   socket.on('signup', function (data) {
-    console.log('signup successful: ' + socket.id)
-    socket.send({login_success: false})
+    console.log('signup successful: ' + socket.id);
+    socket.send({login_success: true});
   });
 });
 

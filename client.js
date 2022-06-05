@@ -12,7 +12,7 @@ function login() {
     });
 
     var login_type;
-    read_input.question('Login or Signup?', (answer) => {
+    read_input.question('Login or Signup? ', (answer) => {
         if(answer === 'login') {
             login_type = 'login';
         } else if(answer === 'signup') {
@@ -21,18 +21,17 @@ function login() {
             cleanup();
             return;
         }
-    })
 
-    // prompt user for login credentials
-    read_input.question('User name:', (user) => {
-        read_input.question('Password:', (pass) => {
-            socket.emit(login_type, {
-                username: user,
-                password: pass
-            })
-            read_input.close();
+        read_input.question('User name:', (user) => {
+            read_input.question('Password:', (pass) => {
+                socket.emit(login_type, {
+                    username: user,
+                    password: pass
+                })
+                read_input.close();
+            });
         });
-    });
+    })
 }
 
 function start_playing() {
