@@ -42,6 +42,22 @@ async function add_connection(user_id, socket_id) {
   }
 }
 
+async function delete_connection(socket_id) {
+  const mongo = new MongoClient(mongo_uri);
+  try {
+      await mongo.connect();
+      const database = mongo.db('project_title_here_db');
+      const connection_table = database.collection('connection');
+
+      await connection_table.deleteMany({
+          socket_id: socket_id
+      })
+
+  } finally {
+      await mongo.close();
+  }
+}
+
 io.on('connection', function (socket){
   console.log('new connection: ' + socket.id);
 
@@ -76,6 +92,10 @@ io.on('connection', function (socket){
     console.log('signup successful: ' + socket.id);
     socket.send({login_success: true});
   });
+
+  socket.on('disconnect', function(event) {
+    delete_connection(socket.id).catch(console.dir);
+  })
 });
 
 http.listen(3000, function () {
