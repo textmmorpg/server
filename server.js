@@ -13,7 +13,8 @@ io.on('connection', function (socket){
       socket.close();
     } else {
       console.log('MSG', socket.id, ' saying ', data['msg']);
-      // find nearby players and send them the message
+
+      // talk
       crud.get_user(socket.id).catch(console.dir).then( (user) => {
         crud.get_other_connections(
           socket.id, user["loc_x"], user["loc_y"], 2
@@ -23,6 +24,9 @@ io.on('connection', function (socket){
           });
         });
       });
+
+      // move
+      
     }
   });
 
