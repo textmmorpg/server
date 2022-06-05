@@ -59,21 +59,25 @@ async function delete_connection(socket_id) {
     });
 }
 
-async function get_other_connections(socket_id, loc_x, loc_y, distance) {
-    return await database.collection('user').find({
-        loc_x: { $gt: loc_x - distance, $lt: loc_x + distance},
-        loc_y: { $gt: loc_y - distance, $lt: loc_y + distance},
-        socket_id: { $not: { $eq: socket_id }}
+async function get_other_connections(socket_id, distance) {
+    // TODO: circle radius instead of square
+    get_user(socket.id).catch(console.dir).then( (user) => {
+        return await database.collection('user').find({
+            loc_x: { $gt: user["loc_x"] - distance, $lt: user["loc_x"] + distance},
+            loc_y: { $gt: user["loc_y"] - distance, $lt: user["loc_y"] + distance},
+            socket_id: { $not: { $eq: socket_id }}
+        });
     });
 }
 
-async function move(socket_id, move_x, move_y) {
+
+async function move(socket_id, distance) {
     return await database.collection('user').updateOne({
         socket_id: socket_id
     }, {
         $inc: {
-            loc_x: move_x,
-            loc_y: move_y
+            loc_x: distance * Math.cos($angle),
+            loc_y: distance * Math.sin($angle)
         }
     });
 }

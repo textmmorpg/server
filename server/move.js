@@ -1,4 +1,8 @@
 var crud = require('./crud');
+var seeing_distance = 10;
+var walk_speed = 1
+var run_spped = 2
+
 
 module.exports = {
     walk_forward: walk_forward,
@@ -13,7 +17,17 @@ module.exports = {
 }
 
 function walk_forward(data, socket) {
-
+    // move the player
+    crud.move(socket.id, walk_speed);
+    // get sockets of the close players
+    crud.get_other_connections(
+        socket.id, seeing_distance
+    ).catch(console.dir).then( (other_users) => {
+        // send the message to the socket of each close player
+        other_users.forEach( (other_user) => {
+            io.to(other_user["socket_id"]).emit('message', {data: 'player walked nearby'});
+        });
+    });
 }
 
 function walk_left(data, socket) {
