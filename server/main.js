@@ -18,9 +18,9 @@ io.on('connection', function (socket){
     crud.delete_connection(socket.id).catch(console.dir);
   });
 
-  socket.on('say', function(data) {talk.talk(data, socket)});
+  socket.on('say', function(data) {talk.talk(data, socket, io)});
   socket.on('introduce', function(data) {talk.introduce(data, socket)})
-  socket.on('walk forward', function (data) {move.walk_forward(data, socket)});
+  socket.on('walk forward', function (data) {move.walk_forward(data, socket, io)});
   socket.on('walk left', function (data) {move.walk_left(data, socket)});
   socket.on('walk right', function(data) {move.walk_right(data, socket)});
   socket.on('run forward', function (data) {move.run_forward(data, socket)});

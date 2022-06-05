@@ -15,6 +15,7 @@ module.exports = {
     add_connection: add_connection,
     delete_connection: delete_connection,
     get_other_connections: get_other_connections,
+    move: move
 };
 
 async function get_login(user, pass) {
@@ -61,8 +62,8 @@ async function delete_connection(socket_id) {
 
 async function get_other_connections(socket_id, distance) {
     // TODO: circle radius instead of square
-    get_user(socket.id).catch(console.dir).then( (user) => {
-        return await database.collection('user').find({
+    return await get_user(socket_id).catch(console.dir).then( (user) => {
+        return database.collection('user').find({
             loc_x: { $gt: user["loc_x"] - distance, $lt: user["loc_x"] + distance},
             loc_y: { $gt: user["loc_y"] - distance, $lt: user["loc_y"] + distance},
             socket_id: { $not: { $eq: socket_id }}
@@ -72,12 +73,14 @@ async function get_other_connections(socket_id, distance) {
 
 
 async function move(socket_id, distance) {
-    return await database.collection('user').updateOne({
-        socket_id: socket_id
-    }, {
-        $inc: {
-            loc_x: distance * Math.cos($angle),
-            loc_y: distance * Math.sin($angle)
-        }
+    await get_user(socket_id).catch(console.dir).then( (user) => {
+        database.collection('user').updateOne({
+            socket_id: socket_id
+        }, {
+            $set: {
+                loc_x: user["loc_x"] + distance * Math.cos(user["angle"]),
+                loc_y: user["loc_y"] + distance * Math.sin(user["angle"])
+            }
+        });
     });
 }

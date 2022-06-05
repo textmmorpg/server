@@ -1,7 +1,7 @@
 var crud = require('./crud');
 var seeing_distance = 10;
 var walk_speed = 1
-var run_spped = 2
+var run_speed = 2
 
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
     turn_around: turn_around
 }
 
-function walk_forward(data, socket) {
+function walk_forward(data, socket, io) {
     // move the player
     crud.move(socket.id, walk_speed);
     // get sockets of the close players

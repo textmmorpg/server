@@ -8,7 +8,7 @@ module.exports = {
     introduce: introduce
 }
 
-function talk(data, socket) {
+function talk(data, socket, io) {
     // get sockets of the close players
     crud.get_other_connections(
         socket.id, hearing_distance

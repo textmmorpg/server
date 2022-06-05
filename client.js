@@ -48,7 +48,11 @@ function start_playing() {
 
     // send command line input to server
     read_input.on('line', (input) => {
-        socket.emit('message', {msg: input});
+        if(input.startsWith('say')) {
+            socket.emit('say', {msg: input});
+        } else if(input.startsWith('walk forward')) {
+            socket.emit('walk forward', {});
+        }
     });
 }
 
