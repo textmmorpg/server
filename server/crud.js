@@ -1,4 +1,5 @@
 const { MongoClient } = require("mongodb");
+
 const uri = "mongodb://localhost/project_title_here_db"
 const mongo = new MongoClient(uri,
     {useUnifiedTopology: true}, {useNewUrlParser: true },
@@ -60,17 +61,14 @@ async function delete_connection(socket_id) {
     });
 }
 
-async function get_other_connections(socket_id, distance) {
+async function get_other_connections(socket_id, loc_x, loc_y, distance) {
     // TODO: circle radius instead of square
-    return await get_user(socket_id).catch(console.dir).then( (user) => {
-        return database.collection('user').find({
-            loc_x: { $gt: user["loc_x"] - distance, $lt: user["loc_x"] + distance},
-            loc_y: { $gt: user["loc_y"] - distance, $lt: user["loc_y"] + distance},
-            socket_id: { $not: { $eq: socket_id }}
-        });
+    return await database.collection('user').find({
+        loc_x: { $gt: loc_x - distance, $lt: loc_x + distance},
+        loc_y: { $gt: loc_y - distance, $lt: loc_y + distance},
+        socket_id: { $not: { $eq: socket_id }}
     });
 }
-
 
 async function move(socket_id, distance, turn) {
     await get_user(socket_id).catch(console.dir).then( (user) => {

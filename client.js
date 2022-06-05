@@ -43,7 +43,7 @@ function start_playing() {
 
     // print output from server
     socket.addEventListener('message', function (event) {
-        console.log('Message from server ', event.data);
+        console.log(event.data);
     });
 
     // send command line input to server
