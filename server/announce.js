@@ -25,12 +25,15 @@ function get_user_angle(
     // check if they are within their line of sight
     var user1and2Vector = new Vector();
     var user2Vector = new Vector();
-    user1and2Vector.fromTwoPoints([user2_x, user2_y], [user1_x, user1_y]);
-    user2Vector.fromTwoPoints([user2_x, user2_y], [
+    user1and2Vector.fromTwoPoints([user2_x, user2_y, 0], [user1_x, user1_y, 0]);
+    user2Vector.fromTwoPoints([user2_x, user2_y, 0], [
         user2_x + 1 * Math.cos(user2_angle),
-        user2_y + 1 * Math.sin(user2_angle)
+        user2_y + 1 * Math.sin(user2_angle),
+        0
     ]);
-    return user1and2Vector.angle(user2Vector);
+    var angle = user1and2Vector.angle(user2Vector);
+    var left_or_right = user1and2Vector.cross(user2Vector);
+    return left_or_right.toString() + ' ' + angle.toString();
 }
 
 function maybe_send_message(user1, user2, distance, check_behind, io, message) {
