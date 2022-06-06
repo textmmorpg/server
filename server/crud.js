@@ -75,7 +75,7 @@ async function move(socket_id, distance, turn) {
             socket_id: socket_id
         }, {
             $set: {
-                angle: user["angle"] + turn,
+                angle: (user["angle"] + turn) % (2 * Math.PI),
                 loc_x: user["loc_x"] + distance * Math.cos(user["angle"] + turn),
                 loc_y: user["loc_y"] + distance * Math.sin(user["angle"] + turn)
             }

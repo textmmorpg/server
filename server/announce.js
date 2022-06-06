@@ -19,19 +19,18 @@ function within_distance(
 }
 
 function get_user_angle(
-        user1_x, user1_y, user1_angle,
-        user2_x, user2_y
+        user2_x, user2_y, user2_angle,
+        user1_x, user1_y
     ) {
     // check if they are within their line of sight
     var user1and2Vector = new Vector();
-    user1and2Vector.fromTwoPoints([user1_x, user1_y], [user2_x, user2_y]);
-    var user1Vector = new Vector();
-    user1Vector.fromTwoPoints([user1_x, user1_y], [
-        user1_x + 1 * Math.cos(user1_angle),
-        user1_y + 1 * Math.sin(user1_angle)
-    ])
-    angle = user1and2Vector.angle(user1Vector);
-    return angle;
+    var user2Vector = new Vector();
+    user1and2Vector.fromTwoPoints([user2_x, user2_y], [user1_x, user1_y]);
+    user2Vector.fromTwoPoints([user2_x, user2_y], [
+        user2_x + 1 * Math.cos(user2_angle),
+        user2_y + 1 * Math.sin(user2_angle)
+    ]);
+    return user1and2Vector.angle(user2Vector);
 }
 
 function maybe_send_message(user1, user2, distance, check_behind, io, message) {
@@ -44,8 +43,8 @@ function maybe_send_message(user1, user2, distance, check_behind, io, message) {
     )
     
     var user_angle = get_user_angle(
-        user1["loc_x"], user1["loc_y"], user1["angle"],
-        user2["loc_x"], user2["loc_y"]
+        user2["loc_x"], user2["loc_y"], user2["angle"],
+        user1["loc_x"], user1["loc_y"]
     )
 
     // TODO: switch on user_angle to get 'far left', 'left', 'center', 'behind', etc
