@@ -1,4 +1,4 @@
-var crud = require('./crud');
+const crud = require('./crud');
 
 module.exports = {
     login: login,

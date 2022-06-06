@@ -1,5 +1,5 @@
 const { start } = require('repl');
-var io = require('socket.io-client');
+const io = require('socket.io-client');
 var socket = io.connect('http://localhost:3000', {reconnect: false});
 var readline = require('readline');
 var read_input;

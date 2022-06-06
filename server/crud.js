@@ -62,7 +62,6 @@ async function delete_connection(socket_id) {
 }
 
 async function get_other_connections(socket_id, loc_x, loc_y, distance) {
-    // TODO: circle radius instead of square
     return await database.collection('user').find({
         loc_x: { $gt: loc_x - distance, $lt: loc_x + distance},
         loc_y: { $gt: loc_y - distance, $lt: loc_y + distance},
