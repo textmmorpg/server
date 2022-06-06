@@ -18,11 +18,10 @@ function within_distance(
     return distance < distance_limit
 }
 
-function get_user_angle(
+function get_user_vectors(
         user2_x, user2_y, user2_angle,
         user1_x, user1_y
     ) {
-    // check if they are within their line of sight
     var user1and2Vector = new Vector();
     var user2Vector = new Vector();
     user1and2Vector.fromTwoPoints([user2_x, user2_y, 0], [user1_x, user1_y, 0]);
@@ -31,36 +30,61 @@ function get_user_angle(
         user2_y + 1 * Math.sin(user2_angle),
         0
     ]);
-    var angle = user1and2Vector.angle(user2Vector);
-    var left_or_right = user1and2Vector.cross(user2Vector);
-    return left_or_right.toString() + ' ' + angle.toString();
+    return [user1and2Vector, user2Vector];
 }
 
 function maybe_send_message(user1, user2, distance, check_behind, io, message) {
     // send a message if they can hear/see it
-    var field_of_view = 2.35619 // 135 degrees
+    var field_of_view = 1.178097; // 135 degrees (half of that in each direction)
 
     var distance_ok = within_distance(
         user1["loc_x"], user1["loc_y"],
         user2["loc_x"], user2["loc_y"], distance
     )
+
+    if(!distance_ok) {
+        // too far away to hear/see the message
+        return;
+    }
     
-    var user_angle = get_user_angle(
+    var user_vectors = get_user_vectors(
         user2["loc_x"], user2["loc_y"], user2["angle"],
         user1["loc_x"], user1["loc_y"]
     )
 
-    // TODO: switch on user_angle to get 'far left', 'left', 'center', 'behind', etc
-    var perspective = user_angle + ' degrees to you '
+    var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
+
+    if(check_behind && user_angle > field_of_view) {
+        // out of field of view so they cannot see it
+        return;
+    }
 
     // TODO: if the other player is faceing towards you or away from you
     // their left and right are switched ("the player in front of you walked left vs right"
     // changes depending on which way that player is facing)
-    if (distance_ok && (check_behind || user_angle < field_of_view)) {
-        io.to(user2["socket_id"]).emit('message', {
-            data: 'The player ' + perspective + message
-        });
+    var direction_vector = user_vectors[0].cross(user_vectors[1]);
+    // TODO: replace this vector library / do the math with only Math utils
+    var cross_product_values = direction_vector.toString();
+    var is_left =  cross_product_values[2] < 0;
+    var direction_str = is_left? 'left': 'right';
+    var perspective;
+    if ( user_angle < Math.PI/10 ) {
+        perspective = 'in front of you';
+    } else if ( user_angle < Math.PI/4) {
+        perspective = 'to the ' + direction_str + ' of you';
+    } else if ( user_angle < Math.PI/2) {
+        perspective = 'to the far ' + direction_str + ' of you';
+    } else if ( user_angle < (3*Math.PI)/4) {
+        perspective = 'behind you to the ' + direction_str;
+    } else {
+        perspective = 'behind you'
     }
+
+    io.to(user2["socket_id"]).emit('message', {
+        // TODO: 'You *hear/see* the player to your left etc etc'
+        // instead of just 'the player to your left etc etc
+        data: 'The player ' + perspective + ' ' + message
+    });
 }
 
 function announce(socket_id, io, message, distance, check_behind) {
