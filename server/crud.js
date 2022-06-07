@@ -105,13 +105,13 @@ async function get_biome(x, y) {
     return await database.collection('world').findOne({
         $and: [
             {$expr: {
-                $lte: [x, {$sum:["$loc_x", "$width"]}],
+                $lt: [x, {$sum:["$loc_x", "$width"]}],
             }}, {$expr: {
-                $lte: [y, {$sum:["$loc_y", "$height"]}],
+                $lt: [y, {$sum:["$loc_y", "$height"]}],
             }}, {$expr: {
-                $gte: [x, "$loc_x"],
+                $gt: [x, "$loc_x"],
             }}, {$expr: {
-                $gte: [y, "$loc_y"]
+                $gt: [y, "$loc_y"]
             }}
         ]
     });

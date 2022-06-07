@@ -68,6 +68,8 @@ function start_playing() {
             socket.emit('turn right', {});
         } else if(input.startsWith('turn around')) {
             socket.emit('turn around', {});
+        } else if(input.startsWith('look')) {
+            socket.emit('look', {});
         }
     });
 }

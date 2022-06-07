@@ -1,5 +1,5 @@
 # Project Title Here
-
+MMO text adventure using socket.io and mongodb
 
 ### Setup
 

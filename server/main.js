@@ -76,7 +76,6 @@ io.on('connection', function (socket){
   });
   socket.on('look', function(data) {
     crud.get_user(socket.id).catch(console.dir).then( (user) => {
-      console.log(user);
       crud.get_biome(user["loc_x"], user["loc_y"]).catch(console.dir).then( (biome) => {
         if(biome === null) {
           // todo: generate another chunk of world
