@@ -74,6 +74,18 @@ io.on('connection', function (socket){
     crud.move(socket.id, 0, Math.PI);
     announce.announce(socket.id, io, 'turned around', seeing_distance, true);
   });
+  socket.on('look', function(data) {
+    crud.get_user(socket.id).catch(console.dir).then( (user) => {
+      console.log(user);
+      crud.get_biome(user["loc_x"], user["loc_y"]).catch(console.dir).then( (biome) => {
+        if(biome === null) {
+          // todo: generate another chunk of world
+        } else {
+          socket.send({data: biome['type']});
+        }
+      });
+    })
+  })
 });
 
 http.listen(3000, function () {

@@ -101,13 +101,18 @@ async function add_biome(loc_x, loc_y, width, height, type) {
     })
 }
 
-async function get_biome(loc_x, loc_y) {
-    await database.collection('world').findOne({
-        $expr: {
-            $lt: [loc_x, {$sum:["$loc_x", "$width"]}],
-            $lt: [loc_y, {$sum:["$loc_y", "$height"]}],
-            $gt: [loc_x, "$loc_x"],
-            $gt: [loc_y, "$loc_y"]
-        }
+async function get_biome(x, y) {
+    return await database.collection('world').findOne({
+        $and: [
+            {$expr: {
+                $lte: [x, {$sum:["$loc_x", "$width"]}],
+            }}, {$expr: {
+                $lte: [y, {$sum:["$loc_y", "$height"]}],
+            }}, {$expr: {
+                $gte: [x, "$loc_x"],
+            }}, {$expr: {
+                $gte: [y, "$loc_y"]
+            }}
+        ]
     });
 }
