@@ -1,8 +1,8 @@
 const crud = require('./crud');
 
 module.exports = {
-    login: login,
-    signup: signup
+    login,
+    signup
 }
 
 function login(data, socket) {

@@ -1,23 +1,41 @@
-# Private messaging with Socket.IO
+# Project Title Here
+MMO text adventure using socket.io and mongodb
 
-Please read the related guide:
+### Setup
 
-- [Part I](https://socket.io/get-started/private-messaging-part-1/): initial implementation
-- [Part II](https://socket.io/get-started/private-messaging-part-2/): persistent user ID
-- [Part III](https://socket.io/get-started/private-messaging-part-3/): persistent messages
-- [Part IV](https://socket.io/get-started/private-messaging-part-4/): scaling up
-
-## Running the frontend
-
+Install javascript dependencies
 ```
 npm install
-npm run serve
+```
+
+Setup mongodb tables (I'm using MongoDB server version: 4.4.13)
+```
+mongod
+use project_title_here_db // creation db if it doesn't exist
+db.createCollection('user') // create user db
+db.createCollection('world') // create environment db
+```
+
+Create a user (Incase signup autoincrement isn't working)
+```
+db.user.insert({"user_id":1,"username":"test","password":"test","loc_x":0,"loc_y":0,"angle":0,"socket_id":null})
+```
+
+Generate world
+```
+cd server
+node world_generator.js
 ```
 
 ### Running the server
 
 ```
 cd server
-npm install
-npm start
+node main.js
+```
+
+### Running the client
+
+```
+node client.js
 ```

@@ -9,17 +9,21 @@ mongo.connect();
 const database = mongo.db('project_title_here_db');
 
 module.exports = {
-    get_login: get_login,
-    get_user: get_user,
-    check_username: check_username,
-    create_user: create_user,
-    add_connection: add_connection,
-    delete_connection: delete_connection,
-    get_other_connections: get_other_connections,
-    move: move
+    get_login,
+    get_user,
+    check_username,
+    create_user,
+    add_connection,
+    delete_connection,
+    get_other_connections,
+    move,
+    reset_world,
+    add_biome,
+    get_biome
 };
 
 async function get_login(user, pass) {
+    // TODO: use count instead of find
     return await database.collection('user').findOne({
         username: user, password: pass
     });
@@ -70,6 +74,8 @@ async function get_other_connections(socket_id, loc_x, loc_y, distance) {
 }
 
 async function move(socket_id, distance, turn) {
+    // TODO: do this in one query instead of getting
+    // the user x/y/angle in a second query
     await get_user(socket_id).catch(console.dir).then( (user) => {
         database.collection('user').updateOne({
             socket_id: socket_id
@@ -80,5 +86,33 @@ async function move(socket_id, distance, turn) {
                 loc_y: user["loc_y"] + distance * Math.sin(user["angle"] + turn)
             }
         });
+    });
+}
+
+async function reset_world() {
+    await database.collection('world').deleteMany({});
+}
+
+async function add_biome(loc_x, loc_y, width, height, type) {
+    await database.collection('world').insertOne({
+        loc_x: loc_x, loc_y: loc_y,
+        width: width, height: height,
+        type: type
+    })
+}
+
+async function get_biome(x, y) {
+    return await database.collection('world').findOne({
+        $and: [
+            {$expr: {
+                $lt: [x, {$sum:["$loc_x", "$width"]}],
+            }}, {$expr: {
+                $lt: [y, {$sum:["$loc_y", "$height"]}],
+            }}, {$expr: {
+                $gt: [x, "$loc_x"],
+            }}, {$expr: {
+                $gt: [y, "$loc_y"]
+            }}
+        ]
     });
 }

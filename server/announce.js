@@ -2,7 +2,7 @@ const crud = require('./crud');
 const { Vector, VectorConstants } = require("simplevectorsjs");
 
 module.exports = {
-    announce: announce
+    announce
 }
 
 function within_distance(
