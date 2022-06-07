@@ -49,9 +49,9 @@ async function create_user(user, pass, socket_id, x, y, angle, age, height, weig
     });
 }
 
-async function add_connection(user_id, socket_id) {
+async function add_connection(username, socket_id) {
     await db.collection('user').updateOne({
-        user_id: user_id
+        username: username
     }, {
         $set: {socket_id: socket_id}
     });

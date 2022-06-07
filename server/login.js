@@ -25,8 +25,7 @@ function login(data, socket) {
             socket.send({login_success: false});
         } else {
             // user found -> login successful
-            user_id = user['user_id'];
-            crud.add_connection(user_id, socket.id).catch(console.dir);
+            crud.add_connection(data['username'], socket.id).catch(console.dir);
             socket.send({login_success: true});
         }
     });
