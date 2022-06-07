@@ -5,12 +5,21 @@ module.exports = {
     signup
 }
 
+const ages = ["young", "middle aged", "old"];
+const heights = ["short", "average", "tall"];
+const weights = ["skinny", "average", "fat"];
+
+function getRandom(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+
 function login(data, socket) {
     // check if credentials exist / are correct
     crud.get_login(
         data['username'], data['password']
     ).catch(console.dir).then( (user) => {
-        if(user === null) {
+        if(user === 0) {
             // either the username doesn't exist
             // or the password is wrong
             socket.send({login_success: false});
@@ -31,7 +40,12 @@ function signup(data, socket) {
         socket.send({login_success: false});
       } else {
         // username is not taken -> signup success
-        crud.create_user(data["username"], data["password"]).catch(console.dir);
+        // TODO: spawn randomly within spawn zone area created in world generator
+        crud.create_user(
+            data["username"], data["password"], socket.id,
+            0, 0, Math.random() * Math.PI * 2,
+            getRandom(ages), getRandom(heights), getRandom(weights)
+        ).catch(console.dir);
         socket.send({login_success: true});
       }
     })

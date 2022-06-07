@@ -23,8 +23,7 @@ module.exports = {
 };
 
 async function get_login(user, pass) {
-    // TODO: use count instead of find
-    return await database.collection('user').findOne({
+    return await database.collection('user').count({
         username: user, password: pass
     });
 }
@@ -42,10 +41,11 @@ async function check_username(username) {
 }
 
 // TODO: setup auto-increment
-async function create_user(user, pass) {
+async function create_user(user, pass, socket_id, x, y, angle, age, height, weight) {
     await database.collection('user').insertOne({
         username: user, password: pass,
-        loc_x:0, loc_y:0, angle:0, socket_id:null
+        x: x, y: y, angle: angle, socket_id:socket_id,
+        age: age, height: height, weight: weight
     });
 }
 
@@ -65,10 +65,10 @@ async function delete_connection(socket_id) {
     });
 }
 
-async function get_other_connections(socket_id, loc_x, loc_y, distance) {
+async function get_other_connections(socket_id, x, y, distance) {
     return await database.collection('user').find({
-        loc_x: { $gt: loc_x - distance, $lt: loc_x + distance},
-        loc_y: { $gt: loc_y - distance, $lt: loc_y + distance},
+        x: { $gt: x - distance, $lt: x + distance},
+        y: { $gt: y - distance, $lt: y + distance},
         socket_id: { $not: { $eq: socket_id }}
     });
 }
@@ -82,8 +82,8 @@ async function move(socket_id, distance, turn) {
         }, {
             $set: {
                 angle: (user["angle"] + turn) % (2 * Math.PI),
-                loc_x: user["loc_x"] + distance * Math.cos(user["angle"] + turn),
-                loc_y: user["loc_y"] + distance * Math.sin(user["angle"] + turn)
+                x: user["x"] + distance * Math.cos(user["angle"] + turn),
+                y: user["y"] + distance * Math.sin(user["angle"] + turn)
             }
         });
     });
@@ -93,9 +93,9 @@ async function reset_world() {
     await database.collection('world').deleteMany({});
 }
 
-async function add_biome(loc_x, loc_y, width, height, type) {
+async function add_biome(x, y, width, height, type) {
     await database.collection('world').insertOne({
-        loc_x: loc_x, loc_y: loc_y,
+        x: x, y: y,
         width: width, height: height,
         type: type
     })
@@ -105,13 +105,13 @@ async function get_biome(x, y) {
     return await database.collection('world').findOne({
         $and: [
             {$expr: {
-                $lt: [x, {$sum:["$loc_x", "$width"]}],
+                $lt: [x, {$sum:["$x", "$width"]}],
             }}, {$expr: {
-                $lt: [y, {$sum:["$loc_y", "$height"]}],
+                $lt: [y, {$sum:["$y", "$height"]}],
             }}, {$expr: {
-                $gt: [x, "$loc_x"],
+                $gt: [x, "$x"],
             }}, {$expr: {
-                $gt: [y, "$loc_y"]
+                $gt: [y, "$y"]
             }}
         ]
     });
