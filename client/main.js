@@ -45,17 +45,43 @@ $(function() {
         addMessageElement($el, options);
     }
 
+
+    const COLORS = [
+        '#e21400', '#91580f', '#f8a700', '#f78b00',
+        '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
+        '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
+      ];
+    
+    const COLORS_MAP = {
+        'You': COLORS[0],
+        'Server': COLORS[1],
+    }
+
+    // Gets the color of a username through our hash function
+    const getUsernameColor = (username) => {
+        return COLORS_MAP[username]
+        // // Compute hash code
+        // let hash = 7;
+        // for (let i = 0; i < username.length; i++) {
+        // hash = username.charCodeAt(i) + (hash << 5) - hash;
+        // }
+        // // Calculate color
+        // const index = Math.abs(hash % COLORS.length);
+        // return COLORS[index];
+    }
+
+
     // Adds the visual chat message to the message list
     const addChatMessage = (data, options = {}) => {
         // Don't fade the message in if there is an 'X was typing'
         const $usernameDiv = $('<span class="username"/>')
-            .text('You: ')
-            // .css('color', getUsernameColor(data.username));
+            .text(data.username)
+            .css('color', getUsernameColor(data.username));
         const $messageBodyDiv = $('<span class="messageBody">')
-            .text(data.message);
+            .text(data.input);
 
         const $messageDiv = $('<li class="message"/>')
-            .data('username', 'Server: ')
+            .data('username', data.username)
             .append($usernameDiv, $messageBodyDiv);
 
         addMessageElement($messageDiv, options);
@@ -136,7 +162,7 @@ $(function() {
 
         if (input && connected && login_success) {
             $inputMessage.val('');
-            addChatMessage({input});
+            addChatMessage({username: 'You', input: input});
             if(input.startsWith('say')) {
                 socket.emit('say', {msg: input});
             } else if(input.startsWith('walk forward')) {
@@ -194,7 +220,10 @@ $(function() {
             login_success = true;
             socket.removeListener('message');
             socket.addEventListener('message', (event) => {
-                log(event.data)
+                addChatMessage({
+                    input:event.data,
+                    username: 'Server'
+                })
             })
         } else {
             // TODO: also check for username already taken on signup
