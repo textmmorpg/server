@@ -3,8 +3,9 @@ $(function() {
 
     // Initialize variables
     const $window = $(window);
-    const $usernameInput = $('#username'); // Input for username
-    const $passwordInput = $('#password'); // Input for username
+    const $username = $('#username'); // Input for username
+    const $password = $('#password'); // Input for username
+    const $isLogin = $('#isLogin')
     const $messages = $('.messages');           // Messages area
     const $inputMessage = $('.inputMessage');   // Input message input box
 
@@ -19,21 +20,22 @@ $(function() {
     let typing = false;
     let lastTypingTime;
     let $currentInput;
+    let login_success = false;
 
     // Sets the client's username
     const setUsername = () => {
+        is_login = $isLogin.val();
+        var login_type = is_login? "login": "signup";
         username = cleanInput($username.val().trim());
         password = cleanInput($password.val().trim());
 
         // If the username is valid
-        if (username) {
-            $loginPage.fadeOut();
-            $chatPage.show();
-            $loginPage.off('click');
-            $currentInput = $inputMessage.focus();
-
+        if (username && password && is_login) {
             // Tell the server your username
-            socket.emit('add user', username);
+            socket.emit(login_type, {
+                username: username,
+                password: password
+            })
         }
     }
 
@@ -109,11 +111,11 @@ $(function() {
     $window.keydown(event => {
         // Auto-focus the current input when a key is typed
         if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-            $currentInput.focus();
+
         }
         // When the client hits ENTER on their keyboard
         if (event.which === 13) {
-            if (username) {
+            if (login_success) {
                 sendMessage();
                 typing = false;
             } else {
@@ -140,36 +142,6 @@ $(function() {
 
     // Socket handlers
 
-    function login() {
-
-        // read_input = readline.createInterface({
-        //     input: process.stdin,
-        //     output: process.stdout,
-        // });
-
-        // var login_type;
-        // read_input.question('Login or Signup? ', (answer) => {
-        //     if(answer === 'login') {
-        //         login_type = 'login';
-        //     } else if(answer === 'signup') {
-        //         login_type = 'signup';
-        //     } else {
-        //         cleanup();
-        //         return;
-        //     }
-
-        //     read_input.question('User name:', (user) => {
-        //         read_input.question('Password:', (pass) => {
-        //             socket.emit(login_type, {
-        //                 username: user,
-        //                 password: pass
-        //             })
-        //             read_input.close();
-        //         });
-        //     });
-        // })
-    }
-
     function start_playing() {
 
         // read_input = readline.createInterface({
@@ -178,9 +150,6 @@ $(function() {
         // });
 
         // print output from server
-        socket.addEventListener('message', function (event) {
-            console.log(event.data);
-        });
 
         // send command line input to server
         // read_input.on('line', (input) => {
@@ -219,7 +188,7 @@ $(function() {
 
     socket.on('connect', function (event) {
         connected = true;
-        login();
+        console.log('Connected!');
     });
 
     socket.on('disconnect', function (event) {
@@ -232,11 +201,17 @@ $(function() {
         if(event.login_success) {
             console.log("Login Successful");
             // stop listening for login success
-            socket.removeListener('message');
-            start_playing();
+
+            $loginPage.fadeOut();
+            $chatPage.show();
+            $loginPage.off('click');
+            login_success = true;
         } else {
+            // TODO: also check for username already taken on signup
             console.log("Incorrect username/password");
-            login();
+            $('#username').val('');
+            $('#password').val('');
+            $('#incorrectPassword').attr('hidden', false);
         }
     })
 
