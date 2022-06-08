@@ -1,8 +1,7 @@
 const crud = require('./crud');
 
 module.exports = {
-    login,
-    signup
+    login
 }
 
 const ages = ["young", "middle aged", "old"];
@@ -20,9 +19,8 @@ function login(data, socket) {
         data['username'], data['password']
     ).catch(console.dir).then( (user) => {
         if(user === 0) {
-            // either the username doesn't exist
-            // or the password is wrong
-            socket.send({login_success: false});
+            // if the user doesn't exist, try to create one
+            signup(data, socket);
         } else {
             // user found -> login successful
             crud.add_connection(data['username'], socket.id).catch(console.dir);

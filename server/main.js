@@ -1,23 +1,32 @@
-const app = require('express')();
+const express = require('express')
+const app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+const cors = require("cors");
 const crud = require('./crud');
 const login = require('./login');
+const path = require('path');
 const announce = require('./announce');
+// app.use(cors());
+app.use((req,res,next)=>{
+  res.setHeader('Access-Control-Allow-Origin','*');
+  res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
+  res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
+  cors();
+  next(); 
+})
 var walk_speed = 1
 var run_speed = 2
 var hearing_distance = 10;
 var seeing_distance = 10;
+
+app.use(express.static(path.join(__dirname, 'client')));
 
 io.on('connection', function (socket){
   console.log('new connection: ' + socket.id);
 
   socket.on('login', function(data) {
     login.login(data, socket);
-  });
-
-  socket.on('signup', function(data) {
-    login.signup(data, socket);
   });
   
   socket.on('exit', function (data) {
