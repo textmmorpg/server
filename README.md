@@ -1,5 +1,5 @@
 # Project Title Here
-MMO text adventure using socket.io and mongodb
+MMO text adventure game using socket.io and mongodb
 
 ### Setup
 
@@ -37,5 +37,8 @@ node main.js
 ### Running the client
 
 ```
-node client.js
+npm run start
 ```
+And then navigate to https://localhost:3000
+
+Or open the `client/index.html` file directly
