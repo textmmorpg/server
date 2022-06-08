@@ -3,7 +3,8 @@ $(function() {
 
     // Initialize variables
     const $window = $(window);
-    const $usernameInput = $('.usernameInput'); // Input for username
+    const $usernameInput = $('#username'); // Input for username
+    const $passwordInput = $('#password'); // Input for username
     const $messages = $('.messages');           // Messages area
     const $inputMessage = $('.inputMessage');   // Input message input box
 
@@ -17,7 +18,7 @@ $(function() {
     let connected = false;
     let typing = false;
     let lastTypingTime;
-    let $currentInput = $usernameInput.focus();
+    let $currentInput;
 
     // Sets the client's username
     const setUsername = () => {
