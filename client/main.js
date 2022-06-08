@@ -17,22 +17,18 @@ $(function() {
     // Prompt for setting a username
     let username;
     let connected = false;
-    let typing = false;
-    let lastTypingTime;
     let $currentInput;
     let login_success = false;
 
     // Sets the client's username
     const setUsername = () => {
-        is_login = $isLogin.val();
-        var login_type = is_login? "login": "signup";
         username = cleanInput($username.val().trim());
         password = cleanInput($password.val().trim());
 
         // If the username is valid
-        if (username && password && is_login) {
+        if (username && password) {
             // Tell the server your username
-            socket.emit(login_type, {
+            socket.emit('login', {
                 username: username,
                 password: password
             })
@@ -146,7 +142,9 @@ $(function() {
 
     // Focus input when clicking anywhere on login page
     $loginPage.click(() => {
-        $currentInput.focus();
+        if(login_success) {
+            $inputMessage.focus();
+        }
     });
 
     // Focus input when clicking on the message input's border
@@ -231,6 +229,9 @@ $(function() {
             $('#username').val('');
             $('#password').val('');
             $('#incorrectPassword').attr('hidden', false);
+            setTimeout(() => {
+                $('#incorrectPassword').attr('hidden', true);
+            }, 3000)
         }
     })
 

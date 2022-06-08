@@ -28,10 +28,6 @@ io.on('connection', function (socket){
   socket.on('login', function(data) {
     login.login(data, socket);
   });
-
-  socket.on('signup', function(data) {
-    login.signup(data, socket);
-  });
   
   socket.on('exit', function (data) {
     socket.send({data: "bye"});
