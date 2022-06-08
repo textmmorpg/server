@@ -1,9 +1,18 @@
 const app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+const cors = require("cors");
 const crud = require('./crud');
 const login = require('./login');
 const announce = require('./announce');
+// app.use(cors());
+app.use((req,res,next)=>{
+  res.setHeader('Acces-Control-Allow-Origin','*');
+  res.setHeader('Acces-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
+  res.setHeader('Acces-Contorl-Allow-Methods','Content-Type','Authorization');
+  cors();
+  next(); 
+})
 var walk_speed = 1
 var run_speed = 2
 var hearing_distance = 10;
