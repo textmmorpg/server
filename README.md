@@ -11,14 +11,14 @@ npm install
 Setup mongodb tables (I'm using MongoDB server version: 4.4.13)
 ```
 mongod
-use project_title_here_db // creation db if it doesn't exist
-db.createCollection('user') // create user db
-db.createCollection('world') // create environment db
+use project_title_here_db // create db if it doesn't exist
+db.createCollection('user') // create user collection
+db.createCollection('world') // create environment collection
 ```
 
 Create a user (Incase signup autoincrement isn't working)
 ```
-db.user.insert({"user_id":1,"username":"test","password":"test","x":0,"y":0,"angle":0,"socket_id":null})
+db.user.insert({"user_id":1,"username":"test","password":"test","x":0,"y":0,"angle":0,"posture":"standing","socket_id":null})
 ```
 
 Generate world
