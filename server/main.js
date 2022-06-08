@@ -86,6 +86,21 @@ io.on('connection', function (socket){
     crud.move(socket.id, 0, Math.PI);
     announce.announce(socket.id, io, 'turned around', seeing_distance, true);
   });
+
+  socket.on('sit down', function(data) {
+    crud.set_posture(socket.id, 'sitting');
+    announce.announce(socket.id, io, 'sat down', seeing_distance, true)
+  })
+
+  socket.on('lay down', function(data) {
+    crud.set_posture(socket.id, 'laying');
+    announce.announce(socket.id, io, 'layed down', seeing_distance, true)
+  })
+
+  socket.on('stand up', function(data) {
+    crud.set_posture(socket.id, 'standing');
+    announce.announce(socket.id, io, 'stood up', seeing_distance, true)
+  })
   
   socket.on('look', function(data) {
     crud.get_user(socket.id).catch(console.dir).then( (user) => {

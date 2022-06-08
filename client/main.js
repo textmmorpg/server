@@ -183,6 +183,14 @@ $(function() {
                 socket.emit('turn around', {});
             } else if(input.startsWith('look')) {
                 socket.emit('look', {});
+            } else if(input.startsWith('sit down')) {
+                socket.emit('sit down', {});
+            } else if(input.startsWith('lay down')) {
+                socket.emit('lay down', {});
+            } else if(input.startsWith('stand up')) {
+                socket.emit('stand up', {});
+            } else {
+                log('Command not defined');
             }
         }
     }
