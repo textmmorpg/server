@@ -48,22 +48,14 @@ $(function() {
     // Adds the visual chat message to the message list
     const addChatMessage = (data, options = {}) => {
         // Don't fade the message in if there is an 'X was typing'
-        const $typingMessages = getTypingMessages(data);
-        if ($typingMessages.length !== 0) {
-            options.fade = false;
-            $typingMessages.remove();
-        }
-
         const $usernameDiv = $('<span class="username"/>')
-            .text(data.username)
-            .css('color', getUsernameColor(data.username));
+            .text('You: ')
+            // .css('color', getUsernameColor(data.username));
         const $messageBodyDiv = $('<span class="messageBody">')
             .text(data.message);
 
-        const typingClass = data.typing ? 'typing' : '';
         const $messageDiv = $('<li class="message"/>')
-            .data('username', data.username)
-            .addClass(typingClass)
+            .data('username', 'Server: ')
             .append($usernameDiv, $messageBodyDiv);
 
         addMessageElement($messageDiv, options);
@@ -88,10 +80,6 @@ $(function() {
             options.prepend = false;
         }
 
-        // Apply options
-        if (options.fade) {
-            $el.hide().fadeIn(FADE_TIME);
-        }
         if (options.prepend) {
             $messages.prepend($el);
         } else {
@@ -142,41 +130,37 @@ $(function() {
 
     // Socket handlers
 
-    function start_playing() {
+    const sendMessage = () => {
 
-        // read_input = readline.createInterface({
-        //     input: process.stdin,
-        //     output: process.stdout,
-        // });
+        var input = cleanInput($inputMessage.val());
 
-        // print output from server
-
-        // send command line input to server
-        // read_input.on('line', (input) => {
-        //     if(input.startsWith('say')) {
-        //         socket.emit('say', {msg: input});
-        //     } else if(input.startsWith('walk forward')) {
-        //         socket.emit('walk forward', {});
-        //     } else if(input.startsWith('walk left')) {
-        //         socket.emit('walk left', {});
-        //     } else if(input.startsWith('walk right')) {
-        //         socket.emit('walk right', {});
-        //     } else if(input.startsWith('run forward')) {
-        //         socket.emit('run forward', {});
-        //     } else if(input.startsWith('run left')) {
-        //         socket.emit('run left', {});
-        //     } else if(input.startsWith('run right')) {
-        //         socket.emit('run right', {});
-        //     } else if(input.startsWith('turn left')) {
-        //         socket.emit('turn left', {});
-        //     } else if(input.startsWith('turn right')) {
-        //         socket.emit('turn right', {});
-        //     } else if(input.startsWith('turn around')) {
-        //         socket.emit('turn around', {});
-        //     } else if(input.startsWith('look')) {
-        //         socket.emit('look', {});
-        //     }
-        // });
+        if (input && connected && login_success) {
+            $inputMessage.val('');
+            addChatMessage({input});
+            if(input.startsWith('say')) {
+                socket.emit('say', {msg: input});
+            } else if(input.startsWith('walk forward')) {
+                socket.emit('walk forward', {});
+            } else if(input.startsWith('walk left')) {
+                socket.emit('walk left', {});
+            } else if(input.startsWith('walk right')) {
+                socket.emit('walk right', {});
+            } else if(input.startsWith('run forward')) {
+                socket.emit('run forward', {});
+            } else if(input.startsWith('run left')) {
+                socket.emit('run left', {});
+            } else if(input.startsWith('run right')) {
+                socket.emit('run right', {});
+            } else if(input.startsWith('turn left')) {
+                socket.emit('turn left', {});
+            } else if(input.startsWith('turn right')) {
+                socket.emit('turn right', {});
+            } else if(input.startsWith('turn around')) {
+                socket.emit('turn around', {});
+            } else if(input.startsWith('look')) {
+                socket.emit('look', {});
+            }
+        }
     }
 
     function cleanup() {
@@ -196,6 +180,8 @@ $(function() {
         cleanup();
     })
 
+
+
     // listen for login success or failure
     socket.addEventListener('message', function(event) {
         if(event.login_success) {
@@ -206,6 +192,10 @@ $(function() {
             $chatPage.show();
             $loginPage.off('click');
             login_success = true;
+            socket.removeListener('message');
+            socket.addEventListener('message', (event) => {
+                log(event.data)
+            })
         } else {
             // TODO: also check for username already taken on signup
             console.log("Incorrect username/password");
