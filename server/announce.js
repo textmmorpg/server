@@ -38,8 +38,8 @@ function maybe_send_message(user1, user2, distance, check_behind, io, message) {
     var field_of_view = 1.178097; // 135 degrees (half of that in each direction)
 
     var distance_ok = within_distance(
-        user1["loc_x"], user1["loc_y"],
-        user2["loc_x"], user2["loc_y"], distance
+        user1["x"], user1["y"],
+        user2["x"], user2["y"], distance
     )
 
     if(!distance_ok) {
@@ -48,8 +48,8 @@ function maybe_send_message(user1, user2, distance, check_behind, io, message) {
     }
     
     var user_vectors = get_user_vectors(
-        user2["loc_x"], user2["loc_y"], user2["angle"],
-        user1["loc_x"], user1["loc_y"]
+        user2["x"], user2["y"], user2["angle"],
+        user1["x"], user1["y"]
     )
 
     var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
@@ -91,7 +91,7 @@ function announce(socket_id, io, message, distance, check_behind) {
     // get sockets of the close players
     crud.get_user(socket_id).catch(console.dir).then( (user) => {
         crud.get_other_connections(
-            socket_id, user["loc_x"], user["loc_y"], distance
+            socket_id, user["x"], user["y"], distance
         ).catch(console.dir).then( (other_users) => {
             // send the message to the socket of each close player
             other_users.forEach( (other_user) => {
