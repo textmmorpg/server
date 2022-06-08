@@ -13,6 +13,8 @@ module.exports = {
     get_user,
     check_username,
     create_user,
+    set_posture,
+    get_vibe,
     add_connection,
     delete_connection,
     get_other_connections,
@@ -40,13 +42,26 @@ async function check_username(username) {
     });
 }
 
-// TODO: setup auto-increment
 async function create_user(user, pass, socket_id, x, y, angle, age, height, weight) {
     await db.collection('user').insertOne({
         username: user, password: pass,
         x: x, y: y, angle: angle, socket_id:socket_id,
-        age: age, height: height, weight: weight
+        age: age, height: height, weight: weight, posture: "standing"
     });
+}
+
+async function set_posture(socket_id, posture) {
+    await db.collection('user').updateOne({
+        socket_id: socket_id
+    }, {
+        $set: {posture: posture}
+    });
+}
+
+async function get_vibe(socket_id) {
+    return await db.collection('user').findOne({
+        socket_id: socket_id
+    }, {age: 1, height: 1, weight: 1, posture: 1, angle: 1, x: 1, y: 1})
 }
 
 async function add_connection(username, socket_id) {

@@ -18,7 +18,7 @@ db.createCollection('world') // create environment collection
 
 Create a user (Incase signup autoincrement isn't working)
 ```
-db.user.insert({"user_id":1,"username":"test","password":"test","x":0,"y":0,"angle":0,"socket_id":null})
+db.user.insert({"user_id":1,"username":"test","password":"test","x":0,"y":0,"angle":0,"posture":"standing","socket_id":null})
 ```
 
 Generate world
