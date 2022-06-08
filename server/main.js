@@ -89,19 +89,31 @@ io.on('connection', function (socket){
 
   socket.on('sit down', function(data) {
     crud.set_posture(socket.id, 'sitting');
-    announce.announce(socket.id, io, 'sat down', seeing_distance, true)
+    announce.announce(socket.id, io, 'sat down', seeing_distance, true);
   })
 
   socket.on('lay down', function(data) {
     crud.set_posture(socket.id, 'laying');
-    announce.announce(socket.id, io, 'layed down', seeing_distance, true)
+    announce.announce(socket.id, io, 'layed down', seeing_distance, true);
   })
 
   socket.on('stand up', function(data) {
     crud.set_posture(socket.id, 'standing');
-    announce.announce(socket.id, io, 'stood up', seeing_distance, true)
+    announce.announce(socket.id, io, 'stood up', seeing_distance, true);
   })
   
+  socket.on('vibe check', function(data) {
+    crud.get_vibe(socket.id).catch(console.dir).then( (user) => {
+      // TODO: get user North/south/east/west coords instead of the raw angle
+      socket.send({
+        data: 'You are a ' + user['height'] + ' ' + user['weight'] + 
+        ' ' + user['age'] + ' human. You are currently ' + user['posture'] +
+        '. You are at a ' + user['angle'] + ' angle, located at ' + user['x'] +
+        ', ' + user['y'] 
+      });
+    })
+  })
+
   socket.on('look', function(data) {
     crud.get_user(socket.id).catch(console.dir).then( (user) => {
       crud.get_biome(user["x"], user["y"]).catch(console.dir).then( (biome) => {

@@ -14,6 +14,7 @@ module.exports = {
     check_username,
     create_user,
     set_posture,
+    get_vibe,
     add_connection,
     delete_connection,
     get_other_connections,
@@ -55,6 +56,12 @@ async function set_posture(socket_id, posture) {
     }, {
         $set: {posture: posture}
     });
+}
+
+async function get_vibe(socket_id) {
+    return await db.collection('user').findOne({
+        socket_id: socket_id
+    }, {age: 1, height: 1, weight: 1, posture: 1, angle: 1, x: 1, y: 1})
 }
 
 async function add_connection(username, socket_id) {
