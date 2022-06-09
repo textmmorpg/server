@@ -33,7 +33,7 @@ async function get_login(user, pass) {
 async function get_user(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
-    }, {x: 1, y: 1, socket_id: 1, energy: 1});
+    }, {x: 1, y: 1, socket_id: 1, energy: 1, posture: 1});
 }
   
 async function check_username(username) {
@@ -105,12 +105,19 @@ async function get_other_connections(socket_id, x, y, distance) {
 async function move(socket, distance, turn) {
     // TODO: do this in one query instead of getting
     // the user x/y/angle in a second query
-    // TODO: don't check energy if just turning around
     await get_user(socket.id).catch(console.dir).then( (user) => {
-        var movement_energy = 0.025 * distance;
-        if(user['energy'] < movement_energy) {
+        var movement_energy = 0.025 * Math.pow(distance, 2);
+
+        if(user['energy'] < movement_energy && distance !== 0) {
             socket.send({data: "Not enough energy! Sit or lay down to rest"})
+            return;
         }
+
+        if(user['posture'] !== "standing" && distance !== 0) {
+            socket.send({data: "Cannot move while " + user['posture'] + '. Stand up first!'})
+            return;
+        }
+
         db.collection('user').updateOne({
             socket_id: socket.id
         }, {
