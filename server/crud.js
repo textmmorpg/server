@@ -46,7 +46,8 @@ async function create_user(user, pass, socket_id, x, y, angle, age, height, weig
     await db.collection('user').insertOne({
         username: user, password: pass,
         x: x, y: y, angle: angle, socket_id:socket_id,
-        age: age, height: height, weight: weight, posture: "standing"
+        age: age, height: height, weight: weight, posture: "standing",
+        energy: 1, last_cmd_ts: new Date()
     });
 }
 
@@ -54,21 +55,31 @@ async function set_posture(socket_id, posture) {
     await db.collection('user').updateOne({
         socket_id: socket_id
     }, {
-        $set: {posture: posture}
+        $set: {
+            posture: posture,
+            last_cmd_ts: new Date()
+        }
     });
 }
 
 async function get_vibe(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
-    }, {age: 1, height: 1, weight: 1, posture: 1, angle: 1, x: 1, y: 1})
+    }, {
+        age: 1, height: 1, weight: 1,
+        posture: 1, angle: 1, x: 1, y: 1,
+        energy: 1
+    })
 }
 
 async function add_connection(username, socket_id) {
     await db.collection('user').updateOne({
         username: username
     }, {
-        $set: {socket_id: socket_id}
+        $set: {
+            socket_id: socket_id,
+            last_cmd_ts: new Date()
+        }
     });
 }
 
@@ -76,7 +87,10 @@ async function delete_connection(socket_id) {
     await db.collection('user').updateMany({
         socket_id: socket_id
     }, {
-        $set: {socket_id: socket_id}
+        $set: {
+            socket_id: socket_id,
+            last_cmd_ts: new Date()
+        }
     });
 }
 
@@ -98,7 +112,8 @@ async function move(socket_id, distance, turn) {
             $set: {
                 angle: (user["angle"] + turn) % (2 * Math.PI),
                 x: user["x"] + distance * Math.cos(user["angle"] + turn),
-                y: user["y"] + distance * Math.sin(user["angle"] + turn)
+                y: user["y"] + distance * Math.sin(user["angle"] + turn),
+                last_cmd_ts: new Date()
             }
         });
     });

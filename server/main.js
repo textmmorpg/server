@@ -109,7 +109,7 @@ io.on('connection', function (socket){
         data: 'You are a ' + user['height'] + ' ' + user['weight'] + 
         ' ' + user['age'] + ' human. You are currently ' + user['posture'] +
         '. You are at a ' + user['angle'] + ' angle, located at ' + user['x'] +
-        ', ' + user['y'] 
+        ', ' + user['y'] + '. You haven\'t done anything since ' + user['last_cmd_ts']
       });
     })
   })
