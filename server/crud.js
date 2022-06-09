@@ -33,7 +33,7 @@ async function get_login(user, pass) {
 async function get_user(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
-    }, {x: 1, y: 1, socket_id: 1});
+    }, {x: 1, y: 1, socket_id: 1, energy: 1, posture: 1});
 }
   
 async function check_username(username) {
@@ -46,29 +46,73 @@ async function create_user(user, pass, socket_id, x, y, angle, age, height, weig
     await db.collection('user').insertOne({
         username: user, password: pass,
         x: x, y: y, angle: angle, socket_id:socket_id,
-        age: age, height: height, weight: weight, posture: "standing"
+        age: age, height: height, weight: weight, posture: "standing",
+        energy: 1, last_cmd_ts: new Date(),
+        last_set_posture_ts: new Date()
     });
 }
 
-async function set_posture(socket_id, posture) {
-    await db.collection('user').updateOne({
-        socket_id: socket_id
-    }, {
-        $set: {posture: posture}
+async function set_posture(socket, posture) {
+    // TODO: is it possible to do this in one query?
+    await get_user(socket.id).catch(console.dir).then( (user) => {
+
+        if(user['posture'] === posture) {
+            socket.send({data: "You are already " + posture});
+        }
+
+        var energy_regen = 0;
+        if(user['posture'] !== 'standing' && user['energy'] < 1) {
+            // captured in milliseconds
+            var time_in_posture = new Date() - user["last_set_posture_ts"]
+            var regen_multiplier = {
+                "sitting": 1,
+                "laying": 2
+            }[user['posture']]
+            // 20 seconds of sitting or 10 seconds of laying to get
+            // to full energy
+            energy_regen = time_in_posture * 0.00005 * regen_multiplier;
+            if(energy_regen + user['energy'] > 1) {
+                energy_regen = 1 - user['energy'];
+            }
+            socket.send(
+                {data: "Energy increased by " + 
+                Math.round(energy_regen * 100) +
+                "% after " + user['posture'] + " for " + 
+                parseFloat(time_in_posture/1000).toFixed(1) + " seconds"});
+        }
+
+        db.collection('user').updateOne({
+            socket_id: socket.id
+        }, {
+            $set: {
+                posture: posture,
+                last_cmd_ts: new Date(),
+                last_set_posture_ts: new Date(),
+            }, $inc: {
+                energy: energy_regen
+            }
+        });
     });
 }
 
 async function get_vibe(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
-    }, {age: 1, height: 1, weight: 1, posture: 1, angle: 1, x: 1, y: 1})
+    }, {
+        age: 1, height: 1, weight: 1,
+        posture: 1, angle: 1, x: 1, y: 1,
+        energy: 1
+    })
 }
 
 async function add_connection(username, socket_id) {
     await db.collection('user').updateOne({
         username: username
     }, {
-        $set: {socket_id: socket_id}
+        $set: {
+            socket_id: socket_id,
+            last_cmd_ts: new Date()
+        }
     });
 }
 
@@ -76,7 +120,10 @@ async function delete_connection(socket_id) {
     await db.collection('user').updateMany({
         socket_id: socket_id
     }, {
-        $set: {socket_id: socket_id}
+        $set: {
+            socket_id: socket_id,
+            last_cmd_ts: new Date()
+        }
     });
 }
 
@@ -88,17 +135,36 @@ async function get_other_connections(socket_id, x, y, distance) {
     }, {x: 1, y: 1, angle: 1, socket_id: 1});
 }
 
-async function move(socket_id, distance, turn) {
+async function move(socket, distance, turn) {
     // TODO: do this in one query instead of getting
     // the user x/y/angle in a second query
-    await get_user(socket_id).catch(console.dir).then( (user) => {
+    await get_user(socket.id).catch(console.dir).then( (user) => {
+        var movement_energy = 0.025 * Math.pow(distance, 2);
+
+        if(user['posture'] === "laying" && turn !== 0) {
+            socket.send({data: "You cannot turn around while laying down. Sit or stand up first!"});
+            return;
+        }
+
+        if(user['energy'] < movement_energy && distance !== 0) {
+            socket.send({data: "Not enough energy! Sit or lay down to rest"})
+            return;
+        }
+
+        if(user['posture'] !== "standing" && distance !== 0) {
+            socket.send({data: "Cannot move while " + user['posture'] + '. Stand up first!'})
+            return;
+        }
+
         db.collection('user').updateOne({
-            socket_id: socket_id
+            socket_id: socket.id
         }, {
             $set: {
                 angle: (user["angle"] + turn) % (2 * Math.PI),
                 x: user["x"] + distance * Math.cos(user["angle"] + turn),
-                y: user["y"] + distance * Math.sin(user["angle"] + turn)
+                y: user["y"] + distance * Math.sin(user["angle"] + turn),
+                last_cmd_ts: new Date(),
+                energy: user["energy"] - movement_energy
             }
         });
     });
