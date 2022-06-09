@@ -191,6 +191,10 @@ $(function() {
                 socket.emit('stand up', {});
             } else if(input.startsWith('vibe check')) {
                 socket.emit('vibe check')
+            } else if(input.startsWith('whisper')) {
+                socket.emit('whisper', {msg: input})
+            } else if(input.startsWith('yell')) {
+                socket.emit('yell', {msg: input})
             } else {
                 log('Command not defined');
             }

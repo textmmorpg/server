@@ -41,6 +41,14 @@ io.on('connection', function (socket){
   socket.on('say', function(data) {
     announce.announce(socket.id, io, data['msg'], hearing_distance, false);
   });
+
+  socket.on('whisper', function(data) {
+    announce.announce(socket.id, io, data['msg'], hearing_distance*0.2, false);
+  });
+
+  socket.on('yell', function(data) {
+    announce.announce(socket.id, io, data['msg'], hearing_distance*5, false);
+  });
   
   socket.on('walk forward', function (data) {
     crud.move(socket, walk_speed, 0);
