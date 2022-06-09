@@ -43,47 +43,47 @@ io.on('connection', function (socket){
   });
   
   socket.on('walk forward', function (data) {
-    crud.move(socket.id, walk_speed, 0);
+    crud.move(socket, walk_speed, 0);
     announce.announce(socket.id, io, 'walked forward', seeing_distance, true);
   });
 
   socket.on('walk left', function (data) {
-    crud.move(socket.id, walk_speed, Math.PI/2);
+    crud.move(socket, walk_speed, Math.PI/2);
     announce.announce(socket.id, io, 'walked left', seeing_distance, true);
   });
 
   socket.on('walk right', function(data) {
-    crud.move(socket.id, walk_speed, Math.PI/2 * -1);
+    crud.move(socket, walk_speed, Math.PI/2 * -1);
     announce.announce(socket.id, io, 'walked right', seeing_distance, true);
   });
 
   socket.on('run forward', function (data) {
-    crud.move(socket.id, run_speed, 0);
+    crud.move(socket, run_speed, 0);
     announce.announce(socket.id, io, 'ran forward', seeing_distance, true);
   });
 
   socket.on('run left', function (data) {
-    crud.move(socket.id, run_speed, Math.PI/2);
+    crud.move(socket, run_speed, Math.PI/2);
     announce.announce(socket.id, io, 'ran left', seeing_distance, true);
   });
 
   socket.on('run right', function(data) {
-    crud.move(socket.id, run_speed, Math.PI/2 * -1);
+    crud.move(socket, run_speed, Math.PI/2 * -1);
     announce.announce(socket.id, io, 'ran right', seeing_distance, true);
   });
 
   socket.on('turn left', function(data) {
-    crud.move(socket.id, 0, Math.PI/2);
+    crud.move(socket, 0, Math.PI/2);
     announce.announce(socket.id, io, 'turned left', seeing_distance, true);
   });
 
   socket.on('turn right', function(data) {
-    crud.move(socket.id, 0, Math.PI/2 * -1);
+    crud.move(socket, 0, Math.PI/2 * -1);
     announce.announce(socket.id, io, 'turned right', seeing_distance, true);
   });
 
   socket.on('turn around', function(data) {
-    crud.move(socket.id, 0, Math.PI);
+    crud.move(socket, 0, Math.PI);
     announce.announce(socket.id, io, 'turned around', seeing_distance, true);
   });
 
@@ -109,7 +109,8 @@ io.on('connection', function (socket){
         data: 'You are a ' + user['height'] + ' ' + user['weight'] + 
         ' ' + user['age'] + ' human. You are currently ' + user['posture'] +
         '. You are at a ' + user['angle'] + ' angle, located at ' + user['x'] +
-        ', ' + user['y'] + '. You haven\'t done anything since ' + user['last_cmd_ts']
+        ', ' + user['y'] + '. You haven\'t done anything since ' + user['last_cmd_ts'] +
+        '. You have ' + user['energy']*100 + '% energy'
       });
     })
   })

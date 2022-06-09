@@ -33,7 +33,7 @@ async function get_login(user, pass) {
 async function get_user(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
-    }, {x: 1, y: 1, socket_id: 1});
+    }, {x: 1, y: 1, socket_id: 1, energy: 1});
 }
   
 async function check_username(username) {
@@ -102,18 +102,24 @@ async function get_other_connections(socket_id, x, y, distance) {
     }, {x: 1, y: 1, angle: 1, socket_id: 1});
 }
 
-async function move(socket_id, distance, turn) {
+async function move(socket, distance, turn) {
     // TODO: do this in one query instead of getting
     // the user x/y/angle in a second query
-    await get_user(socket_id).catch(console.dir).then( (user) => {
+    // TODO: don't check energy if just turning around
+    await get_user(socket.id).catch(console.dir).then( (user) => {
+        var movement_energy = 0.025 * distance;
+        if(user['energy'] < movement_energy) {
+            socket.send({data: "Not enough energy! Sit or lay down to rest"})
+        }
         db.collection('user').updateOne({
-            socket_id: socket_id
+            socket_id: socket.id
         }, {
             $set: {
                 angle: (user["angle"] + turn) % (2 * Math.PI),
                 x: user["x"] + distance * Math.cos(user["angle"] + turn),
                 y: user["y"] + distance * Math.sin(user["angle"] + turn),
-                last_cmd_ts: new Date()
+                last_cmd_ts: new Date(),
+                energy: user["energy"] - movement_energy
             }
         });
     });
