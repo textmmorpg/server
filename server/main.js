@@ -116,8 +116,8 @@ io.on('connection', function (socket){
       socket.send({
         data: 'You are a ' + user['height'] + ' ' + user['weight'] + 
         ' ' + user['age'] + ' human. You are currently ' + user['posture'] +
-        '. You are at a ' + user['angle'] + ' angle, located at ' + user['x'] +
-        ', ' + user['y'] + '. You haven\'t done anything since ' + user['last_cmd_ts'] +
+        '. You are at a ' + user['angle'] + ' angle, located at ' + user['lat'] +
+        ', ' + user['long'] + '. You haven\'t done anything since ' + user['last_cmd_ts'] +
         '. You have ' + user['energy']*100 + '% energy'
       });
     })
@@ -125,7 +125,7 @@ io.on('connection', function (socket){
 
   socket.on('look', function(data) {
     crud.get_user(socket.id).catch(console.dir).then( (user) => {
-      crud.get_biome(user["x"], user["y"]).catch(console.dir).then( (biome) => {
+      crud.get_biome(user["lat"], user["long"]).catch(console.dir).then( (biome) => {
         if(biome === null) {
           // todo: generate another chunk of world
         } else {

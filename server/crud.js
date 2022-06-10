@@ -33,7 +33,7 @@ async function get_login(user, pass) {
 async function get_user(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
-    }, {x: 1, y: 1, socket_id: 1, energy: 1, posture: 1});
+    }, {lat: 1, long: 1, socket_id: 1, energy: 1, posture: 1});
 }
   
 async function check_username(username) {
@@ -42,10 +42,10 @@ async function check_username(username) {
     });
 }
 
-async function create_user(user, pass, socket_id, x, y, angle, age, height, weight) {
+async function create_user(user, pass, socket_id, lat, long, angle, age, height, weight) {
     await db.collection('user').insertOne({
         username: user, password: pass,
-        x: x, y: y, angle: angle, socket_id:socket_id,
+        lat: lat, long: long, angle: angle, socket_id:socket_id,
         age: age, height: height, weight: weight, posture: "standing",
         energy: 1, last_cmd_ts: new Date(),
         last_set_posture_ts: new Date()
@@ -100,7 +100,7 @@ async function get_vibe(socket_id) {
         socket_id: socket_id
     }, {
         age: 1, height: 1, weight: 1,
-        posture: 1, angle: 1, x: 1, y: 1,
+        posture: 1, angle: 1, lat: 1, long: 1,
         energy: 1
     })
 }
@@ -161,8 +161,8 @@ async function move(socket, distance, turn) {
         }, {
             $set: {
                 angle: (user["angle"] + turn) % (2 * Math.PI),
-                x: user["x"] + distance * Math.cos(user["angle"] + turn),
-                y: user["y"] + distance * Math.sin(user["angle"] + turn),
+                x: user["lat"] + distance * Math.cos(user["angle"] + turn),
+                y: user["long"] + distance * Math.sin(user["angle"] + turn),
                 last_cmd_ts: new Date(),
                 energy: user["energy"] - movement_energy
             }
@@ -176,7 +176,7 @@ async function reset_world() {
 
 async function add_biome(x, y, width, height, type) {
     await db.collection('world').insertOne({
-        x: x, y: y,
+        lat: lat, long: long,
         width: width, height: height,
         type: type
     })
@@ -186,13 +186,13 @@ async function get_biome(x, y) {
     return await db.collection('world').findOne({
         $and: [
             {$expr: {
-                $lt: [x, {$sum:["$x", "$width"]}],
+                $lt: [x, {$sum:["$lat", "$width"]}],
             }}, {$expr: {
-                $lt: [y, {$sum:["$y", "$height"]}],
+                $lt: [y, {$sum:["$long", "$height"]}],
             }}, {$expr: {
-                $gt: [x, "$x"],
+                $gt: [x, "$lat"],
             }}, {$expr: {
-                $gt: [y, "$y"]
+                $gt: [y, "$long"]
             }}
         ]
     }, {type: 1});
