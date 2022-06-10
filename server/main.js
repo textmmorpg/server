@@ -114,18 +114,18 @@ io.on('connection', function (socket){
     crud.get_vibe(socket.id).catch(console.dir).then( (user) => {
       // TODO: get user North/south/east/west coords instead of the raw angle
       socket.send({
-        data: 'You are a ' + user['height'] + ' ' + user['weight'] + 
+        data: 'You are a ' + user['tall'] + ' ' + user['weight'] + 
         ' ' + user['age'] + ' human. You are currently ' + user['posture'] +
-        '. You are at a ' + user['angle'] + ' angle, located at ' + user['x'] +
-        ', ' + user['y'] + '. You haven\'t done anything since ' + user['last_cmd_ts'] +
-        '. You have ' + user['energy']*100 + '% energy'
+        '. You are at a ' + user['angle'] + ' angle, located at ' + user['lat'] +
+        ', ' + user['long'] + ', ' + user['height'] + '. You haven\'t done anything since ' + 
+        user['last_cmd_ts'] + '. You have ' + user['energy']*100 + '% energy'
       });
     })
   })
 
   socket.on('look', function(data) {
     crud.get_user(socket.id).catch(console.dir).then( (user) => {
-      crud.get_biome(user["x"], user["y"]).catch(console.dir).then( (biome) => {
+      crud.get_biome(user["lat"], user["long"]).catch(console.dir).then( (biome) => {
         if(biome === null) {
           // todo: generate another chunk of world
         } else {
