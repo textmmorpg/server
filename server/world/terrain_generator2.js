@@ -2,8 +2,8 @@ const fs = require('fs');
 const { createCanvas } = require('canvas');
 var perlin = require('perlin-noise');
 
-const width = 1000;
-const height = 1000;
+const width = 200;
+const height = 200;
 const canvas = createCanvas(width, height);
 const context = canvas.getContext('2d');
 
@@ -14,12 +14,20 @@ function greyHex(value) {
   return "#" + v + v + v;
 }
 
+var noise = perlin.generatePerlinNoise(width, height);
+
 // create 2d array for the heightmap
 var values = new Array();
+var counter = 0;
 for(var lat = 0; lat < width; lat++) {
   values.push(new Array(height));
   for(var long = 0; long < height; long++) {
-    values[lat][long] = 0.5
+    if(Math.random > 0.99) {
+        values[lat][long] = noise[counter]
+    } else {
+        values[lat][long] = 0
+    }
+    counter += 1;
   }
 }
 
@@ -41,20 +49,6 @@ function create_ridge(points, iter) {
         midpoint(points[1], cur_midpoint)
     ]
     create_ridge(new_points, iter-1);
-}
-
-
-var noise = perlin.generatePerlinNoise(width, height);
-
-// convert to 2d array
-var counter = 0;
-var values = new Array();
-for(var lat = 0; lat < width; lat++) {
-  values.push(new Array(height));
-  for(var long = 0; long < height; long++) {
-    values[lat][long] = noise[counter];
-    counter += 1;
-  }
 }
 
 for(var x = 0; x < width; x++) {
@@ -86,8 +80,11 @@ function blur(size) {
             values[lat][long] = filter.reduce((a, b) => a + b, 0)/filter.length;
         }
     }
+
+    // blur cells on the border
 }
 blur(15);
+blur(3);
 
 // write output to canvas
 for(var lat = 0; lat < width; lat++) {

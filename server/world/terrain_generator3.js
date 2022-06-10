@@ -45,12 +45,53 @@ function draw_circle(minx, miny, maxx, maxy, height, radius, iter) {
             } 
         }
     }
-    draw_circle(
-        center[0]-radius/2, center[1]-radius/2, center[0]+radius/2, center[1]+radius/2,
-        height*1.2, radius*0.5, iter+1);
+    for(var i = 0; i < Math.random()*5; i++) {
+        draw_circle(
+            center[0]-radius/2, center[1]-radius/2, center[0]+radius/2, center[1]+radius/2,
+            height*1.3, radius*0.5, iter+1);
+    }
 }
 
-draw_circle(0, 0, width-1, height-1, 0.5, 300, 0);
+for(var i = 0; i < Math.random()*3; i++) {
+    draw_circle(0, 0, width-1, height-1, 0.25, 300, 0);
+    draw_circle(0, 0, width-1, height-1, 0.25, 200, 0);
+    draw_circle(0, 0, width-1, height-1, 0.25, 200, 0);
+    draw_circle(0, 0, width-1, height-1, 0.25, 100, 0);
+    draw_circle(0, 0, width-1, height-1, 0.25, 100, 0);
+    draw_circle(0, 0, width-1, height-1, 0.25, 100, 0);
+}
+
+var noise = perlin.generatePerlinNoise(width, height);
+
+// convert to 2d array
+var counter = 0;
+for(var lat = 0; lat < width; lat++) {
+  for(var long = 0; long < height; long++) {
+    values[lat][long] += (Math.random()-0.5)*noise[counter];
+    counter += 1;
+  }
+}
+
+// apply gaussian blur
+function blur(size) {
+    var border = Math.floor(size/2);
+    for(var lat = border; lat < width-border; lat++) {
+        for(var long = border; long < height-border; long++) {
+            // create filter of size <size>
+            var filter = new Array();
+            for(var x = -1*border; x < border+1; x++) {
+              for(var y = -1*border; y < border+1; y++) {
+                filter.push(values[lat+x][long+y]);
+              }
+            }
+            // assign cell the average size of neighbors
+            values[lat][long] = filter.reduce((a, b) => a + b, 0)/filter.length;
+        }
+    }
+}
+blur(3);
+blur(5);
+blur(7);
 
 // write output to canvas
 for(var lat = 0; lat < width; lat++) {
