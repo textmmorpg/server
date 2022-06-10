@@ -1,8 +1,8 @@
 const fs = require('fs');
 const { createCanvas } = require('canvas');
 
-const width = 500;
-const height = 500;
+const width = 50;
+const height = 50;
 const canvas = createCanvas(width, height);
 const context = canvas.getContext('2d');
 
@@ -58,7 +58,7 @@ function multiDimensionalUnique(arr) {
     return uniques;
 }
 
-// using diamond square algorithm
+// using a modified diamond square algorithm
 points = [[0,0],[0,height-1],[width-1,0],[width-1,height-1]];
 function get_all_midpoints(points) {
     // find all the midpoints
@@ -66,22 +66,22 @@ function get_all_midpoints(points) {
     // and store the average heights of the two points that generated them
     var heights = new Array();
     pairwise(points).forEach( (pair) => {
-        height_avg = (values[pair[0][0]][pair[0][1]] + values[pair[1][0]][pair[1][1]])/2
+        height_avg = (values[pair[0][0]][pair[0][1]] + values[pair[1][0]][pair[1][1]])/2;
         midpoints.push(midpoint(pair[0], pair[1]));
         heights.push(height_avg);
     });
-    // remove duplicates before returning
-    return [multiDimensionalUnique(midpoints), heights];
+    // todo: remove duplicates before returning
+    return [midpoints, heights];
 }
 
 function update_heights(points, heights) {
     points.forEach( (point, index) => {
         var new_height = heights[index] + (Math.random()-0.5)*0.2
-        values[point[0], point[1]] = new_height;
+        values[point[0]][point[1]] = new_height;
     })
 }
 
-var iter_count = 4;
+var iter_count = 3;
 for(var i = 0; i < iter_count; i++) {
     var midpoint_heights = get_all_midpoints(points);
     update_heights(midpoint_heights[0], midpoint_heights[1])
