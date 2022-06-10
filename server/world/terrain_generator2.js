@@ -91,8 +91,9 @@ function blur(size) {
             values[lat][long] = filter.reduce((a, b) => a + b, 0)/filter.length;
         }
     }
-  }
-  blur(7);
+}
+blur(3);
+blur(7);
 
 // write output to canvas
 for(var lat = 0; lat < width; lat++) {
