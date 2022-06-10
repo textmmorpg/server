@@ -66,6 +66,7 @@ for(var x = 0; x < width; x++) {
 
 // apply gaussian blur
 function blur(size) {
+    var new_values = values;
     var border = Math.floor(size/2);
     for(var lat = border; lat < width-border; lat++) {
         for(var long = border; long < height-border; long++) {
@@ -77,14 +78,20 @@ function blur(size) {
               }
             }
             // assign cell the average size of neighbors
-            values[lat][long] = filter.reduce((a, b) => a + b, 0)/filter.length;
+            new_val = filter.reduce((a, b) => a + b, 0)/filter.length;
+            if(new_val > 1) new_val = 0.999;
+            if(new_val < 0) new_val = 0.001;
+            new_values[lat][long] = new_val;
         }
     }
 
+    return new_values;
+
     // blur cells on the border
 }
-blur(15);
-blur(3);
+values = blur(15);
+values = blur(3);
+values = blur(15);
 
 // write output to canvas
 for(var lat = 0; lat < width; lat++) {
