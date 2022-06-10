@@ -14,6 +14,24 @@ function greyHex(value) {
   return "#" + v + v + v;
 }
 
+function colorHex(value) {
+  // bitwise OR. Gives value in the range 0-255
+  // which is then converted to base 16 (hex).
+  if(value > 0.07) {
+    return "#03007B"; // dark blue
+  } else if(value > 0.045) {
+    return "#6663FF"; // light blue
+  } else if(value > 0.04) {
+    return "#BFBA07"  // yellowy/orange
+  } else if(value > 0.02) {
+    return "#07A804" // light green
+  } else if(value > 0.01) {
+    return "#0B5B02" // dark green
+  } else {
+    return "#787A6B";
+  }
+}
+
 var noise = perlin.generatePerlinNoise(width, height);
 
 // create 2d array for the heightmap
@@ -101,5 +119,17 @@ for(var lat = border; lat < width-border; lat++) {
   }
 }
 
+const buffer1 = canvas.toBuffer('image/png')
+fs.writeFileSync('./terrain.png', buffer1)
+
+// write output to canvas
+var border = Math.floor(21/2)
+for(var lat = border; lat < width-border; lat++) {
+  for(var long = border; long < height-border; long++) {
+      context.fillStyle = colorHex(values[lat][long]);
+      context.fillRect(lat, long, 1, 1);
+  }
+}
+
 const buffer2 = canvas.toBuffer('image/png')
-fs.writeFileSync('./terrain.png', buffer2)
+fs.writeFileSync('./terrain_colored.png', buffer2)
