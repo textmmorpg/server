@@ -42,11 +42,12 @@ async function check_username(username) {
     });
 }
 
-async function create_user(user, pass, socket_id, lat, long, angle, age, height, weight) {
+async function create_user(user, pass, socket_id, lat, long, angle, age, tall, weight) {
+    // TODO: get height of terrain at spawn point
     await db.collection('user').insertOne({
         username: user, password: pass,
-        lat: lat, long: long, angle: angle, socket_id:socket_id,
-        age: age, height: height, weight: weight, posture: "standing",
+        lat: lat, long: long, height: 0, angle: angle, socket_id:socket_id,
+        age: age, tall: tall, weight: weight, posture: "standing",
         energy: 1, last_cmd_ts: new Date(),
         last_set_posture_ts: new Date()
     });
@@ -99,8 +100,8 @@ async function get_vibe(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
     }, {
-        age: 1, height: 1, weight: 1,
-        posture: 1, angle: 1, lat: 1, long: 1,
+        age: 1, tall: 1, weight: 1,
+        posture: 1, angle: 1, lat: 1, long: 1, height: 1,
         energy: 1
     })
 }

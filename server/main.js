@@ -114,11 +114,11 @@ io.on('connection', function (socket){
     crud.get_vibe(socket.id).catch(console.dir).then( (user) => {
       // TODO: get user North/south/east/west coords instead of the raw angle
       socket.send({
-        data: 'You are a ' + user['height'] + ' ' + user['weight'] + 
+        data: 'You are a ' + user['tall'] + ' ' + user['weight'] + 
         ' ' + user['age'] + ' human. You are currently ' + user['posture'] +
         '. You are at a ' + user['angle'] + ' angle, located at ' + user['lat'] +
-        ', ' + user['long'] + '. You haven\'t done anything since ' + user['last_cmd_ts'] +
-        '. You have ' + user['energy']*100 + '% energy'
+        ', ' + user['long'] + ', ' + user['height'] + '. You haven\'t done anything since ' + 
+        user['last_cmd_ts'] + '. You have ' + user['energy']*100 + '% energy'
       });
     })
   })
