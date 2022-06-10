@@ -46,7 +46,7 @@ async function create_user(user, pass, socket_id, lat, long, angle, age, tall, w
     // TODO: get height of terrain at spawn point
     await db.collection('user').insertOne({
         username: user, password: pass,
-        lat: lat, long: long, height: 0, angle: angle, socket_id:socket_id,
+        lat: lat, long: long, height: 1, angle: angle, socket_id:socket_id,
         age: age, tall: tall, weight: weight, posture: "standing",
         energy: 1, last_cmd_ts: new Date(),
         last_set_posture_ts: new Date()
@@ -138,7 +138,7 @@ async function get_other_connections(socket_id, x, y, distance) {
 
 async function move(socket, distance, turn) {
     // convert distance to lat/long degrees
-    var move_distance = (Math.PI/100)*distance
+    var move_distance = (Math.PI/10000)*distance
     await get_user(socket.id).catch(console.dir).then( (user) => {
         var movement_energy = 0.025 * Math.pow(distance, 2);
 
