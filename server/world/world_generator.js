@@ -1,5 +1,5 @@
 
-const crud = require('./crud');
+const crud = require('../crud');
 async function generate() {
     try {
         await crud.reset_world();
