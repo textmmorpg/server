@@ -162,7 +162,7 @@ async function move(socket, distance, turn) {
         }, {
             $set: {
                 angle: (user["angle"] + turn) % (2 * Math.PI),
-                lat: (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (Math.PI),
+                lat: (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (2 * Math.PI),
                 long: (user["long"] + move_distance * Math.sin(user["angle"] + turn)) % (2 * Math.PI),
                 last_cmd_ts: new Date(),
                 energy: user["energy"] - movement_energy
