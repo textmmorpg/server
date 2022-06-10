@@ -1,8 +1,9 @@
 const fs = require('fs');
 const { createCanvas } = require('canvas');
+var perlin = require('perlin-noise');
 
-const width = 100;
-const height = 100;
+const width = 1000;
+const height = 1000;
 const canvas = createCanvas(width, height);
 const context = canvas.getContext('2d');
 
@@ -20,26 +21,6 @@ for(var lat = 0; lat < width; lat++) {
   for(var long = 0; long < height; long++) {
     values[lat][long] = 0.5
   }
-}
-
-function pairwise(array) {
-    var result = new Array();
-    array.forEach( (point1) => {
-        array.forEach( (point2) => {
-            if (point1 !== point2) {
-                result.push([point1, point2]);
-            }
-        });
-    });
-    // remove duplicates like (x,y) and (y,x)
-    result.forEach( (pair1, i1) => {
-        result.forEach( (pair2, i2) => {
-            if(pair1[0] === pair2[1] && pair1[1] === pair2[0]) {
-                result.splice(i1, 1);
-            }
-        });
-    });
-    return result;
 }
 
 function midpoint(point1, point2) {
@@ -62,16 +43,30 @@ function create_ridge(points, iter) {
     create_ridge(new_points, iter-1);
 }
 
+
+var noise = perlin.generatePerlinNoise(width, height);
+
+// convert to 2d array
+var counter = 0;
+var values = new Array();
+for(var lat = 0; lat < width; lat++) {
+  values.push(new Array(height));
+  for(var long = 0; long < height; long++) {
+    values[lat][long] = noise[counter];
+    counter += 1;
+  }
+}
+
 for(var x = 0; x < width; x++) {
     for(var y = 0; y < height; y++) {
-        // var points1 = [[x, 0], [x, height-1]];
-        // var points2 = [[0, y], [width-1, y]];
-        // create_ridge([[x, 0], [0, y]], 30);
-        // create_ridge([[width-1-x, 0], [0, height-1-y]], 30);
-        create_ridge([[x, y], [0, 0]], 30)
-        create_ridge([[x, y], [width-1, height-1]], 30)
-        create_ridge([[x, y], [width-1, 0]], 30)
-        create_ridge([[x, y], [0, height-1]], 30)
+        if(Math.random() > 0.5) create_ridge([[x, y], [0, 0]], 30)
+        if(Math.random() > 0.5) create_ridge([[x, y], [width-1, height-1]], 30)
+        if(Math.random() > 0.5) create_ridge([[x, y], [width-1, 0]], 30)
+        if(Math.random() > 0.5) create_ridge([[x, y], [0, height-1]], 30)
+        if(Math.random() > 0.5) create_ridge([[x, y], [
+            Math.floor(Math.random()*(width-1)), 
+            Math.floor(Math.random()*(height-1))
+        ]], 30)
     }
 }
 
@@ -92,8 +87,7 @@ function blur(size) {
         }
     }
 }
-blur(3);
-blur(7);
+blur(15);
 
 // write output to canvas
 for(var lat = 0; lat < width; lat++) {
