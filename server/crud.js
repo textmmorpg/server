@@ -137,8 +137,8 @@ async function get_other_connections(socket_id, x, y, distance) {
 }
 
 async function move(socket, distance, turn) {
-    // TODO: do this in one query instead of getting
-    // the user x/y/angle in a second query
+    // convert distance to lat/long degrees
+    var move_distance = (Math.PI/100)*distance
     await get_user(socket.id).catch(console.dir).then( (user) => {
         var movement_energy = 0.025 * Math.pow(distance, 2);
 
@@ -162,8 +162,8 @@ async function move(socket, distance, turn) {
         }, {
             $set: {
                 angle: (user["angle"] + turn) % (2 * Math.PI),
-                x: user["lat"] + distance * Math.cos(user["angle"] + turn),
-                y: user["long"] + distance * Math.sin(user["angle"] + turn),
+                lat: (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (Math.PI),
+                long: (user["long"] + move_distance * Math.sin(user["angle"] + turn)) % (2 * Math.PI),
                 last_cmd_ts: new Date(),
                 energy: user["energy"] - movement_energy
             }
