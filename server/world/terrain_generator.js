@@ -57,9 +57,7 @@ function create_ridge(points, iter) {
     if(iter <= 0) return;
     var cur_midpoint = midpoint(points[0], points[1]);
     var h = (values[points[0][0]][points[0][1]] + values[points[1][0]][points[1][1]])/2;
-    var new_h = h + (Math.random()-0.5);
-    // if(new_h > 1) new_h = 1;
-    // if(new_h < 0) new_h = 0;
+    var new_h = h + Math.random()-0.5;
     values[cur_midpoint[0]][cur_midpoint[1]] = new_h
     // iterate with new midpoints recursively
     var new_points = [
