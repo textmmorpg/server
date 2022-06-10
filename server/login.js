@@ -25,6 +25,7 @@ function login(data, socket) {
             // user found -> login successful
             crud.add_connection(data['username'], socket.id).catch(console.dir);
             socket.send({login_success: true});
+            socket.send({data: "Welcome back!"})
         }
     });
 }
@@ -32,10 +33,10 @@ function login(data, socket) {
 function signup(data, socket) {
     // check if that username already exists
     crud.check_username(data["username"]).catch(console.dir).then( (response) => {
-      if(response > 0) {
-        // that username already exists -> signup failure
-        socket.send({login_success: false});
-      } else {
+        if(response > 0) {
+            // that username already exists -> signup failure
+            socket.send({login_success: false});
+        } else {
         // username is not taken -> signup success
         // TODO: spawn randomly within spawn zone area created in world generator
         crud.create_user(
@@ -44,6 +45,10 @@ function signup(data, socket) {
             getRandom(ages), getRandom(heights), getRandom(weights)
         ).catch(console.dir);
         socket.send({login_success: true});
-      }
+        socket.send({
+            data: "You wake up on a strange new planet. " + 
+            "You can't remember how you got here, but you feel a sense of urgency and danger. " +
+            "You should find food and a source of clean water, find civilization, and survive."});
+        }
     })
 }
