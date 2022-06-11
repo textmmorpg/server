@@ -15,20 +15,30 @@ async function add_terrain(docs) {
     await db.collection('world').insertMany(docs)
 }
 
-async function get_biome(lat, long) {
+async function get_biome_attempt(lat, long, size) {
     return await db.collection('world').findOne(
         {
-            lat: {$gte: lat, $lte: (lat + Math.PI/300) % (Math.PI)},
-            long: {$gte: long, $lte: (long + Math.PI/300) % (Math.PI*2)}
+            lat: {$gte: lat, $lte: (lat + (Math.PI/300)*size) % (Math.PI)},
+            long: {$gte: long, $lte: (long + (Math.PI/300)*size) % (Math.PI*2)}
         }, {height: 1, biome: 1}
-    );
+    ); 
+}
+
+async function get_biome(lat, long) {
+    return await get_biome_attempt(lat, long, 1).catch(console.dir).then( (result) => {
+        if(result === null) {
+            return get_biome_attempt(lat, long, 2);
+        } else {
+            return result;
+        }
+    })
 }
 
 async function check_biomes(socket, angle, lat, long) {
         
     async function look_at_biome(angle) {
         var move_distance = Math.PI/300
-        var cur_lat = (lat + move_distance * Math.cos(angle)) % (Math.PI);
+        var cur_lat = (lat + move_distance * Math.cos(angle)) % Math.PI;
         var cur_long = (long + move_distance * Math.sin(angle)) % (2 * Math.PI);
         return await get_biome(cur_lat, cur_long);
     }

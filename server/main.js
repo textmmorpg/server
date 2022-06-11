@@ -6,6 +6,7 @@ const cors = require("cors");
 
 const crud_connection = require('./crud/connection');
 const routers = [
+  require('./router/look'),
   require('./router/speak'),
   require('./router/move'),
   require('./router/turn'),

@@ -169,6 +169,12 @@ $(function() {
                 socket.emit('walk left', {});
             } else if(input.startsWith('walk right')) {
                 socket.emit('walk right', {});
+            } else if(input.startsWith('swim forward')) {
+                socket.emit('swim forward', {});
+            } else if(input.startsWith('swim left')) {
+                socket.emit('swim left', {});
+            } else if(input.startsWith('swim right')) {
+                socket.emit('swim right', {});
             } else if(input.startsWith('run forward')) {
                 socket.emit('run forward', {});
             } else if(input.startsWith('run left')) {

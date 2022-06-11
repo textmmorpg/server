@@ -17,7 +17,7 @@ function biome(height) {
     }
 }
 
-const crud = require('../crud');
+const crud = require('../crud/terrain');
 const terrain = require('./terrain_generator');
 async function generate() {
     try {
