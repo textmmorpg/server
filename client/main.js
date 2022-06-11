@@ -203,6 +203,8 @@ $(function() {
                 socket.emit('whisper', {msg: input})
             } else if(input.startsWith('yell')) {
                 socket.emit('yell', {msg: input})
+            } else if(input.startsWith('exit')) {
+                socket.emit('exit', {})
             } else {
                 log('Command not defined');
             }
