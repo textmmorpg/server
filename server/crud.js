@@ -193,7 +193,7 @@ async function get_biome(lat, long) {
 async function get_spawn_location() {
     return await db.collection('world').findOne(
         {
-            biome: "mountain"
+            biome: "forest"
         }, {lat: 1, long: 1, height: 1}
     );
 }
