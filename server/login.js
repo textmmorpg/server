@@ -1,4 +1,6 @@
-const crud = require('./crud');
+const crud_login = require('./crud/login');
+const crud_connection = require('./crud/connection');
+const crud_terrain = require('./crud/terrain');
 
 module.exports = {
     login
@@ -15,7 +17,7 @@ function getRandom(array) {
 
 function login(data, socket) {
     // check if credentials exist / are correct
-    crud.get_login(
+    crud_login.get_login(
         data['username'], data['password']
     ).catch(console.dir).then( (user_count) => {
         if(user_count === 0) {
@@ -23,11 +25,11 @@ function login(data, socket) {
             signup(data, socket);
         } else {
             // user found -> login successful
-            crud.add_connection(data['username'], socket.id).catch(console.dir);
+            crud_connection.add_connection(data['username'], socket.id).catch(console.dir);
             socket.send({login_success: true});
             socket.send({data: "Welcome back!"})
-            crud.get_user(socket.id).catch(console.dir).then( (user) => {
-                crud.check_biomes(socket, user["angle"], user["lat"], user["long"]);
+            crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+                crud_terrain.check_biomes(socket, user["angle"], user["lat"], user["long"]);
             });
         }
     });
@@ -35,14 +37,13 @@ function login(data, socket) {
 
 function signup(data, socket) {
     // check if that username already exists
-    crud.check_username(data["username"]).catch(console.dir).then( (response) => {
+    crud_login.check_username(data["username"]).catch(console.dir).then( (response) => {
         if(response > 0) {
             // that username already exists -> signup failure
             socket.send({login_success: false});
         } else {
         // username is not taken -> signup success
-        // TODO: spawn randomly within spawn zone area created in world generator
-        crud.create_user(
+        crud_login.create_user(
             data["username"], data["password"], socket, Math.random() * Math.PI * 2,
             getRandom(ages), getRandom(heights), getRandom(weights)
         ).catch(console.dir);
