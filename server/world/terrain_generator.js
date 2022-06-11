@@ -2,8 +2,8 @@ const fs = require('fs');
 const { createCanvas } = require('canvas');
 var perlin = require('perlin-noise');
 
-var width = 650;
-var height = 350;
+var width = 625;
+var height = 325;
 const canvas = createCanvas(width, height);
 const context = canvas.getContext('2d');
 
