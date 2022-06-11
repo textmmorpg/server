@@ -20,7 +20,7 @@ module.exports = {
     get_other_connections,
     move,
     reset_world,
-    add_biome,
+    add_terrain,
     get_biome
 };
 
@@ -175,12 +175,8 @@ async function reset_world() {
     await db.collection('world').deleteMany({});
 }
 
-async function add_biome(x, y, width, height, type) {
-    await db.collection('world').insertOne({
-        lat: lat, long: long,
-        width: width, height: height,
-        type: type
-    })
+async function add_terrain(docs) {
+    await db.collection('world').insertMany(docs)
 }
 
 async function get_biome(x, y) {
