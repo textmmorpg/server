@@ -179,18 +179,11 @@ async function add_terrain(docs) {
     await db.collection('world').insertMany(docs)
 }
 
-async function get_biome(x, y) {
-    return await db.collection('world').findOne({
-        $and: [
-            {$expr: {
-                $lt: [x, {$sum:["$lat", "$width"]}],
-            }}, {$expr: {
-                $lt: [y, {$sum:["$long", "$height"]}],
-            }}, {$expr: {
-                $gt: [x, "$lat"],
-            }}, {$expr: {
-                $gt: [y, "$long"]
-            }}
-        ]
-    }, {type: 1});
+async function get_biome(lat, long) {
+    return await db.collection('world').findOne(
+        {
+            lat: {$gte: lat, $lte: lat + 300/Math.PI},
+            long: {$gte: long, $lte: long + 600/(Math.PI*2)}
+        }, {height: 1, biome: 1}
+    );
 }

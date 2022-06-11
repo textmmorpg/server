@@ -125,12 +125,9 @@ io.on('connection', function (socket){
 
   socket.on('look', function(data) {
     crud.get_user(socket.id).catch(console.dir).then( (user) => {
-      crud.get_biome(user["lat"], user["long"]).catch(console.dir).then( (biome) => {
-        if(biome === null) {
-          // todo: generate another chunk of world
-        } else {
-          socket.send({data: biome['type']});
-        }
+      crud.get_biome(user["lat"], user["long"]).catch(console.dir).then( (result) => {
+          socket.send({data: "You are in a " + result['biome'] + " and " +
+          result['height'] + " meters above sea level"});
       });
     })
   })
