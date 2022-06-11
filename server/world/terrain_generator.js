@@ -133,26 +133,18 @@ function generate_terrain() {
 }
 
 function write_to_image(values) {
+
+  const canvas2 = createCanvas(width, height);
+  const context2 = canvas2.getContext('2d');
+
   // write output to canvas
-  var border = 0;
-  for(var lat = border; lat < width-border; lat++) {
-    for(var long = border; long < height-border; long++) {
-        context.fillStyle = greyHex(values[lat][long]);
-        context.fillRect(lat, long, 1, 1);
+  for(var lat = 0; lat < width; lat++) {
+    for(var long = 0; long < height; long++) {
+        context2.fillStyle = colorHex(values[lat][long]);
+        context2.fillRect(lat, long, 1, 1);
     }
   }
 
-  const buffer1 = canvas.toBuffer('image/png')
-  fs.writeFileSync('./terrain.png', buffer1)
-
-  // write output to canvas
-  for(var lat = border; lat < width-border; lat++) {
-    for(var long = border; long < height-border; long++) {
-        context.fillStyle = colorHex(values[lat][long]);
-        context.fillRect(lat, long, 1, 1);
-    }
-  }
-
-  const buffer2 = canvas.toBuffer('image/png')
-  fs.writeFileSync('./terrain_colored.png', buffer2)
+  const buffer2 = canvas2.toBuffer('image/png')
+  fs.writeFileSync('./terrain.png', buffer2)
 }
