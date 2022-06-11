@@ -32,6 +32,10 @@ function login(data, socket) {
                 crud_terrain.check_biomes(socket, user["angle"], user["lat"], user["long"]);
             });
         }
+
+        crud_connection.get_active_user_count().catch(console.dir).then( (active_user_count) => {
+            socket.send({active_users: active_user_count});
+        });
     });
 }
 

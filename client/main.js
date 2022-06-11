@@ -248,6 +248,14 @@ $(function() {
             login_success = true;
             socket.removeListener('message');
             socket.addEventListener('message', (event) => {
+
+                if(event.active_users !== null) {
+                    try {
+                        log("Active users: " + event.active_users.toString());
+                        return;
+                    } catch {}
+                }
+
                 addChatMessage({
                     input:event.data,
                     username: 'Server'
