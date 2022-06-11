@@ -6,6 +6,7 @@ var width = 625;
 var height = 325;
 const canvas = createCanvas(width, height);
 const context = canvas.getContext('2d');
+var rivers;
 
 module.exports = {
   generate_terrain,
@@ -19,7 +20,12 @@ function greyHex(value) {
   return "#" + v + v + v;
 }
 
-function colorHex(value) {
+function colorHex(value, x, y) {
+
+  if(rivers[x][y] === 1) {
+    return "#6663FF" // river
+  }
+
   if(value < 0.3) {
     return "#03007B"; // deep water
   } else if(value < 0.55) {
@@ -129,6 +135,20 @@ function generate_terrain() {
   }
   width -= border*2;
   height -= border*2;
+
+  // add river starting points
+  rivers = new Array();
+  for(var x = 0; x < width; x++) {
+    rivers.push(new Array());
+    for(var y = 0; y < height; y++) {
+      if(values[x][y] <= 0.06 && Math.random() < 0.001) {
+        rivers[x].push(1);
+      } else {
+        rivers[x].push(0);
+      }
+    }
+  }
+
   return output;
 }
 
@@ -140,7 +160,7 @@ function write_to_image(values) {
   // write output to canvas
   for(var lat = 0; lat < width; lat++) {
     for(var long = 0; long < height; long++) {
-        context2.fillStyle = colorHex(values[lat][long]);
+        context2.fillStyle = colorHex(values[lat][long], lat, long);
         context2.fillRect(lat, long, 1, 1);
     }
   }
