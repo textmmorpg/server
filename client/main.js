@@ -177,6 +177,14 @@ $(function() {
                 socket.emit('run right', {});
             } else if(input.startsWith('turn left')) {
                 socket.emit('turn left', {});
+            } else if(input.startsWith('turn slight left')) {
+                socket.emit('turn slight left', {});
+            } else if(input.startsWith('turn hard left')) {
+                socket.emit('turn hard left', {});
+            } else if(input.startsWith('turn slight right')) {
+                socket.emit('turn slight right', {});
+            } else if(input.startsWith('turn hard right')) {
+                socket.emit('turn hard right', {});
             } else if(input.startsWith('turn right')) {
                 socket.emit('turn right', {});
             } else if(input.startsWith('turn around')) {
