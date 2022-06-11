@@ -125,9 +125,23 @@ io.on('connection', function (socket){
 
   socket.on('look', function(data) {
     crud.get_user(socket.id).catch(console.dir).then( (user) => {
-      crud.get_biome(user["lat"], user["long"]).catch(console.dir).then( (result) => {
+      
+      async function look_at_biome(angle) {
+        var move_distance = (Math.PI/100)*30
+        var lat = (user["lat"] + move_distance * Math.cos(angle)) % (Math.PI);
+        var long = (user["long"] + move_distance * Math.sin(angle)) % (2 * Math.PI);
+        return await crud.get_biome(lat, long);
+      }
+
+      var biome_ahead = look_at_biome(user["angle"]);
+      var biome_right = look_at_biome(user["angle"] - Math.PI/2);
+      var biome_left = look_at_biome(user["angle"] + Math.PI/2);
+      Promise.all([biome_ahead, biome_right, biome_left]).then(function(biomes) {
+        crud.get_biome(user["lat"], user["long"]).catch(console.dir).then( (result) => {
           socket.send({data: "You are in a " + result['biome'] + " and " +
-          result['height'] + " meters above sea level"});
+          result['height'] + " meters above sea level. Ahead of you is " + biomes[0]["biome"] +
+          ". To the right you see " + biomes[1]["biome"] + " and to the left there is " + biomes[2]["biome"]});
+        });
       });
     })
   })

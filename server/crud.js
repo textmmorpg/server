@@ -182,10 +182,12 @@ async function add_terrain(docs) {
 }
 
 async function get_biome(lat, long) {
+    lat = (lat+Math.PI*2)%(Math.PI)
+    long = (long+Math.PI*2)%(Math.PI*2)
     return await db.collection('world').findOne(
         {
-            lat: {$gte: lat, $lte: lat + 300/Math.PI},
-            long: {$gte: long, $lte: long + 600/(Math.PI*2)}
+            lat: {$gte: lat, $lte: (lat + (Math.PI+100)/300)},
+            long: {$gte: long, $lte: (long + (Math.PI*2+100)/600)}
         }, {height: 1, biome: 1}
     );
 }
@@ -193,7 +195,7 @@ async function get_biome(lat, long) {
 async function get_spawn_location() {
     return await db.collection('world').findOne(
         {
-            biome: "beach"
+            biome: "mountain"
         }, {lat: 1, long: 1, height: 1}
     );
 }

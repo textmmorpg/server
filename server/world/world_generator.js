@@ -30,8 +30,8 @@ async function generate() {
         var docs = new Array()
         height_map.forEach( (row, long_i) => {
             row.forEach( (value, lat_i) => {
-                var long = long_i/(Math.PI*2);
-                var lat = lat_i/Math.PI;
+                var long = long_i*((Math.PI*2)/600);
+                var lat = lat_i*(Math.PI/300);
                 docs.push({
                     lat: lat, long: long, height: height_map[long_i][lat_i],
                     biome: biome(height_map[long_i][lat_i])
