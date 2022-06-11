@@ -17,8 +17,8 @@ function login(data, socket) {
     // check if credentials exist / are correct
     crud.get_login(
         data['username'], data['password']
-    ).catch(console.dir).then( (user) => {
-        if(user === 0) {
+    ).catch(console.dir).then( (user_count) => {
+        if(user_count === 0) {
             // if the user doesn't exist, try to create one
             signup(data, socket);
         } else {
@@ -26,6 +26,9 @@ function login(data, socket) {
             crud.add_connection(data['username'], socket.id).catch(console.dir);
             socket.send({login_success: true});
             socket.send({data: "Welcome back!"})
+            crud.get_user(socket.id).catch(console.dir).then( (user) => {
+                crud.check_biomes(socket, user["angle"], user["lat"], user["long"]);
+            });
         }
     });
 }
@@ -40,7 +43,7 @@ function signup(data, socket) {
         // username is not taken -> signup success
         // TODO: spawn randomly within spawn zone area created in world generator
         crud.create_user(
-            data["username"], data["password"], socket.id, Math.random() * Math.PI * 2,
+            data["username"], data["password"], socket, Math.random() * Math.PI * 2,
             getRandom(ages), getRandom(heights), getRandom(weights)
         ).catch(console.dir);
         socket.send({login_success: true});

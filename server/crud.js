@@ -21,7 +21,8 @@ module.exports = {
     move,
     reset_world,
     add_terrain,
-    get_biome
+    get_biome,
+    check_biomes
 };
 
 async function get_login(user, pass) {
@@ -42,16 +43,18 @@ async function check_username(username) {
     });
 }
 
-async function create_user(user, pass, socket_id, angle, age, tall, weight) {
+async function create_user(user, pass, socket, angle, age, tall, weight) {
     await get_spawn_location().catch(console.dir).then( (spawn) => {
         db.collection('user').insertOne({
             username: user, password: pass,
             lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
-            angle: angle, socket_id:socket_id,
+            angle: angle, socket_id:socket.id,
             age: age, tall: tall, weight: weight, posture: "standing",
             energy: 1, last_cmd_ts: new Date(),
             last_set_posture_ts: new Date()
         });
+
+        check_biomes(socket, angle, spawn["lat"], spawn["long"]);
     })
 }
 
@@ -159,17 +162,23 @@ async function move(socket, distance, turn) {
             return;
         }
 
+        var new_angle = (user["angle"] + turn) % (2 * Math.PI);
+        var new_lat = (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (2 * Math.PI);
+        var new_long = (user["long"] + move_distance * Math.sin(user["angle"] + turn)) % (2 * Math.PI);
+
         db.collection('user').updateOne({
             socket_id: socket.id
         }, {
             $set: {
-                angle: (user["angle"] + turn) % (2 * Math.PI),
-                lat: (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (2 * Math.PI),
-                long: (user["long"] + move_distance * Math.sin(user["angle"] + turn)) % (2 * Math.PI),
+                angle: new_angle,
+                lat: new_lat,
+                long: new_long,
                 last_cmd_ts: new Date(),
                 energy: user["energy"] - movement_energy
             }
-        });
+        }).then( () => {
+            check_biomes(socket, new_angle, new_lat, new_long);
+        })
     });
 }
 
@@ -197,3 +206,23 @@ async function get_spawn_location() {
         }, {lat: 1, long: 1, height: 1}
     );
 }
+function check_biomes(socket, angle, lat, long) {
+        
+    async function look_at_biome(angle) {
+        var move_distance = Math.PI/300
+        var cur_lat = (lat + move_distance * Math.cos(angle)) % (Math.PI);
+        var cur_long = (long + move_distance * Math.sin(angle)) % (2 * Math.PI);
+        return await get_biome(cur_lat, cur_long);
+    }
+
+    var biome_ahead = look_at_biome(angle);
+    var biome_right = look_at_biome(angle - Math.PI/2);
+    var biome_left = look_at_biome(angle + Math.PI/2);
+    Promise.all([biome_ahead, biome_right, biome_left]).then(function(biomes) {
+        get_biome(lat, long).catch(console.dir).then( (result) => {
+        socket.send({data: "You are in a " + result['biome'] + ". Ahead of you is " + biomes[0]["biome"] +
+        ". To the right you see " + biomes[1]["biome"] + " and to the left there is " + biomes[2]["biome"]});
+        });
+    });
+}
+  
