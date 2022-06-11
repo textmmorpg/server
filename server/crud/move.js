@@ -98,6 +98,22 @@ async function move(socket, distance, turn) {
             }
         }).then( () => {
             crud_terrain.check_biomes(socket, new_angle, new_lat, new_long);
+            var old_biome = crud_terrain.get_biome(user['lat'], user['long']);
+            var new_biome = crud_terrain.get_biome(new_lat, new_long);
+            Promise.all([old_biome, new_biome]).then(function(biomes) {
+                if(biomes[0] === null || biomes[1] === null) return;
+                if(
+                    (biomes[0]["biome"] !== "deep water" && biomes[0]["biome"] !== "shallow water") && 
+                    (biomes[1]["biome"] === "deep water" || biomes[1]["biome"] === "shallow water")
+                ) {
+                    socket.send({data: "You start swimming"});
+                } else if(
+                    (biomes[0]["biome"] === "deep water" || biomes[0]["biome"] === "shallow water") && 
+                    (biomes[1]["biome"] !== "deep water" && biomes[1]["biome"] !== "shallow water")
+                ) {
+                    socket.send({data: "You stop swimming"})
+                }
+            });
         })
     });
 }

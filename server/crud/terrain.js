@@ -28,7 +28,7 @@ async function check_biomes(socket, angle, lat, long) {
         
     async function look_at_biome(angle) {
         var move_distance = Math.PI/300
-        var cur_lat = (lat + move_distance * Math.cos(angle)) % (Math.PI);
+        var cur_lat = (lat + move_distance * Math.cos(angle)) % Math.PI;
         var cur_long = (long + move_distance * Math.sin(angle)) % (2 * Math.PI);
         return await get_biome(cur_lat, cur_long);
     }
