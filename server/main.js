@@ -3,7 +3,9 @@ const app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 const cors = require("cors");
-const crud = require('./crud');
+const crud_connection = require('./crud/connection');
+const crud_move = require('./crud/move');
+const crud_login = require('./crud/login');
 const login = require('./login');
 const path = require('path');
 const announce = require('./announce');
@@ -35,7 +37,7 @@ io.on('connection', function (socket){
   });
 
   socket.on('disconnect', function(event) {
-    crud.delete_connection(socket.id).catch(console.dir);
+    crud_connection.delete_connection(socket.id).catch(console.dir);
   });
 
   socket.on('say', function(data) {
@@ -51,67 +53,67 @@ io.on('connection', function (socket){
   });
   
   socket.on('walk forward', function (data) {
-    crud.move(socket, walk_speed, 0);
+    crud_move.move(socket, walk_speed, 0);
     announce.announce(socket.id, io, 'walked forward', seeing_distance, true);
   });
 
   socket.on('walk left', function (data) {
-    crud.move(socket, walk_speed, Math.PI/2);
+    crud_move.move(socket, walk_speed, Math.PI/2);
     announce.announce(socket.id, io, 'walked left', seeing_distance, true);
   });
 
   socket.on('walk right', function(data) {
-    crud.move(socket, walk_speed, Math.PI/2 * -1);
+    crud_move.move(socket, walk_speed, Math.PI/2 * -1);
     announce.announce(socket.id, io, 'walked right', seeing_distance, true);
   });
 
   socket.on('run forward', function (data) {
-    crud.move(socket, run_speed, 0);
+    crud_move.move(socket, run_speed, 0);
     announce.announce(socket.id, io, 'ran forward', seeing_distance, true);
   });
 
   socket.on('run left', function (data) {
-    crud.move(socket, run_speed, Math.PI/2);
+    crud_move.move(socket, run_speed, Math.PI/2);
     announce.announce(socket.id, io, 'ran left', seeing_distance, true);
   });
 
   socket.on('run right', function(data) {
-    crud.move(socket, run_speed, Math.PI/2 * -1);
+    crud_move.move(socket, run_speed, Math.PI/2 * -1);
     announce.announce(socket.id, io, 'ran right', seeing_distance, true);
   });
 
   socket.on('turn left', function(data) {
-    crud.move(socket, 0, Math.PI/2);
+    crud_move.move(socket, 0, Math.PI/2);
     announce.announce(socket.id, io, 'turned left', seeing_distance, true);
   });
 
   socket.on('turn right', function(data) {
-    crud.move(socket, 0, Math.PI/2 * -1);
+    crud_move.move(socket, 0, Math.PI/2 * -1);
     announce.announce(socket.id, io, 'turned right', seeing_distance, true);
   });
 
   socket.on('turn around', function(data) {
-    crud.move(socket, 0, Math.PI);
+    crud_move.move(socket, 0, Math.PI);
     announce.announce(socket.id, io, 'turned around', seeing_distance, true);
   });
 
   socket.on('sit down', function(data) {
-    crud.set_posture(socket, 'sitting');
+    crud_move.set_posture(socket, 'sitting');
     announce.announce(socket.id, io, 'sat down', seeing_distance, true);
   })
 
   socket.on('lay down', function(data) {
-    crud.set_posture(socket, 'laying');
+    crud_move.set_posture(socket, 'laying');
     announce.announce(socket.id, io, 'layed down', seeing_distance, true);
   })
 
   socket.on('stand up', function(data) {
-    crud.set_posture(socket, 'standing');
+    crud_move.set_posture(socket, 'standing');
     announce.announce(socket.id, io, 'stood up', seeing_distance, true);
   })
   
   socket.on('vibe check', function(data) {
-    crud.get_vibe(socket.id).catch(console.dir).then( (user) => {
+    crud_move.get_vibe(socket.id).catch(console.dir).then( (user) => {
       // TODO: get user North/south/east/west coords instead of the raw angle
       socket.send({
         data: 'You are a ' + user['tall'] + ' ' + user['weight'] + 
@@ -124,8 +126,8 @@ io.on('connection', function (socket){
   })
 
   socket.on('look', function(data) {
-    crud.get_user(socket.id).catch(console.dir).then( (user) => {
-      crud.check_biomes(socket, user);
+    crud.login.get_user(socket.id).catch(console.dir).then( (user) => {
+      crud.terrain.check_biomes(socket, user);
     });
   })
 });
