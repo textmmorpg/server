@@ -121,7 +121,10 @@ function generate_terrain() {
   for(var lat = border; lat < width; lat++) {
     output.push(new Array())
     for(var long = border; long < height; long++) {
-      output[lat-border].push(((values[lat][long]*10)*-1)+1);
+      var new_val = ((values[lat][long]*10)*-1)+1
+      if(new_val > 1) new_val = 1;
+      if(new_val < 0) new_val = 0;
+      output[lat-border].push(new_val);
     }
   }
   width -= border*2;
