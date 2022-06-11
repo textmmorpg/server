@@ -2,7 +2,7 @@ const fs = require('fs');
 const { createCanvas } = require('canvas');
 var perlin = require('perlin-noise');
 
-const width = 300;
+const width = 600;
 const height = 300;
 const canvas = createCanvas(width, height);
 const context = canvas.getContext('2d');
@@ -15,20 +15,20 @@ function greyHex(value) {
 }
 
 function colorHex(value) {
-  // bitwise OR. Gives value in the range 0-255
-  // which is then converted to base 16 (hex).
-  if(value > 0.07) {
-    return "#03007B"; // dark blue
-  } else if(value > 0.045) {
-    return "#6663FF"; // light blue
-  } else if(value > 0.04) {
-    return "#BFBA07"  // yellowy/orange
-  } else if(value > 0.02) {
-    return "#07A804" // light green
-  } else if(value > 0.01) {
-    return "#0B5B02" // dark green
+  if(value > 0.7) {
+    return "#03007B"; // deep water
+  } else if(value > 0.45) {
+    return "#6663FF"; // shallow water
+  } else if(value > 0.4) {
+    return "#BFBA07"  // beach
+  } else if(value > 0.2) {
+    return "#07A804" // field
+  } else if(value > 0.1) {
+    return "#0B5B02" // forest
+  } else if(value > 0.05) {
+    return "#787A6B"; // stone
   } else {
-    return "#787A6B";
+    return "#F8F8F8"; // snowwy mountain top
   }
 }
 
@@ -107,6 +107,14 @@ values = blur(15);
 values = blur(3);
 values = blur(15);
 values = blur(15);
+
+// adjust values
+var border = Math.floor(21/2)
+for(var lat = border; lat < width-border; lat++) {
+  for(var long = border; long < height-border; long++) {
+    values[lat][long] = values[lat][long]*10
+  }
+}
 
 // write output to canvas
 var border = Math.floor(21/2)
