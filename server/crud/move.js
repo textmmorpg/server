@@ -14,6 +14,15 @@ async function set_posture(socket, posture) {
 
         if(user['posture'] === posture) {
             socket.send({data: "You are already " + posture});
+            return;
+        }
+
+        if(
+            user['posture'] === "swimming" &&
+            (posture === "laying" || posture === "sitting")
+        ) {
+            socket.send({data: "Cannot sit or lay down while swimming, go to shore first!"})
+            return;
         }
 
         // regen energy when going from sitting/laying to standing
@@ -65,7 +74,7 @@ async function get_vibe(socket_id) {
     })
 }
 
-async function check_swimming(socket, user, new_lat, new_long) {
+async function check_swimming(socket, user, new_lat, new_long, move_type) {
     var old_biome = crud_terrain.get_biome(user['lat'], user['long']);
     var new_biome = crud_terrain.get_biome(new_lat, new_long);
     return Promise.all([old_biome, new_biome]).then(function(biomes) {
@@ -74,24 +83,24 @@ async function check_swimming(socket, user, new_lat, new_long) {
             (biomes[0]["biome"] !== "deep water" && biomes[0]["biome"] !== "shallow water") && 
             (biomes[1]["biome"] === "deep water" || biomes[1]["biome"] === "shallow water")
         ) {
-            socket.send({data: "You start swimming"});
-            set_posture(socket, "swimming");
-            return true;
+            return "start_swimming";
         } else if(
             (biomes[0]["biome"] === "deep water" || biomes[0]["biome"] === "shallow water") && 
             (biomes[1]["biome"] !== "deep water" && biomes[1]["biome"] !== "shallow water")
         ) {
-            socket.send({data: "You stop swimming"})
-            set_posture(socket, "standing");
-            return false;
+            return "stop_swimming";
         }
 
         // check for swimming from water biome to water biome
-        return (biomes[1]["biome"] === "deep water" || biomes[1]["biome"] === "shallow water")
+        if(biomes[1]["biome"] === "deep water" || biomes[1]["biome"] === "shallow water") {
+            return "keep_swimming";
+        } else {
+            return "keep_walking"
+        }
     });
 }
 
-async function move(socket, distance, turn) {
+async function move(socket, distance, turn, move_type) {
     // convert distance to lat/long degrees
     var move_distance = (Math.PI/300)*distance
     await crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
@@ -100,11 +109,6 @@ async function move(socket, distance, turn) {
         var new_lat = (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (2 * Math.PI);
         var new_long = (user["long"] + move_distance * Math.sin(user["angle"] + turn)) % (2 * Math.PI);
 
-        check_swimming(socket, user, new_lat, new_long).catch(console.dir).then( (is_swimming) => {
-            if(is_swimming) {
-                
-            }
-        })
         if(user['posture'] === "laying" && turn !== 0) {
             socket.send({data: "You cannot turn around while laying down. Sit or stand up first!"});
             return;
@@ -123,18 +127,36 @@ async function move(socket, distance, turn) {
             return;
         }
 
-        db.collection('user').updateOne({
-            socket_id: socket.id
-        }, {
-            $set: {
-                angle: new_angle,
-                lat: new_lat,
-                long: new_long,
-                last_cmd_ts: new Date(),
-                energy: user["energy"] - movement_energy
+        check_swimming(socket, user, new_lat, new_long, move_type).catch(console.dir).then( (swimming_status) => {
+            var posture = user["posture"];
+            if(swimming_status === "start_swimming") {
+                socket.send({data: "You start swimming"});
+                posture = "swimming";
+            } else if(swimming_status === "stop_swimming") {
+                socket.send({data: "You stop swimming"});
+                posture = "standing";
+            } else if(swimming_status === "keep_swimming" && move_type == "walk") {
+                socket.send({data: "You cannot walk in water, swim instead"});
+                return;
+            } else if(swimming_status === "keep_walking" && move_type == "swim") {
+                socket.send({data: "You cannot swim on land, walk or run instead"});
+                return;
             }
-        }).then( () => {
-            crud_terrain.check_biomes(socket, new_angle, new_lat, new_long);
+
+            db.collection('user').updateOne({
+                socket_id: socket.id
+            }, {
+                $set: {
+                    angle: new_angle,
+                    lat: new_lat,
+                    long: new_long,
+                    last_cmd_ts: new Date(),
+                    energy: user["energy"] - movement_energy,
+                    posture: posture
+                }
+            }).then( () => {
+                crud_terrain.check_biomes(socket, new_angle, new_lat, new_long);
+            })
         })
     });
 }
