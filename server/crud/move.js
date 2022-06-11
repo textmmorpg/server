@@ -16,8 +16,12 @@ async function set_posture(socket, posture) {
             socket.send({data: "You are already " + posture});
         }
 
+        // regen energy when going from sitting/laying to standing
         var energy_regen = 0;
-        if(user['posture'] !== 'standing' && user['energy'] < 1) {
+        if(
+            (user['posture'] !== 'standing' && user['posture'] !== 'swimming')
+            && user['energy'] < 1
+        ) {
             // captured in milliseconds
             var time_in_posture = new Date() - user["last_set_posture_ts"]
             var regen_multiplier = {
@@ -61,12 +65,46 @@ async function get_vibe(socket_id) {
     })
 }
 
+async function check_swimming(socket, user, new_lat, new_long) {
+    var old_biome = crud_terrain.get_biome(user['lat'], user['long']);
+    var new_biome = crud_terrain.get_biome(new_lat, new_long);
+    return Promise.all([old_biome, new_biome]).then(function(biomes) {
+        // check for starting/stopping swimming
+        if(
+            (biomes[0]["biome"] !== "deep water" && biomes[0]["biome"] !== "shallow water") && 
+            (biomes[1]["biome"] === "deep water" || biomes[1]["biome"] === "shallow water")
+        ) {
+            socket.send({data: "You start swimming"});
+            set_posture(socket, "swimming");
+            return true;
+        } else if(
+            (biomes[0]["biome"] === "deep water" || biomes[0]["biome"] === "shallow water") && 
+            (biomes[1]["biome"] !== "deep water" && biomes[1]["biome"] !== "shallow water")
+        ) {
+            socket.send({data: "You stop swimming"})
+            set_posture(socket, "standing");
+            return false;
+        }
+
+        // check for swimming from water biome to water biome
+        return (biomes[1]["biome"] === "deep water" || biomes[1]["biome"] === "shallow water")
+    });
+}
+
 async function move(socket, distance, turn) {
     // convert distance to lat/long degrees
     var move_distance = (Math.PI/300)*distance
     await crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
         var movement_energy = 0.025 * Math.pow(distance, 2);
+        var new_angle = (user["angle"] + turn) % (2 * Math.PI);
+        var new_lat = (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (2 * Math.PI);
+        var new_long = (user["long"] + move_distance * Math.sin(user["angle"] + turn)) % (2 * Math.PI);
 
+        check_swimming(socket, user, new_lat, new_long).catch(console.dir).then( (is_swimming) => {
+            if(is_swimming) {
+                
+            }
+        })
         if(user['posture'] === "laying" && turn !== 0) {
             socket.send({data: "You cannot turn around while laying down. Sit or stand up first!"});
             return;
@@ -77,14 +115,13 @@ async function move(socket, distance, turn) {
             return;
         }
 
-        if(user['posture'] !== "standing" && distance !== 0) {
+        if(
+            (user['posture'] !== "standing" && user['posture'] !== "swimming")
+            && distance !== 0
+        ) {
             socket.send({data: "Cannot move while " + user['posture'] + '. Stand up first!'})
             return;
         }
-
-        var new_angle = (user["angle"] + turn) % (2 * Math.PI);
-        var new_lat = (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (2 * Math.PI);
-        var new_long = (user["long"] + move_distance * Math.sin(user["angle"] + turn)) % (2 * Math.PI);
 
         db.collection('user').updateOne({
             socket_id: socket.id
@@ -98,22 +135,6 @@ async function move(socket, distance, turn) {
             }
         }).then( () => {
             crud_terrain.check_biomes(socket, new_angle, new_lat, new_long);
-            var old_biome = crud_terrain.get_biome(user['lat'], user['long']);
-            var new_biome = crud_terrain.get_biome(new_lat, new_long);
-            Promise.all([old_biome, new_biome]).then(function(biomes) {
-                if(biomes[0] === null || biomes[1] === null) return;
-                if(
-                    (biomes[0]["biome"] !== "deep water" && biomes[0]["biome"] !== "shallow water") && 
-                    (biomes[1]["biome"] === "deep water" || biomes[1]["biome"] === "shallow water")
-                ) {
-                    socket.send({data: "You start swimming"});
-                } else if(
-                    (biomes[0]["biome"] === "deep water" || biomes[0]["biome"] === "shallow water") && 
-                    (biomes[1]["biome"] !== "deep water" && biomes[1]["biome"] !== "shallow water")
-                ) {
-                    socket.send({data: "You stop swimming"})
-                }
-            });
         })
     });
 }
