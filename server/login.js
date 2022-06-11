@@ -40,8 +40,7 @@ function signup(data, socket) {
         // username is not taken -> signup success
         // TODO: spawn randomly within spawn zone area created in world generator
         crud.create_user(
-            data["username"], data["password"], socket.id,
-            0, 0, Math.random() * Math.PI * 2,
+            data["username"], data["password"], socket.id, Math.random() * Math.PI * 2,
             getRandom(ages), getRandom(heights), getRandom(weights)
         ).catch(console.dir);
         socket.send({login_success: true});

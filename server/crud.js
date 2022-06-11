@@ -20,7 +20,7 @@ module.exports = {
     get_other_connections,
     move,
     reset_world,
-    add_biome,
+    add_terrain,
     get_biome
 };
 
@@ -42,15 +42,17 @@ async function check_username(username) {
     });
 }
 
-async function create_user(user, pass, socket_id, lat, long, angle, age, tall, weight) {
-    // TODO: get height of terrain at spawn point
-    await db.collection('user').insertOne({
-        username: user, password: pass,
-        lat: lat, long: long, height: 1, angle: angle, socket_id:socket_id,
-        age: age, tall: tall, weight: weight, posture: "standing",
-        energy: 1, last_cmd_ts: new Date(),
-        last_set_posture_ts: new Date()
-    });
+async function create_user(user, pass, socket_id, angle, age, tall, weight) {
+    await get_spawn_location().catch(console.dir).then( (spawn) => {
+        db.collection('user').insertOne({
+            username: user, password: pass,
+            lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
+            angle: angle, socket_id:socket_id,
+            age: age, tall: tall, weight: weight, posture: "standing",
+            energy: 1, last_cmd_ts: new Date(),
+            last_set_posture_ts: new Date()
+        });
+    })
 }
 
 async function set_posture(socket, posture) {
@@ -138,7 +140,7 @@ async function get_other_connections(socket_id, x, y, distance) {
 
 async function move(socket, distance, turn) {
     // convert distance to lat/long degrees
-    var move_distance = (Math.PI/10000)*distance
+    var move_distance = (Math.PI/100)*distance
     await get_user(socket.id).catch(console.dir).then( (user) => {
         var movement_energy = 0.025 * Math.pow(distance, 2);
 
@@ -175,26 +177,23 @@ async function reset_world() {
     await db.collection('world').deleteMany({});
 }
 
-async function add_biome(x, y, width, height, type) {
-    await db.collection('world').insertOne({
-        lat: lat, long: long,
-        width: width, height: height,
-        type: type
-    })
+async function add_terrain(docs) {
+    await db.collection('world').insertMany(docs)
 }
 
-async function get_biome(x, y) {
-    return await db.collection('world').findOne({
-        $and: [
-            {$expr: {
-                $lt: [x, {$sum:["$lat", "$width"]}],
-            }}, {$expr: {
-                $lt: [y, {$sum:["$long", "$height"]}],
-            }}, {$expr: {
-                $gt: [x, "$lat"],
-            }}, {$expr: {
-                $gt: [y, "$long"]
-            }}
-        ]
-    }, {type: 1});
+async function get_biome(lat, long) {
+    return await db.collection('world').findOne(
+        {
+            lat: {$gte: lat, $lte: lat + 300/Math.PI},
+            long: {$gte: long, $lte: long + 600/(Math.PI*2)}
+        }, {height: 1, biome: 1}
+    );
+}
+
+async function get_spawn_location() {
+    return await db.collection('world').findOne(
+        {
+            biome: "beach"
+        }, {lat: 1, long: 1, height: 1}
+    );
 }
