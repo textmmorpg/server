@@ -140,7 +140,7 @@ async function get_other_connections(socket_id, x, y, distance) {
 
 async function move(socket, distance, turn) {
     // convert distance to lat/long degrees
-    var move_distance = (Math.PI/100)*distance
+    var move_distance = (Math.PI/300)*distance
     await get_user(socket.id).catch(console.dir).then( (user) => {
         var movement_energy = 0.025 * Math.pow(distance, 2);
 
@@ -182,12 +182,10 @@ async function add_terrain(docs) {
 }
 
 async function get_biome(lat, long) {
-    lat = (lat+Math.PI*2)%(Math.PI)
-    long = (long+Math.PI*2)%(Math.PI*2)
     return await db.collection('world').findOne(
         {
-            lat: {$gte: lat, $lte: (lat + (Math.PI+100)/300)},
-            long: {$gte: long, $lte: (long + (Math.PI*2+100)/600)}
+            lat: {$gte: lat, $lte: (lat + Math.PI/300) % (Math.PI)},
+            long: {$gte: long, $lte: (long + Math.PI/300) % (Math.PI*2)}
         }, {height: 1, biome: 1}
     );
 }

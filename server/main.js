@@ -127,7 +127,7 @@ io.on('connection', function (socket){
     crud.get_user(socket.id).catch(console.dir).then( (user) => {
       
       async function look_at_biome(angle) {
-        var move_distance = (Math.PI/100)*30
+        var move_distance = Math.PI/300
         var lat = (user["lat"] + move_distance * Math.cos(angle)) % (Math.PI);
         var long = (user["long"] + move_distance * Math.sin(angle)) % (2 * Math.PI);
         return await crud.get_biome(lat, long);
