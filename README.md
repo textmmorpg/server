@@ -18,22 +18,17 @@ db.createCollection('world') // create environment collection
 
 Generate world
 ```
-cd server
-node world_generator.js
+npm run new_world
 ```
 
-### Running the server
-
-```
-cd server
-node main.js
-```
-
-### Running the client
+### Running the server and exposing the client
 
 ```
 npm run start
 ```
-And then navigate to https://localhost:3000
+
+### Using the client
+
+Navigate to https://localhost:3000
 
 Or open the `client/index.html` file directly
