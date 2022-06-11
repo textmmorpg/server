@@ -15,17 +15,17 @@ function greyHex(value) {
 }
 
 function colorHex(value) {
-  if(value > 0.7) {
+  if(value < 0.3) {
     return "#03007B"; // deep water
-  } else if(value > 0.45) {
+  } else if(value < 0.55) {
     return "#6663FF"; // shallow water
-  } else if(value > 0.4) {
+  } else if(value < 0.6) {
     return "#BFBA07"  // beach
-  } else if(value > 0.2) {
+  } else if(value < 0.8) {
     return "#07A804" // field
-  } else if(value > 0.1) {
+  } else if(value < 0.9) {
     return "#0B5B02" // forest
-  } else if(value > 0.05) {
+  } else if(value < 0.95) {
     return "#787A6B"; // stone
   } else {
     return "#F8F8F8"; // snowwy mountain top
@@ -112,7 +112,7 @@ values = blur(15);
 var border = Math.floor(21/2)
 for(var lat = border; lat < width-border; lat++) {
   for(var long = border; long < height-border; long++) {
-    values[lat][long] = values[lat][long]*10
+    values[lat][long] = ((values[lat][long]*10)*-1)+1
   }
 }
 
