@@ -133,21 +133,61 @@ function generate_terrain() {
       output[lat-border].push(new_val);
     }
   }
+
   width -= border*2;
   height -= border*2;
 
   // add river starting points
   rivers = new Array();
-  for(var x = 0; x < width; x++) {
+  var river_points = new Array();
+  for(var x = 0; x < output.length; x++) {
     rivers.push(new Array());
-    for(var y = 0; y < height; y++) {
-      if(values[x][y] <= 0.06 && Math.random() < 0.001) {
+    for(var y = 0; y < output[x].length; y++) {
+      if(output[x][y] > 0.6 && Math.random() < 0.001) {
         rivers[x].push(1);
+        river_points.push([x, y])
       } else {
         rivers[x].push(0);
       }
     }
   }
+
+  // populate the rest of the rivers
+  function make_river(point, iters) {
+    var lowest_x;
+    var lowest_y;
+    var lowest_value = -1;
+    var x = point[0];
+    var y = point[1];
+
+    if(iters > 30) return;
+
+    // ignore borders
+    if(x-1 < 0 || y-1 < 0 || x+1 > output.length || y+1 > output[0].length) return;
+
+    // iterate neighbors and do gradient descent recursively
+    neighbors = [
+      [x-1, y-1], [x-1, y], [x-1, y+1],
+      [x, y-1], [x, y], [x, y+1],
+      [x+1, y-1], [x+1, y], [x+1, y+1],
+    ]
+    neighbors.forEach( (neighbor) => {
+      if(output[neighbor[0]][neighbor[1]] < lowest_value) {
+        lowest_value = output[neighbor[0]][neighbor[1]];
+        lowest_x = neighbor[0];
+        lowest_y = neighbor[1]
+      }
+    })
+
+    // if(lowest_value > 0.6) return;
+
+    rivers[lowest_x][lowest_y] = 1;
+    make_river([lowest_x, lowest_y], iters+1);
+  }
+
+  river_points.forEach( (point) => {
+    make_river(point, 0);
+  });
 
   return output;
 }
