@@ -32,3 +32,5 @@ npm run start
 Navigate to https://localhost:3000
 
 Or open the `client/index.html` file directly
+
+For details on gameplay, view the github wiki: https://github.com/beefy/project_title_here/wiki
