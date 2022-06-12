@@ -1,8 +1,10 @@
+require('dotenv').config();
+
 const { MongoClient } = require("mongodb");
 
-const uri = "mongodb://localhost/project_title_here_db"
+const uri = "mongodb+srv://"+process.env.MONGO_USER+":"+process.env.MONGO_PASS+"@"+process.env.MONGO_URL+"/project_title_here_db"
 const mongo = new MongoClient(uri,
-    {useUnifiedTopology: true}, {useNewUrlParser: true },
+    {useNewUrlParser: true },
     {connectTimeoutMS: 30000 }, {keepAlive: 1}
 );
 mongo.connect();

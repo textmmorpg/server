@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "start": "node server/main.js",
-    "new_world": "node server/world/world_generator.js"
+    "new_world": "node server/world/world_generator.js",
+    "create-env": "printenv > .env"
   },
   "dependencies": {
     "canvas": "^2.9.1",
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "mongodb": "^4.6.0",
     "perlin-noise": "^0.0.1",
