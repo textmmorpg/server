@@ -4,7 +4,8 @@ module.exports = {
     reset_world,
     add_terrain,
     get_biome,
-    check_biomes
+    check_biomes,
+    get_terrain_chunk
 };
 
 async function reset_world() {
@@ -20,6 +21,19 @@ async function get_biome_attempt(lat, long, size) {
         {
             lat: {$gte: lat, $lte: (lat + (Math.PI/300)*size) % (Math.PI)},
             long: {$gte: long, $lte: (long + (Math.PI/300)*size) % (Math.PI*2)}
+        }, {height: 1, biome: 1}
+    ); 
+}
+
+async function get_terrain_chunk(lat, long, size) {
+    var min_lat = (lat - (Math.PI/300)*size) % (Math.PI)
+    var max_lat = (lat + (Math.PI/300)*size) % (Math.PI)
+    var min_long = (long - (Math.PI/300)*size) % (Math.PI*2)
+    var max_long = (long + (Math.PI/300)*size) % (Math.PI*2)
+    return await db.collection('world').findOne(
+        {
+            lat: {$gte: min_lat, $lte: max_lat},
+            long: {$gte: min_long, $lte: max_long}
         }, {height: 1, biome: 1}
     ); 
 }
