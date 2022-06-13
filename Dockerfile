@@ -1,5 +1,6 @@
 FROM node:16
 ADD . .
 RUN npm install
+EXPOSE 3000
 # RUN npm run new_world
-RUN npm run start
+CMD ["npm", "run", "start"]
