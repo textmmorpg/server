@@ -1,6 +1,7 @@
 FROM node:16
-ADD . .
+WORKDIR /app
+COPY . /app
 RUN npm install
 EXPOSE 3000
-# RUN npm run new_world
-CMD ["npm", "run", "start"]
+# CMD npm run new_world
+CMD npm run start
