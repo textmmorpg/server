@@ -23,8 +23,7 @@ app.use((req,res,next)=>{
   next(); 
 })
 
-app.use(express.static(path.join(__dirname, 'client')));
-
+// setup socket.io routes
 io.on('connection', function (socket){
   console.log('new connection: ' + socket.id);
 
@@ -44,6 +43,12 @@ io.on('connection', function (socket){
   routers.forEach( (router) => {
     router.add_routes(socket, io)
   });
+});
+
+// serve client template
+app.use(express.static(path.join(__dirname, '/../client')));
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/../client/index.html");
 });
 
 http.listen(3000, function () {

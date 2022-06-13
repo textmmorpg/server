@@ -146,5 +146,5 @@ function write_to_image(values) {
   }
 
   const buffer2 = canvas2.toBuffer('image/png')
-  fs.writeFileSync('./terrain.png', buffer2)
+  fs.writeFileSync('./client/terrain.png', buffer2)
 }
