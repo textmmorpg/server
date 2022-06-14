@@ -32,3 +32,11 @@ npm run start
 Navigate to https://localhost:3000
 
 For details on gameplay, view the github wiki: https://github.com/beefy/project_title_here/wiki
+
+### Deployment (automation is a WIP)
+
+```
+docker build -t textmmo .
+docker tag textmmo us-central1-docker.pkg.dev/project-title-here/textmmo/textmmo-image
+docker push us-central1-docker.pkg.dev/project-title-here/textmmo/textmmo-image
+```
