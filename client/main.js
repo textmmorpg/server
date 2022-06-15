@@ -12,8 +12,8 @@ $(function() {
     const $loginPage = $('.login.page');        // The login page
     const $chatPage = $('.chat.page');          // The chatroom page
     
-    const socket = io.connect('wss://textmmo.com:3000', {
-        reconnect: false, secure:true, transports: ['websocket']
+    const socket = io.connect('http://textmmo.com:3000', {
+        reconnect: false, secure:true
     });
 
     // Prompt for setting a username
