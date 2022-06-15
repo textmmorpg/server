@@ -56,4 +56,5 @@ app.get("/", (req, res) => {
 http.listen(3000, function () {
   console.log('listening on *:3000');
   console.log('Version: ' + package.version);
+  console.log(process.env.MONGO_USER.substring(0,5));
 });
