@@ -1,8 +1,9 @@
 const express = require('express')
 const app = express();
+const cors = require("cors");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-const cors = require("cors");
+var package = require('../package.json');
 
 const crud_connection = require('./crud/connection');
 const routers = [
@@ -12,6 +13,14 @@ const routers = [
   require('./router/turn'),
   require('./router/posture')
 ]
+
+app.use((req,res,next)=>{
+  res.setHeader('Access-Control-Allow-Origin','*');
+  res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
+  res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
+  cors();
+  next(); 
+})
 
 const login = require('./login');
 const path = require('path');
@@ -46,4 +55,5 @@ app.get("/", (req, res) => {
 
 http.listen(3000, function () {
   console.log('listening on *:3000');
+  console.log('Version: ' + package.version);
 });
