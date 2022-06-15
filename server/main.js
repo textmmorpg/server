@@ -15,13 +15,6 @@ const routers = [
 
 const login = require('./login');
 const path = require('path');
-app.use((req,res,next)=>{
-  res.setHeader('Access-Control-Allow-Origin','*');
-  res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
-  res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
-  cors();
-  next(); 
-})
 
 // setup socket.io routes
 io.on('connection', function (socket){
