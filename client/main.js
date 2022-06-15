@@ -12,7 +12,7 @@ $(function() {
     const $loginPage = $('.login.page');        // The login page
     const $chatPage = $('.chat.page');          // The chatroom page
     
-    const socket = io.connect('http://textmmo.com:3000', {
+    const socket = io.connect('https://textmmo.com:3000', {
         reconnect: false, secure:true, transports: ['websocket']
     });
 
