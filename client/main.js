@@ -13,7 +13,7 @@ $(function() {
     const $chatPage = $('.chat.page');          // The chatroom page
     
     var socket;
-    if('${_ENV}' === 'PROD') {
+    if('window.location.hostname' === 'textmmo.com') {
         socket = io.connect('https://textmmo.com/', {
             reconnect: false, secure:true, transports: ['websocket']
         });
