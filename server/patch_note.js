@@ -1,7 +1,7 @@
 // node patch_note.js DEV|PROD <note>
 
 const { MongoClient } = require("mongodb");
-const crud_other = require('./crud/patch_notes');
+const crud_patch_notes = require('./crud/patch_notes');
 
 var uri;
 if(process.argv[2] === 'PROD') {
@@ -15,7 +15,7 @@ const mongo = new MongoClient(uri,
 );
 mongo.connect();
 const db = mongo.db('project_title_here_db');
-crud_other.add_patch_note(db, process.argv[3]).catch(console.dir).then( () => {
+crud_patch_notes.add_patch_note(db, process.argv[3]).catch(console.dir).then( () => {
     console.log("done");
     process.exit(0);
 })

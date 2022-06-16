@@ -218,6 +218,8 @@ $(function() {
                 socket.emit('yell', {msg: input})
             } else if(input.startsWith('exit')) {
                 socket.emit('exit', {})
+            } else if(input.startsWith('check patch notes')) {
+                socket.emit('check patch notes', {})
             } else {
                 log('Command not defined');
             }

@@ -1,6 +1,7 @@
 const crud_login = require('./crud/login');
 const crud_connection = require('./crud/connection');
 const crud_terrain = require('./crud/terrain');
+const crud_patch_notes = require('./crud/patch_notes');
 
 module.exports = {
     login,

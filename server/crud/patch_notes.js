@@ -20,5 +20,5 @@ async function get_patch_notes_since_ts(ts) {
 
 async function get_recent_patch_notes() {
     return await db.collection('patchnotes')
-    .find({}).sort({ts: 1}).limit(3);
+    .find({}).sort({ts: -1}).limit(3);
 }
