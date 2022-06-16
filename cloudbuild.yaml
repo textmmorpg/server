@@ -41,3 +41,5 @@ tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
   - textmmo-image
+substitutions:
+  - _ENV: PROD
