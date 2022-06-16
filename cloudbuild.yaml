@@ -1,10 +1,11 @@
 steps:
   - name: 'ubuntu'
-    args: ['bash', 'printenv', '>', '.env']
+    args: ['bash', './cloud_util.sh']
     env:
       - MONGO_USER=$_MONGO_USER
       - MONGO_PASS=$_MONGO_PASS
       - MONGO_URL=$_MONGO_URL
+    id: Setup
   - name: gcr.io/cloud-builders/docker
     args:
       - build
