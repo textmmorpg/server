@@ -1,7 +1,7 @@
 // node patch_note.js DEV|PROD <note>
 
 const { MongoClient } = require("mongodb");
-const crud_other = require('./crud/other');
+const crud_other = require('./crud/patch_notes');
 
 var uri;
 if(process.argv[2] === 'PROD') {
