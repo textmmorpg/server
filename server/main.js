@@ -29,7 +29,11 @@ io.on('connection', function (socket){
   console.log('new connection: ' + socket.id);
 
   socket.on('login', function(data) {
-    login.login(data, socket);
+    if(!data.reconnection) {
+      login.login(data, socket);
+    } else {
+      login.reconnect(data, socket)
+    }
   });
   
   socket.on('exit', function (data) {

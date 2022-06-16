@@ -40,7 +40,8 @@ $(function() {
             // Tell the server your username
             socket.emit('login', {
                 username: username,
-                password: password
+                password: password,
+                reconnection: false
             })
         }
     }
@@ -236,7 +237,8 @@ $(function() {
 
         socket.emit('login', {
             username: username,
-            password: password
+            password: password,
+            reconnection: true
         });
     });
 

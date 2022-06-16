@@ -3,7 +3,8 @@ const crud_connection = require('./crud/connection');
 const crud_terrain = require('./crud/terrain');
 
 module.exports = {
-    login
+    login,
+    reconnect
 }
 
 const ages = ["young", "middle aged", "old"];
@@ -58,4 +59,17 @@ function signup(data, socket) {
             "You should find food and a source of clean water, find civilization, and survive."});
         }
     })
+}
+
+function reconnect(data, socket) {
+    // check if credentials exist / are correct
+    crud_login.get_login(
+        data['username'], data['password']
+    ).catch(console.dir).then( (user_count) => {
+        // disallow signup on reconnection
+        if(user_count === 0) return;
+
+        crud_connection.add_connection(data['username'], socket.id).catch(console.dir);
+        socket.send({data: "Reconnected"})
+    });
 }
