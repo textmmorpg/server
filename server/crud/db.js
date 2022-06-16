@@ -2,7 +2,12 @@ require('dotenv').config();
 
 const { MongoClient } = require("mongodb");
 
-const uri = "mongodb+srv://"+process.env.MONGO_USER+":"+process.env.MONGO_PASS+"@"+process.env.MONGO_URL+"/project_title_here_db"
+var uri;
+if(process.env.ENV === 'PROD') {
+    uri = "mongodb+srv://"+process.env.MONGO_USER+":"+process.env.MONGO_PASS+"@"+process.env.MONGO_URL+"/project_title_here_db"
+} else {
+    uri = "mongodb://localhost/project_title_here_db"
+}
 const mongo = new MongoClient(uri,
     {useNewUrlParser: true },
     {connectTimeoutMS: 30000 }, {keepAlive: 1}
