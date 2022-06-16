@@ -12,9 +12,16 @@ $(function() {
     const $loginPage = $('.login.page');        // The login page
     const $chatPage = $('.chat.page');          // The chatroom page
     
-    const socket = io.connect('https://textmmo.com/', {
-        reconnect: false, secure:true, transports: ['websocket']
-    });
+    var socket;
+    if('${_ENV}' === 'PROD') {
+        socket = io.connect('https://textmmo.com/', {
+            reconnect: false, secure:true, transports: ['websocket']
+        });
+    } else {
+        socket = io.connect('http://localhost:3000/', {
+            reconnect: false
+        });
+    }
 
     // Prompt for setting a username
     let username;

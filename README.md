@@ -14,6 +14,7 @@ mongod
 use project_title_here_db // create db if it doesn't exist
 db.createCollection('user') // create user collection
 db.createCollection('world') // create environment collection
+db.createCollection('patchnotes') // create environment collection
 ```
 
 Generate world
