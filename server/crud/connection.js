@@ -2,7 +2,6 @@ const db = require('./db').get_db();
 
 module.exports = {
     add_connection,
-    delete_connection,
     get_other_connections,
     get_active_user_count
 };
@@ -10,17 +9,6 @@ module.exports = {
 async function add_connection(username, socket_id) {
     await db.collection('user').updateOne({
         username: username
-    }, {
-        $set: {
-            socket_id: socket_id,
-            last_cmd_ts: new Date()
-        }
-    });
-}
-
-async function delete_connection(socket_id) {
-    await db.collection('user').updateMany({
-        socket_id: socket_id
     }, {
         $set: {
             socket_id: socket_id,

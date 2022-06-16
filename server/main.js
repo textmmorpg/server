@@ -5,7 +5,6 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var package = require('../package.json');
 
-const crud_connection = require('./crud/connection');
 const routers = [
   require('./router/look'),
   require('./router/speak'),
@@ -36,10 +35,6 @@ io.on('connection', function (socket){
   socket.on('exit', function (data) {
     socket.send({data: "bye"});
     socket.close();
-  });
-
-  socket.on('disconnect', function(event) {
-    crud_connection.delete_connection(socket.id).catch(console.dir);
   });
 
   routers.forEach( (router) => {
