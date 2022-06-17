@@ -17,7 +17,7 @@ async function add_terrain(docs, custom_db) {
 
 async function get_biome(lat, long) {
 
-    var size = Math.PI/300*2;
+    var size = Math.PI/300;
     var max_lat = lat + size;
     var min_lat = lat - size;
     var max_long = long + size;
@@ -45,13 +45,14 @@ async function get_biome(lat, long) {
 
     return await db.collection('world').findOne(
         {
-            [agg_lat]: [
-                {lat: {$gte: min_lat}},
-                {lat: {$lte: max_lat}},
-            ],
-            [agg_long]: [
-                {long: {$gte: min_long}},
-                {long: {$lte: max_long}},
+            $and: [
+                {[agg_lat]: [
+                    {lat: {$gte: min_lat}},
+                    {lat: {$lte: max_lat}},
+                ]}, {[agg_long]: [
+                    {long: {$gte: min_long}},
+                    {long: {$lte: max_long}},
+                ]}
             ]
         }, {height: 1, biome: 1}
     ); 
