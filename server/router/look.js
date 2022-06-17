@@ -37,7 +37,8 @@ function add_routes(socket, io) {
             ' ' + user['age'] + ' human. You are currently ' + user['posture'] +
             '. You are facing ' + get_direction(user['angle']) + ', located at ' + user['lat'] +
             ', ' + user['long'] + ', ' + user['height'] + '. You haven\'t done anything since ' + 
-            user['last_cmd_ts'] + '. You have ' + user['energy']*100 + '% energy'
+            user['last_cmd_ts'] + '. You have ' + user['energy']*100 + '% energy. ' +
+            'Your admin status is: ' + user['admin']
         });
         })
     })

@@ -5,7 +5,8 @@ module.exports = {
     get_login,
     get_user,
     check_username,
-    create_user
+    create_user,
+    create_admin
 };
 
 
@@ -36,11 +37,19 @@ async function create_user(user, pass, socket, angle, age, tall, weight) {
             age: age, tall: tall, weight: weight, posture: "standing",
             energy: 1, last_cmd_ts: new Date(),
             last_set_posture_ts: new Date(),
-            last_read_patch_notes: new Date()
+            last_read_patch_notes: new Date(), admin: false
         });
 
         crud_terrain.check_biomes(socket, angle, spawn["lat"], spawn["long"]);
     })
+}
+
+async function create_admin(user) {
+    await db.collection('user').updateOne({
+        username: user
+    }, {
+        $set: {admin: true}
+    });
 }
 
 async function get_spawn_location() {
