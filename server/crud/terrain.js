@@ -17,10 +17,10 @@ async function add_terrain(docs, custom_db) {
 }
 
 async function get_locations(lat, long, size) {
-    return await db.collection('world').findOne(
+    return await db.collection('world').find(
         {
-            lat: {$gte: lat, $lte: (lat + (Math.PI/300)*size) % (Math.PI)},
-            long: {$gte: long, $lte: (long + (Math.PI/300)*size) % (Math.PI*2)}
+            lat: {$gte: lat, $lte: lat + (Math.PI/300)*size},
+            long: {$gte: long, $lte: long + (Math.PI/300)*size}
         }, {height: 1, biome: 1, lat: 1, long: 1}
     ); 
 }
@@ -34,7 +34,7 @@ async function get_biome(lat, long) {
 
         var lowest_distance = 99999;
         var closest_location_i = -1;
-        result.forEach( (location, i) => {
+        return result.forEach( (location, i) => {
             var cur_distance = my_math.distance(
                 [1, location["lat"], location["long"]],
                 [1, lat, long]
@@ -45,6 +45,7 @@ async function get_biome(lat, long) {
             }
         }).then( () => {
             if(closest_location_i === -1) return exception_ret;
+            console.log(result);
             return result[closest_location_i];
         })
     })
