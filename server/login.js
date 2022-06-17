@@ -27,14 +27,15 @@ function login(data, socket) {
             signup(data, socket);
         } else {
             // user found -> login successful
-            crud_connection.add_connection(data['username'], socket.id).catch(console.dir);
-            socket.send({login_success: true});
-            socket.send({data: "Welcome back!"})
-            crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
-                crud_terrain.check_biomes(socket, user["angle"], user["lat"], user["long"]);
-                crud_patch_notes.get_patch_notes_since_ts(user['last_read_patch_notes']).catch(console.dir).then((patch_notes) => {
-                    write_patch_notes(patch_notes, socket);
-                })
+            crud_connection.add_connection(data['username'], socket.id).catch(console.dir).then( () => {
+                socket.send({login_success: true});
+                socket.send({data: "Welcome back!"});
+                crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+                    crud_terrain.check_biomes(socket, user["angle"], user["lat"], user["long"]);
+                    crud_patch_notes.get_patch_notes_since_ts(user['last_read_patch_notes']).catch(console.dir).then((patch_notes) => {
+                        write_patch_notes(patch_notes, socket);
+                    })
+                });
             });
         }
 

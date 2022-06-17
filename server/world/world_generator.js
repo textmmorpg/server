@@ -1,3 +1,20 @@
+const crud = require('../crud/terrain');
+const terrain = require('./terrain_generator');
+
+const { MongoClient } = require("mongodb");
+
+var uri;
+if(process.argv[2] === 'PROD') {
+    uri = "mongodb+srv://"+process.env.MONGO_USER+":"+process.env.MONGO_PASS+"@"+process.env.MONGO_URL+"/project_title_here_db"
+} else {
+    uri = "mongodb://localhost/project_title_here_db"
+}
+const mongo = new MongoClient(uri,
+    {useNewUrlParser: true },
+    {connectTimeoutMS: 30000 }, {keepAlive: 1}
+);
+mongo.connect();
+const db = mongo.db('project_title_here_db');
 
 function biome(height) {
     if(height < 0.3) {
@@ -17,8 +34,6 @@ function biome(height) {
     }
 }
 
-const crud = require('../crud/terrain');
-const terrain = require('./terrain_generator');
 async function generate() {
     try {
         console.log("generating terrain");
@@ -38,7 +53,7 @@ async function generate() {
                 })
             })
         })
-        await crud.add_terrain(docs).catch(console.dir).then( () => {
+        await crud.add_terrain(docs, db).catch(console.dir).then( () => {
             console.log("done");
             process.exit(0);
         });

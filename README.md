@@ -19,7 +19,7 @@ db.createCollection('patchnotes') // create environment collection
 
 Generate world
 ```
-npm run new_world
+npm run new_world_dev
 ```
 
 ### Running the server and exposing the client
