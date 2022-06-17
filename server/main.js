@@ -25,7 +25,6 @@ app.use((req,res,next)=>{
   next(); 
 })
 
-
 // setup socket.io routes
 io.on('connection', function (socket){
   console.log('new connection: ' + socket.id);
@@ -36,11 +35,6 @@ io.on('connection', function (socket){
     } else {
       login.reconnect(data, socket)
     }
-  });
-  
-  socket.on('exit', function (data) {
-    socket.send({data: "bye"});
-    socket.close();
   });
 
   routers.forEach( (router) => {
