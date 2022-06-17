@@ -16,4 +16,7 @@ const mongo = new MongoClient(uri,
 mongo.connect();
 const db = mongo.db('project_title_here_db');
 
-crud_login.create_admin(process.argv[3]);
+crud_login.create_admin(process.argv[3]).catch(console.dir).then( () => {
+    console.log("done");
+    process.exit(0);
+})
