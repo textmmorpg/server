@@ -43,6 +43,10 @@ io.on('connection', function (socket){
     socket.close();
   });
 
+  socket.on('help', function(data) {
+    socket.send({data: "tbd"})
+  })
+
   routers.forEach( (router) => {
     router.add_routes(socket, io)
   });

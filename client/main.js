@@ -168,6 +168,7 @@ $(function() {
         if (input && connected && login_success) {
             $inputMessage.val('');
             addChatMessage({username: 'You', input: input});
+            input = input.toLowerCase();
             if(input.startsWith('say')) {
                 socket.emit('say', {msg: input});
             } else if(input.startsWith('walk forward')) {
@@ -220,6 +221,10 @@ $(function() {
                 socket.emit('exit', {})
             } else if(input.startsWith('check patch notes')) {
                 socket.emit('check patch notes', {})
+            } else if(input.startsWith('?')) {
+                socket.emit('help', {})
+            } else if(input.startsWith('help')) {
+                socket.emit('help', {})
             } else {
                 log('Command not defined');
             }
