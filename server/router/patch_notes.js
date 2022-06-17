@@ -23,4 +23,5 @@ function write_patch_notes(patch_notes, socket) {
         message += "For the full list of patch notes, check https://github.com/beefy/textmmo/releases"
         socket.send({data: message});
     })
+    crud_patch_notes.update_user_ts(socket.id);
 }
