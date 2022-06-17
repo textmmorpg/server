@@ -35,7 +35,8 @@ async function create_user(user, pass, socket, angle, age, tall, weight) {
             angle: angle, socket_id:socket.id,
             age: age, tall: tall, weight: weight, posture: "standing",
             energy: 1, last_cmd_ts: new Date(),
-            last_set_posture_ts: new Date()
+            last_set_posture_ts: new Date(),
+            last_read_patch_notes: new Date()
         });
 
         crud_terrain.check_biomes(socket, angle, spawn["lat"], spawn["long"]);

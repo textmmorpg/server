@@ -4,14 +4,17 @@ const cors = require("cors");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var package = require('../package.json');
+const crud_patch_notes = require('./crud/patch_notes');
+const login = require('./login');
+const path = require('path');
 
-const crud_connection = require('./crud/connection');
 const routers = [
   require('./router/look'),
   require('./router/speak'),
   require('./router/move'),
   require('./router/turn'),
-  require('./router/posture')
+  require('./router/posture'),
+  require('./router/patch_notes')
 ]
 
 app.use((req,res,next)=>{
@@ -22,24 +25,22 @@ app.use((req,res,next)=>{
   next(); 
 })
 
-const login = require('./login');
-const path = require('path');
 
 // setup socket.io routes
 io.on('connection', function (socket){
   console.log('new connection: ' + socket.id);
 
   socket.on('login', function(data) {
-    login.login(data, socket);
+    if(!data.reconnection) {
+      login.login(data, socket);
+    } else {
+      login.reconnect(data, socket)
+    }
   });
   
   socket.on('exit', function (data) {
     socket.send({data: "bye"});
     socket.close();
-  });
-
-  socket.on('disconnect', function(event) {
-    crud_connection.delete_connection(socket.id).catch(console.dir);
   });
 
   routers.forEach( (router) => {

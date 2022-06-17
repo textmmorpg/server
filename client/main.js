@@ -13,20 +13,22 @@ $(function() {
     const $chatPage = $('.chat.page');          // The chatroom page
     
     var socket;
-    if(window.location.hostname === 'textmmo.com') {
-        socket = io.connect('https://textmmo.com/', {
-            reconnect: false, secure:true, transports: ['websocket']
-        });
-    } else {
-        socket = io.connect('http://localhost:3000/', {
-            reconnect: false
-        });
+    var username;
+    var password;
+    var connected = false;
+    var login_success = false;
+
+    function connect() {
+        if(window.location.hostname === 'textmmo.com') {
+            socket = io.connect('https://textmmo.com/', {
+                secure:true, transports: ['websocket']
+            });
+        } else {
+            socket = io.connect('http://localhost:3000/', {});
+        }
     }
 
-    // Prompt for setting a username
-    let username;
-    let connected = false;
-    let login_success = false;
+    connect();
 
     // Sets the client's username
     const setUsername = () => {
@@ -38,7 +40,8 @@ $(function() {
             // Tell the server your username
             socket.emit('login', {
                 username: username,
-                password: password
+                password: password,
+                reconnection: false
             })
         }
     }
@@ -142,10 +145,6 @@ $(function() {
         }
     });
 
-    $inputMessage.on('input', () => {
-        updateTyping();
-    });
-
     // Click events
 
     // Focus input when clicking anywhere on login page
@@ -219,6 +218,8 @@ $(function() {
                 socket.emit('yell', {msg: input})
             } else if(input.startsWith('exit')) {
                 socket.emit('exit', {})
+            } else if(input.startsWith('check patch notes')) {
+                socket.emit('check patch notes', {})
             } else {
                 log('Command not defined');
             }
@@ -234,20 +235,23 @@ $(function() {
 
     socket.on('connect', function (event) {
         connected = true;
-        console.log('Connected!');
+        log('Connected');
+
+        socket.emit('login', {
+            username: username,
+            password: password,
+            reconnection: true
+        });
     });
 
-    socket.on('disconnect', function (event) {
-        console.log('Disconnected!');
-        cleanup();
-    })
-
-
+    socket.on('disconnect', function () {
+        log("Disconnected, attempting to reconnect")
+    });
 
     // listen for login success or failure
     socket.addEventListener('message', function(event) {
         if(event.login_success) {
-            console.log("Login Successful");
+            log("Login Successful");
             // stop listening for login success
 
             $loginPage.fadeOut();

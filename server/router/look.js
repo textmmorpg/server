@@ -29,6 +29,7 @@ function get_direction(angle) {
 }
 
 function add_routes(socket, io) {
+
     socket.on('vibe check', function(data) {
         crud_move.get_vibe(socket.id).catch(console.dir).then( (user) => {
         // TODO: get user North/south/east/west coords instead of the raw angle
@@ -43,6 +44,7 @@ function add_routes(socket, io) {
     })
 
     socket.on('look', function(data) {
+        console.log(data);
         crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
             crud_terrain.check_biomes(socket, user);
         });
