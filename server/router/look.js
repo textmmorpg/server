@@ -44,7 +44,6 @@ function add_routes(socket, io) {
     })
 
     socket.on('look', function(data) {
-        console.log(data);
         crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
             crud_terrain.check_biomes(socket, user);
         });
