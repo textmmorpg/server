@@ -2,6 +2,7 @@ const crud_login = require('./crud/login');
 const crud_connection = require('./crud/connection');
 const crud_terrain = require('./crud/terrain');
 const crud_patch_notes = require('./crud/patch_notes');
+const { write_patch_notes } = require('./router/patch_notes');
 
 module.exports = {
     login,
@@ -15,7 +16,6 @@ const weights = ["skinny", "average", "fat"];
 function getRandom(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
-
 
 function login(data, socket) {
     // check if credentials exist / are correct
@@ -32,6 +32,9 @@ function login(data, socket) {
             socket.send({data: "Welcome back!"})
             crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
                 crud_terrain.check_biomes(socket, user["angle"], user["lat"], user["long"]);
+                crud_patch_notes.get_patch_notes_since_ts(user['last_read_patch_notes']).catch(console.dir).then((patch_notes) => {
+                    write_patch_notes(patch_notes, socket);
+                })
             });
         }
 
@@ -72,5 +75,11 @@ function reconnect(data, socket) {
 
         crud_connection.add_connection(data['username'], socket.id).catch(console.dir);
         socket.send({data: "Reconnected"})
+
+        crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+            crud_patch_notes.get_patch_notes_since_ts(user['last_read_patch_notes']).catch(console.dir).then((patch_notes) => {
+                write_patch_notes(patch_notes, socket);
+            })
+        });
     });
 }

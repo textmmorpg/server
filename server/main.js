@@ -5,13 +5,16 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var package = require('../package.json');
 const crud_patch_notes = require('./crud/patch_notes');
+const login = require('./login');
+const path = require('path');
 
 const routers = [
   require('./router/look'),
   require('./router/speak'),
   require('./router/move'),
   require('./router/turn'),
-  require('./router/posture')
+  require('./router/posture'),
+  require('./router/patch_notes')
 ]
 
 app.use((req,res,next)=>{
@@ -22,8 +25,6 @@ app.use((req,res,next)=>{
   next(); 
 })
 
-const login = require('./login');
-const path = require('path');
 
 // setup socket.io routes
 io.on('connection', function (socket){
@@ -40,18 +41,6 @@ io.on('connection', function (socket){
   socket.on('exit', function (data) {
     socket.send({data: "bye"});
     socket.close();
-  });
-
-  socket.on('check patch notes', function(data) {
-    crud_patch_notes.get_recent_patch_notes().catch(console.dir).then( (patch_notes) => {
-      var message = ""
-      patch_notes.forEach((patch_note) => {
-        message += patch_note["ts"] + ": " + patch_note["note"] + ". "
-      }).then( () => {
-        message += "For the full list of patch notes, check https://github.com/beefy/textmmo/releases"
-        socket.send({data: message});
-      })
-    })
   });
 
   routers.forEach( (router) => {

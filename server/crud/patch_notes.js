@@ -14,7 +14,7 @@ async function add_patch_note(custom_db, note) {
 
 async function get_patch_notes_since_ts(ts) {
     return await db.collection('patchnotes').find({
-        $gt: {ts: ts}
+        ts: {$gt: ts}
     });
 }
 
