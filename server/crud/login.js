@@ -44,9 +44,9 @@ async function create_user(user, pass, socket, angle, age, tall, weight) {
 }
 
 async function get_spawn_location() {
-    return await db.collection('world').findOne(
+    return await db.collection('world').find(
         {
             biome: "forest"
         }, {lat: 1, long: 1, height: 1, biome: 1}
-    );
+    ).limit(1).skip(Math.round(Math.random()*50)).next();
 }

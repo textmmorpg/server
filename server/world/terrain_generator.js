@@ -12,13 +12,6 @@ module.exports = {
   write_to_image
 }
 
-function greyHex(value) {
-  // bitwise OR. Gives value in the range 0-255
-  // which is then converted to base 16 (hex).
-  var v = (value*(256)|0).toString(16);
-  return "#" + v + v + v;
-}
-
 function colorHex(value) {
   if(value < 0.3) {
     return "#03007B"; // deep water
