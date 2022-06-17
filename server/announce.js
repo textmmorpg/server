@@ -1,5 +1,6 @@
 const crud_login = require('./crud/login');
 const crud_connection = require('./crud/connection');
+const my_math = require('./math');
 const { Vector, VectorConstants } = require("simplevectorsjs");
 
 module.exports = {
@@ -11,9 +12,8 @@ function within_distance(
         user2_x, user2_y, distance_limit
     ) {
     // check if they are too far away
-    var distance = Math.sqrt(
-        Math.pow(user2_x - user1_x, 2) +
-        Math.pow(user2_y - user1_y, 2)
+    var distance = my_math.distance(
+        [1, user1_x, user1_y], [1, user2_x, user2_y]
     );
 
     return distance < distance_limit
