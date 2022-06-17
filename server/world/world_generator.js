@@ -49,8 +49,7 @@ async function generate() {
                 var lat = lat_i*(Math.PI/300);
                 docs.push({
                     lat: lat, long: long, height: height_map[long_i][lat_i],
-                    biome: biome(height_map[long_i][lat_i]),
-                    random: Math.random() + 1
+                    biome: biome(height_map[long_i][lat_i])
                 })
             })
         })
