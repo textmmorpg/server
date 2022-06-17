@@ -168,6 +168,7 @@ $(function() {
         if (input && connected && login_success) {
             $inputMessage.val('');
             addChatMessage({username: 'You', input: input});
+            input = input.toLowerCase();
             if(input.startsWith('say')) {
                 socket.emit('say', {msg: input});
             } else if(input.startsWith('walk forward')) {
@@ -220,15 +221,24 @@ $(function() {
                 socket.emit('exit', {})
             } else if(input.startsWith('check patch notes')) {
                 socket.emit('check patch notes', {})
+            } else if(input.startsWith('?') || input.startsWith('help')) {
+                help_message();
             } else {
                 log('Command not defined');
             }
         }
     }
 
-    function cleanup() {
-        socket.removeAllListeners();
-        socket.close();
+    function help_message() {
+        addChatMessage({
+            username: 'Server',
+            input: "This is a multiplayer text adventure game! " +
+            "Type commands to interact with the world and other players. " +
+            "For example, type 'walk forward' to walk, 'turn right' to turn, etc. " +
+            "Use 'say hello' to say hello to players around you. Use 'look' or 'vibe check' to " + 
+            "examine your immediate environment. For the full list of commands, " +
+            "check the wiki: https://github.com/beefy/textmmo/wiki"
+        });
     }
 
     socket.on('error', (error) => {console.log(error);});
@@ -254,6 +264,7 @@ $(function() {
             log("Login Successful");
             // stop listening for login success
 
+            help_message()
             $loginPage.fadeOut();
             $chatPage.show();
             $loginPage.off('click');
