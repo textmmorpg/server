@@ -47,6 +47,6 @@ async function get_spawn_location() {
     return await db.collection('world').findOne(
         {
             biome: "forest", random: {$gt: Math.random() + 0.5}
-        }, {lat: 1, long: 1, height: 1}
+        }, {lat: 1, long: 1, height: 1, biome: 1}
     );
 }
