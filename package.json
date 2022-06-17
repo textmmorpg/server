@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node server/main.js",
-    "new_world": "node server/world/world_generator.js",
+    "new_world_dev": "node server/world/world_generator.js DEV",
+    "new_world_prod": "node server/world/world_generator.js PROD",
     "create-env": "printenv > .env"
   },
   "dependencies": {

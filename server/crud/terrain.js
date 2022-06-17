@@ -11,8 +11,8 @@ async function reset_world() {
     await db.collection('world').deleteMany({});
 }
 
-async function add_terrain(docs) {
-    await db.collection('world').insertMany(docs)
+async function add_terrain(docs, custom_db) {
+    await custom_db.collection('world').insertMany(docs)
 }
 
 async function get_biome_attempt(lat, long, size) {
