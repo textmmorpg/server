@@ -1,6 +1,6 @@
 {
   "name": "project_title_here",
-  "version": "9000.0.1",
+  "version": "9000.0.2",
   "private": true,
   "scripts": {
     "start": "node server/main.js",
