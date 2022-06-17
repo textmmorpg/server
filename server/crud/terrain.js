@@ -1,5 +1,4 @@
 const db = require('./db').get_db();
-const my_math = require('../math');
 
 module.exports = {
     reset_world,
@@ -15,40 +14,6 @@ async function reset_world() {
 async function add_terrain(docs, custom_db) {
     await custom_db.collection('world').insertMany(docs)
 }
-
-// async function get_locations(lat, long, size) {
-//     return await db.collection('world').find(
-//         {
-//             lat: {$gte: lat, $lte: lat + (Math.PI/300)*size},
-//             long: {$gte: long, $lte: long + (Math.PI/300)*size}
-//         }, {height: 1, biome: 1, lat: 1, long: 1}
-//     ); 
-// }
-
-// async function get_biome(lat, long) {
-//     return await get_locations(lat, long, 10).catch(console.dir).then( (result) => {
-//         var exception_ret = {height: -100, biome: "hell", lat: lat, long: long}
-//         if(result === null) {
-//             return exception_ret;
-//         }
-
-//         var lowest_distance = 99999;
-//         var closest_location_i = -1;
-//         return result.forEach( (location, i) => {
-//             var cur_distance = my_math.distance(
-//                 [1, location["lat"], location["long"]],
-//                 [1, lat, long]
-//             );
-//             if(cur_distance < lowest_distance) {
-//                 lowest_distance = cur_distance;
-//                 closest_location_i = i;
-//             }
-//         }).then( () => {
-//             if(closest_location_i === -1) return exception_ret;
-//             return exception_ret; //result[closest_location_i];
-//         })
-//     })
-// }
 
 async function get_biome_attempt(lat, long, size) {
     return await db.collection('world').findOne(
