@@ -3,20 +3,26 @@ const fs = require('fs');
 
 var filename = __dirname + '/../migrations/' + new Date().valueOf() + '_' + process.argv[2] + ".js"
 var content = `
-const db = requrie('./crud/custom_db').get_db(process.argv[2]);
+
+const custom_db = require('../crud/custom_db')
 
 module.exports = {
     up,
     down
 }
 
-function up() {
+function up(env) {
+    console.log("Running on: " + env);
+    const db = custom_db.get_db(env);
     // write migration here
 }
 
-function down() {
+function down(env) {
+    console.log("Running on: " + env);
+    const db = custom_db.get_db(env);
     // how to undo the migration here
 }
+
 `;
 
 fs.writeFile(filename, content, err => {
