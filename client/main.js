@@ -203,6 +203,18 @@ $(function() {
                 socket.emit('turn right', {});
             } else if(input.startsWith('turn around')) {
                 socket.emit('turn around', {});
+            } else if(input.startsWith('turn to face north')) {
+                socket.emit('turn to face north', {})
+            } else if(input.startsWith('turn to face south')) {
+                socket.emit('turn south', {})
+            } else if(input.startsWith('turn to face east')) {
+                socket.emit('turn east', {})
+            } else if(input.startsWith('turn to face west')) {
+                socket.emit('turn west', {})
+            } else if(input.startsWith('turn a little to the right')) {
+                socket.emit('turn a little to the right', {})
+            } else if(input.startsWith('turn a little to the left')) {
+                socket.emit('turn a little to the left', {})
             } else if(input.startsWith('look')) {
                 socket.emit('look', {});
             } else if(input.startsWith('sit down')) {
