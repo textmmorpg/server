@@ -101,25 +101,37 @@ async function check_swimming(socket, user, new_lat, new_long, move_type) {
     });
 }
 
-async function move(socket, distance, turn, move_type) {
+async function move(socket, distance, turn, move_type, set_angle) {
     // convert distance to lat/long degrees
     var move_distance = (Math.PI/300)*distance
+
+    // get user data of current position/angle/posture
     await crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+
+        // calculate some variables based on the type of movement
         var movement_energy = 0.025 * Math.pow(distance, 2);
-        var new_angle = (user["angle"] + turn) % (2 * Math.PI);
+        var new_angle;
+        if(!set_angle) {
+            new_angle = (user["angle"] + turn) % (2 * Math.PI);
+        } else {
+            new_angle = turn;
+        }
         var new_lat = (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (2 * Math.PI);
         var new_long = (user["long"] + move_distance * Math.sin(user["angle"] + turn)) % (2 * Math.PI);
 
+        // prevent user from turning while laying down
         if(user['posture'] === "laying" && turn !== 0) {
             socket.send({data: "You cannot turn around while laying down. Sit or stand up first!"});
             return;
         }
 
+        // prevent user from moving when they are out of energy
         if(user['energy'] < movement_energy && distance !== 0) {
             socket.send({data: "Not enough energy! Sit or lay down to rest"})
             return;
         }
 
+        // prevent the user from walking unless they are standing
         if(
             (user['posture'] !== "standing" && user['posture'] !== "swimming")
             && distance !== 0
@@ -128,7 +140,10 @@ async function move(socket, distance, turn, move_type) {
             return;
         }
 
+        // get swimming status so user does not walk on water or swim on land
         check_swimming(socket, user, new_lat, new_long, move_type).catch(console.dir).then( (swimming_status) => {
+            
+            // swimming related checks
             var posture = user["posture"];
             if(swimming_status === "start_swimming") {
                 socket.send({data: "You start swimming"});
@@ -144,6 +159,7 @@ async function move(socket, distance, turn, move_type) {
                 return;
             }
 
+            // finally if all checks passed, update the needed data
             db.collection('user').updateOne({
                 socket_id: socket.id
             }, {
@@ -156,6 +172,7 @@ async function move(socket, distance, turn, move_type) {
                     posture: posture
                 }
             }).then( () => {
+                // afterwards, display the new location info to the user
                 crud_terrain.check_biomes(socket, new_angle, new_lat, new_long);
             })
         })
@@ -167,7 +184,8 @@ async function teleport(socket, lat, long, height) {
         socket_id: socket.id
     }, {
         $set: {
-            lat: lat, long: long, height: height
+            lat: lat, long: long, height: height,
+            last_cmd_ts: new Date(),
         }
     })
 }

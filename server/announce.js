@@ -92,11 +92,11 @@ function announce(socket_id, io, message, distance, check_behind) {
     // get sockets of the close players
     crud_login.get_user(socket_id).catch(console.dir).then( (user) => {
         crud_connection.get_other_connections(
-            socket_id, user["lat"], user["long"], distance
+            socket_id, user["lat"], user["long"], (Math.PI/300)*distance
         ).catch(console.dir).then( (other_users) => {
             // send the message to the socket of each close player
             other_users.forEach( (other_user) => {
-                maybe_send_message(user, other_user, distance, check_behind, io, message);
+                maybe_send_message(user, other_user, (Math.PI/300)*distance, check_behind, io, message);
             });
         });
     });
