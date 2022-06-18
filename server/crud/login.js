@@ -58,8 +58,8 @@ async function create_user(user, pass, socket, angle, age, tall, weight) {
     })
 }
 
-async function create_admin(user) {
-    await db.collection('user').updateOne({
+async function create_admin(custom_db, user) {
+    await custom_db.collection('user').updateOne({
         username: user
     }, {
         $set: {admin: true}

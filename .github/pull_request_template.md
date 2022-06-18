@@ -6,7 +6,7 @@
 
 ## Merging Checklist
 - [ ] Wiki updated
-- [ ] Patch notes updated in mongo `node server/patch_note_util.js PROD "example patch note that describes updates to users"`
-- [ ] Create a new github release with the same patch note (link: )
+- [ ] Patch notes updated in mongo `node server/scripts/patch_note_util.js PROD "example patch note that describes updates to users"`
+- [ ] (After merging) Create a new github release with the same patch note
 - [ ] package.json version updated
-- [ ] Vibe check
+- [ ] Migration created and executed

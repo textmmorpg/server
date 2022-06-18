@@ -1,20 +1,6 @@
 const crud = require('../crud/terrain');
-const terrain = require('./terrain_generator');
-
-const { MongoClient } = require("mongodb");
-
-var uri;
-if(process.argv[2] === 'PROD') {
-    uri = "mongodb+srv://"+process.env.MONGO_USER+":"+process.env.MONGO_PASS+"@"+process.env.MONGO_URL+"/project_title_here_db"
-} else {
-    uri = "mongodb://localhost/project_title_here_db"
-}
-const mongo = new MongoClient(uri,
-    {useNewUrlParser: true },
-    {connectTimeoutMS: 30000 }, {keepAlive: 1}
-);
-mongo.connect();
-const db = mongo.db('project_title_here_db');
+const terrain = require('../world/terrain_generator');
+const db = requrie('./crud/custom_db').get_db(process.argv[2]);
 
 function biome(height) {
     if(height < 0.3) {
