@@ -101,12 +101,17 @@ async function check_swimming(socket, user, new_lat, new_long, move_type) {
     });
 }
 
-async function move(socket, distance, turn, move_type) {
+async function move(socket, distance, turn, move_type, set_angle) {
     // convert distance to lat/long degrees
     var move_distance = (Math.PI/300)*distance
     await crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
         var movement_energy = 0.025 * Math.pow(distance, 2);
-        var new_angle = (user["angle"] + turn) % (2 * Math.PI);
+        var new_angle;
+        if(!set_angle) {
+            new_angle = (user["angle"] + turn) % (2 * Math.PI);
+        } else {
+            new_angle = turn;
+        }
         var new_lat = (user["lat"] + move_distance * Math.cos(user["angle"] + turn)) % (2 * Math.PI);
         var new_long = (user["long"] + move_distance * Math.sin(user["angle"] + turn)) % (2 * Math.PI);
 

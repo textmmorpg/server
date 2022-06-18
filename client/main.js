@@ -206,11 +206,11 @@ $(function() {
             } else if(input.startsWith('turn to face north')) {
                 socket.emit('turn to face north', {})
             } else if(input.startsWith('turn to face south')) {
-                socket.emit('turn south', {})
+                socket.emit('turn to face south', {})
             } else if(input.startsWith('turn to face east')) {
-                socket.emit('turn east', {})
+                socket.emit('turn to faceeast', {})
             } else if(input.startsWith('turn to face west')) {
-                socket.emit('turn west', {})
+                socket.emit('turn to face west', {})
             } else if(input.startsWith('turn a little to the right')) {
                 socket.emit('turn a little to the right', {})
             } else if(input.startsWith('turn a little to the left')) {
