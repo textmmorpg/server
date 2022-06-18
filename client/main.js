@@ -217,6 +217,8 @@ $(function() {
                 socket.emit('whisper', {msg: input})
             } else if(input.startsWith('yell')) {
                 socket.emit('yell', {msg: input})
+            } else if(input.startsWith('teleport to')) {
+                socket.emit('teleport to', {msg: input})
             } else if(input.startsWith('check patch notes')) {
                 socket.emit('check patch notes', {})
             } else if(input.startsWith('?') || input.startsWith('help')) {

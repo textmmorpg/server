@@ -5,7 +5,8 @@ const crud_terrain = require('./terrain');
 module.exports = {
     set_posture,
     get_vibe,
-    move
+    move,
+    teleport
 };
 
 async function set_posture(socket, posture) {
@@ -159,4 +160,14 @@ async function move(socket, distance, turn, move_type) {
             })
         })
     });
+}
+
+async function teleport(socket, lat, long, height) {
+    await db.collection("user").updateOne({
+        socket_id: socket.id
+    }, {
+        $set: {
+            lat: lat, long: long, height: height
+        }
+    })
 }
