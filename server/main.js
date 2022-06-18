@@ -4,7 +4,6 @@ const cors = require("cors");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var package = require('../package.json');
-const crud_patch_notes = require('./crud/patch_notes');
 const login = require('./login');
 const path = require('path');
 
