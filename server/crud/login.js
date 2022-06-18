@@ -6,7 +6,9 @@ module.exports = {
     get_user,
     check_username,
     create_user,
-    create_admin
+    create_admin,
+    get_other_user,
+    is_admin
 };
 
 
@@ -21,7 +23,19 @@ async function get_user(socket_id) {
         socket_id: socket_id
     }, {lat: 1, long: 1, socket_id: 1, energy: 1, posture: 1});
 }
-  
+
+async function is_admin(socket_id) {
+    return await db.collection('user').findOne({
+        socket_id: socket_id
+    }, {admin: 1});
+}
+
+async function get_other_user(username) {
+    return await db.collection('user').findOne({
+        username: username
+    }, {lat: 1, long: 1, height: 1});
+}
+
 async function check_username(username) {
     return await db.collection('user').count({
         username: username
