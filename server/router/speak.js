@@ -1,5 +1,5 @@
 const announce = require('../announce');
-var hearing_distance = 3;
+const config = require('../config');
 
 module.exports = {
     add_routes
@@ -7,15 +7,14 @@ module.exports = {
 
 function add_routes(socket, io) {
     socket.on('say', function(data) {
-        announce.announce(socket.id, io, data['msg'], hearing_distance, false);
+        announce.announce(socket.id, io, data['msg'], config.HEARING_DISTANCE, false);
     });
 
     socket.on('whisper', function(data) {
-        announce.announce(socket.id, io, data['msg'], hearing_distance*0.2, false);
+        announce.announce(socket.id, io, data['msg'], config.HEARING_DISTANCE_QUIET, false);
     });
 
     socket.on('yell', function(data) {
-        announce.announce(socket.id, io, data['msg'], hearing_distance*5, false);
+        announce.announce(socket.id, io, data['msg'], config.HEARING_DISTANCE_LOUD, false);
     });
 }
-  
