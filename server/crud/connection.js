@@ -19,10 +19,10 @@ async function add_connection(username, socket_id) {
 
 async function get_other_connections(socket_id, x, y, distance) {
     return await db.collection('user').find({
-        x: { $gt: x - distance, $lt: x + distance},
-        y: { $gt: y - distance, $lt: y + distance},
+        lat: { $gt: x - distance, $lt: x + distance},
+        long: { $gt: y - distance, $lt: y + distance},
         socket_id: { $not: { $eq: socket_id }}
-    }, {x: 1, y: 1, angle: 1, socket_id: 1});
+    }, {lat: 1, long: 1, angle: 1, socket_id: 1});
 }
 
 async function get_active_user_count() {

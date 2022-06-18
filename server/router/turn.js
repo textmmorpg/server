@@ -1,6 +1,6 @@
 const announce = require('../announce');
 const crud_move = require('../crud/move');
-var seeing_distance = 10;
+var seeing_distance = 3;
 
 module.exports = {
     add_routes

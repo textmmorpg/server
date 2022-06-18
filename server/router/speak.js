@@ -1,5 +1,5 @@
 const announce = require('../announce');
-var hearing_distance = 10;
+var hearing_distance = 3;
 
 module.exports = {
     add_routes
