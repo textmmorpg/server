@@ -167,7 +167,8 @@ async function teleport(socket, lat, long, height) {
         socket_id: socket.id
     }, {
         $set: {
-            lat: lat, long: long, height: height
+            lat: lat, long: long, height: height,
+            last_cmd_ts: new Date(),
         }
     })
 }
