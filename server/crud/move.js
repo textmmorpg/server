@@ -129,7 +129,7 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
 
         // check if user is drowning
         if(user['energy'] < movement_energy && distance !== 0 && move_type === "swim") {
-            interact.announce(socket.id, io, 'drowned', config.SEEING_DISTANCE, false);
+            crud_crud_interact.announce(socket.id, io, 'drowned', config.SEEING_DISTANCE, false);
             crud_user.respawn(socket.id, io, 'drowning');
             return;
         }
