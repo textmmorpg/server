@@ -60,7 +60,7 @@ async function create_user(user, pass, socket, angle) {
             age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights), 
             posture: "standing", energy: 1, last_cmd_ts: new Date(),
             last_set_posture_ts: new Date(),
-            last_read_patch_notes: new Date(), admin: false
+            last_read_patch_notes: new Date(), admin: false, health: 1
         }).catch(console.dir).then( () => {
             crud_terrain.check_biomes(socket, angle, spawn["lat"], spawn["long"]);
         });
@@ -78,7 +78,7 @@ async function respawn(socket) {
                 lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
                 energy: 1, last_cmd_ts: new Date(), posture: "standing",
                 age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights),
-                angle: angle
+                angle: angle, health: 1
             }
         }).catch(console.dir).then( () => {
             crud_terrain.check_biomes(socket, angle, spawn["lat"], spawn["long"]);
