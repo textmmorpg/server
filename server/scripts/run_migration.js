@@ -1,4 +1,4 @@
-// node run_migration.js <migration_name> <up|down> <prod|dev>
+// node run_migration.js <migration_name> <up|down> <PROD|DEV>
 
 const fs = require('fs');
 var files = fs.readdirSync(__dirname + '/../migrations/');

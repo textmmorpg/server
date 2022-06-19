@@ -1,4 +1,4 @@
-const crud_login = require('./crud/login');
+const crud_user = require('./crud/user');
 const crud_connection = require('./crud/connection');
 const crud_terrain = require('./crud/terrain');
 const crud_patch_notes = require('./crud/patch_notes');
@@ -9,17 +9,9 @@ module.exports = {
     reconnect
 }
 
-const ages = ["young", "middle aged", "old"];
-const heights = ["short", "average", "tall"];
-const weights = ["skinny", "average", "fat"];
-
-function getRandom(array) {
-    return array[Math.floor(Math.random() * array.length)];
-}
-
 function login(data, socket) {
     // check if credentials exist / are correct
-    crud_login.get_login(
+    crud_user.get_login(
         data['username'], data['password']
     ).catch(console.dir).then( (user_count) => {
         if(user_count === 0) {
@@ -30,7 +22,7 @@ function login(data, socket) {
             crud_connection.add_connection(data['username'], socket.id).catch(console.dir).then( () => {
                 socket.send({login_success: true});
                 socket.send({data: "Welcome back!"});
-                crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+                crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
                     crud_terrain.check_biomes(socket, user["angle"], user["lat"], user["long"]);
                     crud_patch_notes.get_patch_notes_since_ts(user['last_read_patch_notes']).catch(console.dir).then((patch_notes) => {
                         write_patch_notes(patch_notes, socket);
@@ -47,15 +39,14 @@ function login(data, socket) {
 
 function signup(data, socket) {
     // check if that username already exists
-    crud_login.check_username(data["username"]).catch(console.dir).then( (response) => {
+    crud_user.check_username(data["username"]).catch(console.dir).then( (response) => {
         if(response > 0) {
             // that username already exists -> signup failure
             socket.send({login_success: false});
         } else {
         // username is not taken -> signup success
-        crud_login.create_user(
-            data["username"], data["password"], socket, Math.random() * Math.PI * 2,
-            getRandom(ages), getRandom(heights), getRandom(weights)
+        crud_user.create_user(
+            data["username"], data["password"], socket
         ).catch(console.dir);
         socket.send({login_success: true});
         socket.send({
@@ -68,7 +59,7 @@ function signup(data, socket) {
 
 function reconnect(data, socket) {
     // check if credentials exist / are correct
-    crud_login.get_login(
+    crud_user.get_login(
         data['username'], data['password']
     ).catch(console.dir).then( (user_count) => {
         // disallow signup on reconnection
@@ -77,7 +68,7 @@ function reconnect(data, socket) {
         crud_connection.add_connection(data['username'], socket.id).catch(console.dir);
         socket.send({data: "Reconnected"})
 
-        crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+        crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
             crud_patch_notes.get_patch_notes_since_ts(user['last_read_patch_notes']).catch(console.dir).then((patch_notes) => {
                 write_patch_notes(patch_notes, socket);
             })

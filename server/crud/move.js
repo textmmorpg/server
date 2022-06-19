@@ -1,5 +1,5 @@
 const db = require('./db').get_db();
-const crud_login = require('./login');
+const crud_user = require('./user');
 const crud_terrain = require('./terrain');
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
 
 async function set_posture(socket, posture) {
     // TODO: is it possible to do this in one query?
-    await crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+    await crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
 
         if(user['posture'] === posture) {
             socket.send({data: "You are already " + posture});
@@ -106,7 +106,7 @@ async function move(socket, distance, turn, move_type, set_angle) {
     var move_distance = (Math.PI/300)*distance
 
     // get user data of current position/angle/posture
-    await crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+    await crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
 
         // calculate some variables based on the type of movement
         var movement_energy = 0.025 * Math.pow(distance, 2);

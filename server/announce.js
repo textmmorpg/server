@@ -1,4 +1,4 @@
-const crud_login = require('./crud/login');
+const crud_user = require('./crud/user');
 const crud_connection = require('./crud/connection');
 const { Vector, VectorConstants } = require("simplevectorsjs");
 
@@ -90,7 +90,7 @@ function maybe_send_message(user1, user2, distance, check_behind, io, message) {
 
 function announce(socket_id, io, message, distance, check_behind) {
     // get sockets of the close players
-    crud_login.get_user(socket_id).catch(console.dir).then( (user) => {
+    crud_user.get_user(socket_id).catch(console.dir).then( (user) => {
         crud_connection.get_other_connections(
             socket_id, user["lat"], user["long"], (Math.PI/300)*distance
         ).catch(console.dir).then( (other_users) => {

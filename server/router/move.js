@@ -1,5 +1,5 @@
 const crud_move = require('../crud/move');
-const crud_login = require('../crud/login');
+const crud_user = require('../crud/user');
 const announce = require('../announce');
 const config = require('../config');
 
@@ -66,14 +66,14 @@ function add_routes(socket, io) {
         var username_target = data["msg"].replace("teleport to", "").trim();
 
         // check if current user is admin
-        crud_login.is_admin(socket.id).catch(console.dir).then( (user) => {
+        crud_user.is_admin(socket.id).catch(console.dir).then( (user) => {
             if(!user["admin"]) {
                 socket.send({data: "Only admin users can teleport"});
                 return;
             }
 
             // check if target user exists
-            crud_login.get_other_user(username_target).catch(console.dir).then( (user) => {
+            crud_user.get_other_user(username_target).catch(console.dir).then( (user) => {
                 if(user === null) {
                     socket.send({data: "User not found: " + username_target});
                     return;
