@@ -13,7 +13,8 @@ const routers = [
   require('./router/move'),
   require('./router/turn'),
   require('./router/posture'),
-  require('./router/patch_notes')
+  require('./router/patch_notes'),
+  require('./router/battle')
 ]
 
 app.use((req,res,next)=>{
