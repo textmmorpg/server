@@ -1,6 +1,8 @@
 const db = require('./db').get_db();
-const crud_login = require('./login');
+const crud_user = require('./user');
 const crud_terrain = require('./terrain');
+const announce = require('../announce');
+const config = require('../config');
 
 module.exports = {
     set_posture,
@@ -11,7 +13,7 @@ module.exports = {
 
 async function set_posture(socket, posture) {
     // TODO: is it possible to do this in one query?
-    await crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+    await crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
 
         if(user['posture'] === posture) {
             socket.send({data: "You are already " + posture});
@@ -101,12 +103,12 @@ async function check_swimming(socket, user, new_lat, new_long, move_type) {
     });
 }
 
-async function move(socket, distance, turn, move_type, set_angle) {
+async function move(socket, io, distance, turn, move_type, set_angle) {
     // convert distance to lat/long degrees
     var move_distance = (Math.PI/300)*distance
 
     // get user data of current position/angle/posture
-    await crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+    await crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
 
         // calculate some variables based on the type of movement
         var movement_energy = 0.025 * Math.pow(distance, 2);
@@ -122,6 +124,14 @@ async function move(socket, distance, turn, move_type, set_angle) {
         // prevent user from turning while laying down
         if(user['posture'] === "laying" && turn !== 0) {
             socket.send({data: "You cannot turn around while laying down. Sit or stand up first!"});
+            return;
+        }
+
+        // check if user is drowning
+        if(user['energy'] < movement_energy && distance !== 0 && move_type === "swim") {
+            socket.send({data: "You ran out of energy swimming and drowned! You died."});
+            announce.announce(socket.id, io, 'drowned', config.SEEING_DISTANCE, false);
+            crud_user.respawn(socket);
             return;
         }
 
@@ -142,7 +152,7 @@ async function move(socket, distance, turn, move_type, set_angle) {
 
         // get swimming status so user does not walk on water or swim on land
         check_swimming(socket, user, new_lat, new_long, move_type).catch(console.dir).then( (swimming_status) => {
-            
+
             // swimming related checks
             var posture = user["posture"];
             if(swimming_status === "start_swimming") {

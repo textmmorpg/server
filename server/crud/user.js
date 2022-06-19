@@ -8,8 +8,17 @@ module.exports = {
     create_user,
     create_admin,
     get_other_user,
-    is_admin
+    is_admin,
+    respawn
 };
+
+const ages = ["young", "middle aged", "old"];
+const heights = ["short", "average", "tall"];
+const weights = ["skinny", "average", "fat"];
+
+function getRandom(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
 
 
 async function get_login(user, pass) {
@@ -42,20 +51,39 @@ async function check_username(username) {
     });
 }
 
-async function create_user(user, pass, socket, angle, age, tall, weight) {
+async function create_user(user, pass, socket, angle) {
     await get_spawn_location().catch(console.dir).then( (spawn) => {
         db.collection('user').insertOne({
             username: user, password: pass,
             lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
-            angle: angle, socket_id:socket.id,
-            age: age, tall: tall, weight: weight, posture: "standing",
-            energy: 1, last_cmd_ts: new Date(),
+            angle: Math.random() * Math.PI * 2, socket_id:socket.id,
+            age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights), 
+            posture: "standing", energy: 1, last_cmd_ts: new Date(),
             last_set_posture_ts: new Date(),
             last_read_patch_notes: new Date(), admin: false
+        }).catch(console.dir).then( () => {
+            crud_terrain.check_biomes(socket, angle, spawn["lat"], spawn["long"]);
         });
-
-        crud_terrain.check_biomes(socket, angle, spawn["lat"], spawn["long"]);
     })
+}
+
+async function respawn(socket) {
+    socket.send({data: "Respawning"});
+    var angle = Math.random() * Math.PI * 2
+    await get_spawn_location().catch(console.dir).then( (spawn) => {
+        db.collection('user').updateOne({
+            socket_id: socket.id
+        }, {
+            $set: {
+                lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
+                energy: 1, last_cmd_ts: new Date(), posture: "standing",
+                age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights),
+                angle: angle
+            }
+        }).catch(console.dir).then( () => {
+            crud_terrain.check_biomes(socket, angle, spawn["lat"], spawn["long"]);
+        });
+    });
 }
 
 async function create_admin(custom_db, user) {

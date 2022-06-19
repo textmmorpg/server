@@ -1,5 +1,5 @@
 const crud_move = require('../crud/move');
-const crud_login = require('../crud/login')
+const crud_user = require('../crud/user')
 const crud_terrain = require('../crud/terrain');
 
 module.exports = {
@@ -44,7 +44,7 @@ function add_routes(socket, io) {
     })
 
     socket.on('look', function(data) {
-        crud_login.get_user(socket.id).catch(console.dir).then( (user) => {
+        crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
             crud_terrain.check_biomes(socket, user['angle'], user['lat'], user['long']);
         });
     })
