@@ -111,7 +111,7 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
     await crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
 
         // calculate some variables based on the type of movement
-        var movement_energy = 0.025 * Math.pow(distance, 2);
+        var movement_energy = 0.025 * Math.pow(distance, 2); // TODO: move to config
         var new_angle;
         if(!set_angle) {
             new_angle = (user["angle"] + turn) % (2 * Math.PI);

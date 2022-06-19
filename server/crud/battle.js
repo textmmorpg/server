@@ -16,6 +16,17 @@ async function create_corpse(socket) {
     });
 }
 
-async function attack(socket, damage) {
-    
+// reduce health and possibly knock down victim
+async function attack(attacker, victim, damage, energy) {
+    await db.collection('user').updateOne({
+        socket_id: attacker['socket_id']
+    }, {
+        $set: {energy: attacker['energy'] - energy}
+    });
+
+    await db.collection('user').updateOne({
+        socket_id: victim['socket_id']
+    }, {
+        $set: {health: victim['health'] - damage}
+    });
 }

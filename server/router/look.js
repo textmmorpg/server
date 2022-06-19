@@ -32,14 +32,15 @@ function add_routes(socket, io) {
 
     socket.on('vibe check', function(data) {
         crud_move.get_vibe(socket.id).catch(console.dir).then( (user) => {
-        socket.send({
-            data: 'You are a ' + user['tall'] + ' ' + user['weight'] + 
-            ' ' + user['age'] + ' human. You are currently ' + user['posture'] +
-            '. You are facing ' + get_direction(user['angle']) + ', located at ' + user['lat'] +
-            ', ' + user['long'] + ', ' + user['height'] + '. You haven\'t done anything since ' + 
-            user['last_cmd_ts'] + '. You have ' + user['energy']*100 + '% energy. ' +
-            'Your admin status is: ' + user['admin']
-        });
+            socket.send({
+                data: 'You are a ' + user['tall'] + ' ' + user['weight'] + 
+                ' ' + user['age'] + ' human. You are currently ' + user['posture'] +
+                '. You are facing ' + get_direction(user['angle']) + ', located at (lat:' + user['lat'] +
+                ', long:' + user['long'] + '). You haven\'t done anything since ' + 
+                user['last_cmd_ts'] + '. You have ' + Math.round(user['energy']*100) + '% energy. ' +
+                'You have ' + Math.round(user['health']*100) + '% health. ' +
+                'Your admin status is: ' + user['admin']
+            });
         })
     })
 
