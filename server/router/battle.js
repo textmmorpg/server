@@ -17,6 +17,6 @@ function add_routes(socket, io) {
 
     socket.on('punch', function(data) {
         // TODO: lower energy on punching
-        interact.get_close_player(socket, config.ATTACK_DISTANCE, true);
+        interact.get_close_player(socket, io, config.ATTACK_DISTANCE, true);
     });
 }

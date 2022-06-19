@@ -125,7 +125,7 @@ function announce(socket_id, io, message, distance, check_behind) {
     });
 }
 
-function get_close_player(socket, distance, only_in_field_of_view) {
+function get_close_player(socket, io, distance, only_in_field_of_view) {
     // TODO: filter out players that are logged off / idle for a long time
     // get sockets of the close players
     return crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
@@ -133,20 +133,25 @@ function get_close_player(socket, distance, only_in_field_of_view) {
             socket.id, user["lat"], user["long"], config.ONE_METER*distance
         ).catch(console.dir).then( (other_users) => {
             // send the message to the socket of each close player
+            var punched = false
             return other_users.forEach( (other_user) => {
                 if(is_close(user, other_user, config.ONE_METER*distance, only_in_field_of_view)) {
                     crud_battle.attack(other_user["socket_id"], config.PUNCH_DAMAGE);
                     io.to(other_user["socket_id"]).emit('message', {
                         // TODO: 'You *hear/see* the player to your left etc etc'
                         // instead of just 'the player to your left etc etc
-                        data: 'The player ' + perspective + 'punched you!'
+                        data: 'You got punched!'
                     });
+                    socket.send({data: 'Your punch hit the player in front of you!'})
+                    punched = true;
                     return;
                 }
             }).then( () => {
-                interact.announce(socket.id, io, 'punched thin air', config.SEEING_DISTANCE, false);
-                socket.send({data: 'You missed'});
-                return;
+                if(!punched) {
+                    announce(socket.id, io, 'punched thin air', config.SEEING_DISTANCE, false);
+                    socket.send({data: 'You missed'});
+                    return;
+                }
             });
         });
     });
