@@ -1,6 +1,6 @@
 const crud_move = require('../crud/move');
-const crud_user = require('../crud/user');
-const interact = require('../interact');
+const crud_user = require('../crud/user/user');
+const crud_interact = require('../crud/interact/interact');
 const config = require('../config');
 
 module.exports = {
@@ -13,49 +13,49 @@ function add_routes(socket, io) {
 
     socket.on('walk forward', function (data) {
         crud_move.move(socket, io, config.WALK_SPEED, 0, 'walk', false);
-        interact.announce(socket.id, io, 'walked forward', config.SEEING_DISTANCE, true);
+        crud_interact.announce(socket.id, io, 'walked forward', config.SEEING_DISTANCE, true);
     });
 
     socket.on('walk left', function (data) {
         crud_move.move(socket, io, config.WALK_SPEED, Math.PI/2, 'walk', false);
-        interact.announce(socket.id, io, 'walked left', config.SEEING_DISTANCE, true);
+        crud_interact.announce(socket.id, io, 'walked left', config.SEEING_DISTANCE, true);
     });
 
     socket.on('walk right', function(data) {
         crud_move.move(socket, io, config.WALK_SPEED, Math.PI/2 * -1, 'walk', false);
-        interact.announce(socket.id, io, 'walked right', config.SEEING_DISTANCE, true);
+        crud_interact.announce(socket.id, io, 'walked right', config.SEEING_DISTANCE, true);
     });
 
     socket.on('run forward', function (data) {
         crud_move.move(socket, io, config.RUN_SPEED, 0, 'walk', false);
-        interact.announce(socket.id, io, 'ran forward', config.SEEING_DISTANCE, true);
+        crud_interact.announce(socket.id, io, 'ran forward', config.SEEING_DISTANCE, true);
     });
 
     socket.on('run left', function (data) {
         crud_move.move(socket, io, config.RUN_SPEED, Math.PI/2, 'walk', false);
-        interact.announce(socket.id, io, 'ran left', config.SEEING_DISTANCE, true);
+        crud_interact.announce(socket.id, io, 'ran left', config.SEEING_DISTANCE, true);
     });
 
     socket.on('run right', function(data) {
         crud_move.move(socket, io, config.RUN_SPEED, Math.PI/2 * -1, 'walk', false);
-        interact.announce(socket.id, io, 'ran right', config.SEEING_DISTANCE, true);
+        crud_interact.announce(socket.id, io, 'ran right', config.SEEING_DISTANCE, true);
     });
 
     // swimming
 
     socket.on('swim forward', function (data) {
         crud_move.move(socket, io, config.SWIM_SPEED, 0, 'swim', false);
-        interact.announce(socket.id, io, 'swam forward', config.SEEING_DISTANCE, true);
+        crud_interact.announce(socket.id, io, 'swam forward', config.SEEING_DISTANCE, true);
     });
 
     socket.on('swim left', function (data) {
         crud_move.move(socket, io, config.SWIM_SPEED, Math.PI/2, 'swim', false);
-        interact.announce(socket.id, io, 'swam left', config.SEEING_DISTANCE, true);
+        crud_interact.announce(socket.id, io, 'swam left', config.SEEING_DISTANCE, true);
     });
 
     socket.on('swim right', function(data) {
         crud_move.move(socket, io, config.SWIM_SPEED, Math.PI/2 * -1, 'swim', false);
-        interact.announce(socket.id, io, 'swam right', config.SEEING_DISTANCE, true);
+        crud_interact.announce(socket.id, io, 'swam right', config.SEEING_DISTANCE, true);
     });
 
     // teleporting (only for admins)
@@ -83,7 +83,7 @@ function add_routes(socket, io) {
                 crud_move.teleport(socket, user["lat"], user["long"], user["height"]).catch(console.dir).then( () => {
                     socket.send({data: "Teleport successful"});
                     // announce to players around target user that we teleported
-                    interact.announce(socket.id, io, 'teleported', config.SEEING_DISTANCE, true);
+                    crud_interact.announce(socket.id, io, 'teleported', config.SEEING_DISTANCE, true);
                 });
             });
         });

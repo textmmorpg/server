@@ -1,6 +1,6 @@
 const crud = require('../crud/terrain');
 const terrain = require('../world/terrain_generator');
-const db = require('../crud/custom_db').get_db(process.argv[2]);
+const db = require('../crud/db/custom_db').get_db(process.argv[2]);
 const config = require('../config');
 
 function biome(height) {

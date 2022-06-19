@@ -1,5 +1,5 @@
 
-const custom_db = require('../crud/custom_db')
+const custom_db = require('../crud/db/custom_db')
 
 module.exports = {
     up,
