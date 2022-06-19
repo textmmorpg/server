@@ -51,37 +51,40 @@ async function check_username(username) {
     });
 }
 
-async function create_user(user, pass, socket, angle) {
+async function create_user(user, pass, socket, io) {
+    var angle = Math.random() * Math.PI * 2;
     await get_spawn_location().catch(console.dir).then( (spawn) => {
         db.collection('user').insertOne({
             username: user, password: pass,
             lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
-            angle: Math.random() * Math.PI * 2, socket_id:socket.id,
+            angle: angle, socket_id:socket.id,
             age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights), 
             posture: "standing", energy: 1, last_cmd_ts: new Date(),
             last_set_posture_ts: new Date(),
-            last_read_patch_notes: new Date(), admin: false
+            last_read_patch_notes: new Date(), admin: false, health: 1
         }).catch(console.dir).then( () => {
-            crud_terrain.check_biomes(socket, angle, spawn["lat"], spawn["long"]);
+            crud_terrain.check_biomes(socket.id, io, angle, spawn["lat"], spawn["long"]);
         });
     })
 }
 
-async function respawn(socket) {
-    socket.send({data: "Respawning"});
+async function respawn(socket_id, io, reason_of_death) {
+    io.to(socket_id).emit('message', {
+        data: 'You died from ' + reason_of_death + '. You are respawning'
+    });
     var angle = Math.random() * Math.PI * 2
     await get_spawn_location().catch(console.dir).then( (spawn) => {
         db.collection('user').updateOne({
-            socket_id: socket.id
+            socket_id: socket_id
         }, {
             $set: {
                 lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
                 energy: 1, last_cmd_ts: new Date(), posture: "standing",
                 age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights),
-                angle: angle
+                angle: angle, health: 1
             }
         }).catch(console.dir).then( () => {
-            crud_terrain.check_biomes(socket, angle, spawn["lat"], spawn["long"]);
+            crud_terrain.check_biomes(socket_id, io, angle, spawn["lat"], spawn["long"]);
         });
     });
 }

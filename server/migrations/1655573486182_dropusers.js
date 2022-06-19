@@ -24,5 +24,5 @@ function up(env) {
 function down(env) {
     console.log("Running on: " + env);
     const db = custom_db.get_db(env);
-    // how to undo the migration here
+    console.log("No way to revert");
 }

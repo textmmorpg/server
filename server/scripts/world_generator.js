@@ -1,6 +1,7 @@
 const crud = require('../crud/terrain');
 const terrain = require('../world/terrain_generator');
 const db = require('../crud/custom_db').get_db(process.argv[2]);
+const config = require('../config');
 
 function biome(height) {
     if(height < 0.3) {
@@ -31,8 +32,8 @@ async function generate() {
         var docs = new Array()
         height_map.forEach( (row, long_i) => {
             row.forEach( (value, lat_i) => {
-                var long = long_i*(Math.PI/300);
-                var lat = lat_i*(Math.PI/300);
+                var long = long_i*config.ONE_METER;
+                var lat = lat_i*config.ONE_METER;
                 docs.push({
                     lat: lat, long: long, height: height_map[long_i][lat_i],
                     biome: biome(height_map[long_i][lat_i])

@@ -1,4 +1,5 @@
 const db = require('./db').get_db();
+const config = require('../config');
 
 module.exports = {
     reset_world,
@@ -17,7 +18,7 @@ async function add_terrain(docs, custom_db) {
 
 async function get_biome(lat, long) {
 
-    var size = Math.PI/300;
+    var size = config.ONE_METER;
     var max_lat = lat + size;
     var min_lat = lat - size;
     var max_long = long + size;
@@ -58,10 +59,10 @@ async function get_biome(lat, long) {
     ); 
 }
 
-async function check_biomes(socket, angle, lat, long) {
+async function check_biomes(socket_id, io, angle, lat, long) {
         
     async function look_at_biome(angle) {
-        var move_distance = Math.PI/300
+        var move_distance = config.ONE_METER
         var cur_lat = (lat + move_distance * Math.cos(angle)) % Math.PI;
         var cur_long = (long + move_distance * Math.sin(angle)) % (2 * Math.PI);
         return await get_biome(cur_lat, cur_long);
@@ -72,8 +73,12 @@ async function check_biomes(socket, angle, lat, long) {
     var biome_left = look_at_biome(angle + Math.PI/2);
     Promise.all([biome_ahead, biome_right, biome_left]).then(function(biomes) {
         get_biome(lat, long).catch(console.dir).then( (result) => {
-        socket.send({data: "You are in a " + result['biome'] + ". Ahead of you is " + biomes[0]["biome"] +
-        ". To the right you see " + biomes[1]["biome"] + " and to the left there is " + biomes[2]["biome"]});
+            io.to(socket_id).emit('message', {
+                data: "You are in a " + result['biome'] + 
+                ". Ahead of you is " + biomes[0]["biome"] +
+                ". To the right you see " + biomes[1]["biome"] + 
+                " and to the left there is " + biomes[2]["biome"]
+            });
         });
     });
 }

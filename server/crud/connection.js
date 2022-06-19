@@ -22,7 +22,7 @@ async function get_other_connections(socket_id, x, y, distance) {
         lat: { $gt: x - distance, $lt: x + distance},
         long: { $gt: y - distance, $lt: y + distance},
         socket_id: { $not: { $eq: socket_id }}
-    }, {lat: 1, long: 1, angle: 1, socket_id: 1});
+    }, {lat: 1, long: 1, angle: 1, socket_id: 1, health: 1});
 }
 
 async function get_active_user_count() {

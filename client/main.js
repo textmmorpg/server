@@ -225,7 +225,7 @@ $(function() {
                 socket.emit('stand up', {});
             } else if(input.startsWith('vibe check')) {
                 socket.emit('vibe check')
-            } else if(input.startsWith('suicide')) {
+            } else if(input.startsWith('commit suicide')) {
                 socket.emit('suicide')
             } else if(input.startsWith('whisper')) {
                 socket.emit('whisper', {msg: input})
@@ -235,6 +235,8 @@ $(function() {
                 socket.emit('teleport to', {msg: input})
             } else if(input.startsWith('check patch notes')) {
                 socket.emit('check patch notes', {})
+            } else if(input.startsWith('punch')) {
+                socket.emit('punch', {});
             } else if(input.startsWith('?') || input.startsWith('help')) {
                 help_message();
             } else {
