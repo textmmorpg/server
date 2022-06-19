@@ -115,9 +115,14 @@ function get_close_player(socket, io, distance, check_behind) {
         crud_connection.get_other_connections(
             socket.id, user["lat"], user["long"], config.ONE_METER*distance
         ).catch(console.dir).then( (other_users) => {
+            if(other_users.length === 0) return null;
+
             // send the message to the socket of each close player
             other_users.forEach( (other_user) => {
                 var is_close = is_close(user, other_user, config.ONE_METER*distance, check_behind);
+                if(is_close) {
+                    return other_user;
+                }
             });
         });
     });
