@@ -1,7 +1,7 @@
 const db = require('./db').get_db();
 const crud_user = require('./user');
 const crud_terrain = require('./terrain');
-const interact = require('../interact');
+const crud_interact = require('./interact');
 const config = require('../config');
 
 module.exports = {

@@ -1,12 +1,14 @@
-const crud_user = require('./crud/user');
-const crud_connection = require('./crud/connection');
-const crud_battle = require('./crud/battle');
-const config = require("./config");
+const crud_user = require('./user');
+const crud_connection = require('./connection');
+const crud_battle = require('./battle');
+const crud_terrain = require('./terrain');
+const config = require("../config");
 const { Vector, VectorConstants } = require("simplevectorsjs");
 
 module.exports = {
     announce,
-    attack_nearby
+    attack_nearby,
+    look_around
 }
 
 function within_distance(
@@ -153,6 +155,11 @@ function perform_attack(socket, io, user, other_user, damage, energy) {
 
     // TODO: announce to other players that the punch landed, but don't notify the victim
     //       because they already know they were hit
+}
+
+function look_around(socket_id, io, angle, lat, long) {
+    crud_terrain.check_biomes(socket_id, io, angle, lat, long);
+    
 }
 
 function attack_nearby(socket, io, distance, energy, damage, only_in_field_of_view) {

@@ -1,6 +1,6 @@
 const crud_battle = require('../crud/battle');
 const crud_user = require('../crud/user');
-const interact = require('../interact');
+const crud_interact = require('../crud/interact');
 const config = require('../config');
 
 module.exports = {

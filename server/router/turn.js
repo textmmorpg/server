@@ -1,4 +1,4 @@
-const interact = require('../interact');
+const crud_interact = require('../crud/interact');
 const crud_move = require('../crud/move');
 const config = require('../config');
 
