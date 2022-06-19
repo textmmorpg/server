@@ -21,37 +21,11 @@ function maybe_send_message(user1, user2, distance, check_behind, io, message) {
         return;
     }
     
-    var user_vectors = proximity.get_user_vectors(
-        user2["lat"], user2["long"], user2["angle"],
-        user1["lat"], user1["long"]
-    )
+    var perspective = proximity.get_perspective(user1, user2);
 
-    var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
-
-    if(check_behind && user_angle > config.FIELD_OF_VIEW) {
+    if(check_behind && perspective.startsWith("behind you")) {
         // out of field of view so they cannot see it
         return;
-    }
-
-    // TODO: if the other player is faceing towards you or away from you
-    // their left and right are switched ("the player in front of you walked left vs right"
-    // changes depending on which way that player is facing)
-    var direction_vector = user_vectors[0].cross(user_vectors[1]);
-    // TODO: replace this vector library / do the math with only Math utils
-    var cross_product_values = direction_vector.toString();
-    var is_left =  cross_product_values[2] < 0;
-    var direction_str = is_left? 'left': 'right';
-    var perspective;
-    if ( user_angle < Math.PI/10 ) {
-        perspective = 'in front of you';
-    } else if ( user_angle < Math.PI/4 ) {
-        perspective = 'to the ' + direction_str + ' of you';
-    } else if ( user_angle < config.FIELD_OF_VIEW/2 ) {
-        perspective = 'to the far ' + direction_str + ' of you';
-    } else if ( user_angle < (3*Math.PI)/4 ) {
-        perspective = 'behind you to the ' + direction_str;
-    } else {
-        perspective = 'behind you'
     }
 
     io.to(user2["socket_id"]).emit('message', {

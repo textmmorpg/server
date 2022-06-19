@@ -21,10 +21,12 @@ function look_around(socket_id, io, angle, lat, long) {
                 if(proximity.is_close(
                     {lat: lat, long: long}, other_user, config.SEEING_DISTANCE, true
                 )) {
-                    // TODO: add perspective (ex: to the right)
+                    var perspective = proximity.get_perspective(
+                        {lat: lat, long: long, angle: angle}, other_user
+                    );
                     io.to(socket_id).emit('message', {
                         data: 'You see a ' + user['tall'] + ' ' + user['weight'] + 
-                        ' ' + user['age'] + ' human'
+                        ' ' + user['age'] + ' human ' +  perspective
                     });
                 }
             })
