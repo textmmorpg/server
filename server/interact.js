@@ -1,5 +1,6 @@
 const crud_user = require('./crud/user');
 const crud_connection = require('./crud/connection');
+const crud_battle = require('./crud/battle');
 const config = require("./config");
 const { Vector, VectorConstants } = require("simplevectorsjs");
 
@@ -36,14 +37,30 @@ function get_user_vectors(
     return [user1and2Vector, user2Vector];
 }
 
-function is_close(user1, user2, distance, check_behind) {
+function is_close(user1, user2, distance, only_in_field_of_view) {
+    // send a message if they can hear/see it
+    var distance_ok = within_distance(
+        user1["lat"], user1["long"],
+        user2["lat"], user2["long"], distance
+    )
 
+    if(!distance_ok) {
+        // too far away to hear/see the message
+        return false;
+    }
+    
+    var user_vectors = get_user_vectors(
+        user2["lat"], user2["long"], user2["angle"],
+        user1["lat"], user1["long"]
+    )
+
+    var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
+    var in_field_of_view = user_angle < config.FIELD_OF_VIEW/2
+    return !only_in_field_of_view || in_field_of_view;
 }
 
 function maybe_send_message(user1, user2, distance, check_behind, io, message) {
     // send a message if they can hear/see it
-    var field_of_view = 1.178097; // 135 degrees (half of that in each direction)
-
     var distance_ok = within_distance(
         user1["lat"], user1["long"],
         user2["lat"], user2["long"], distance
@@ -61,7 +78,7 @@ function maybe_send_message(user1, user2, distance, check_behind, io, message) {
 
     var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
 
-    if(check_behind && user_angle > field_of_view) {
+    if(check_behind && user_angle > config.FIELD_OF_VIEW) {
         // out of field of view so they cannot see it
         return;
     }
@@ -77,11 +94,11 @@ function maybe_send_message(user1, user2, distance, check_behind, io, message) {
     var perspective;
     if ( user_angle < Math.PI/10 ) {
         perspective = 'in front of you';
-    } else if ( user_angle < Math.PI/4) {
+    } else if ( user_angle < Math.PI/4 ) {
         perspective = 'to the ' + direction_str + ' of you';
-    } else if ( user_angle < Math.PI/2) {
+    } else if ( user_angle < config.FIELD_OF_VIEW/2 ) {
         perspective = 'to the far ' + direction_str + ' of you';
-    } else if ( user_angle < (3*Math.PI)/4) {
+    } else if ( user_angle < (3*Math.PI)/4 ) {
         perspective = 'behind you to the ' + direction_str;
     } else {
         perspective = 'behind you'
@@ -108,21 +125,28 @@ function announce(socket_id, io, message, distance, check_behind) {
     });
 }
 
-function get_close_player(socket, io, distance, check_behind) {
+function get_close_player(socket, distance, only_in_field_of_view) {
     // TODO: filter out players that are logged off / idle for a long time
     // get sockets of the close players
-    crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
+    return crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
         crud_connection.get_other_connections(
             socket.id, user["lat"], user["long"], config.ONE_METER*distance
         ).catch(console.dir).then( (other_users) => {
-            if(other_users.length === 0) return null;
-
             // send the message to the socket of each close player
-            other_users.forEach( (other_user) => {
-                var is_close = is_close(user, other_user, config.ONE_METER*distance, check_behind);
-                if(is_close) {
-                    return other_user;
+            return other_users.forEach( (other_user) => {
+                if(is_close(user, other_user, config.ONE_METER*distance, only_in_field_of_view)) {
+                    crud_battle.attack(other_user["socket_id"], config.PUNCH_DAMAGE);
+                    io.to(other_user["socket_id"]).emit('message', {
+                        // TODO: 'You *hear/see* the player to your left etc etc'
+                        // instead of just 'the player to your left etc etc
+                        data: 'The player ' + perspective + 'punched you!'
+                    });
+                    return;
                 }
+            }).then( () => {
+                interact.announce(socket.id, io, 'punched thin air', config.SEEING_DISTANCE, false);
+                socket.send({data: 'You missed'});
+                return;
             });
         });
     });

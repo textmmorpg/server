@@ -16,13 +16,7 @@ function add_routes(socket, io) {
     });
 
     socket.on('punch', function(data) {
-        var other_user_socket = interact.get_close_player(socket, io, config.ATTACK_DISTANCE, false);
-        if(!other_user_socket) {
-            interact.announce(socket.id, io, 'punched thin air', config.SEEING_DISTANCE, false);
-            socket.send({data: 'You missed'});
-        } else {
-            crud_battle.attack(other_user_socket, config.PUNCH_DAMAGE);
-            other_user_socket.send({data: 'You got punched!'})
-        }
+        // TODO: lower energy on punching
+        interact.get_close_player(socket, config.ATTACK_DISTANCE, true);
     });
 }
