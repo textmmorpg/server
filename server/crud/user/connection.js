@@ -1,4 +1,4 @@
-const db = require('./db').get_db();
+const db = require('../db/db').get_db();
 
 module.exports = {
     add_connection,
@@ -21,8 +21,14 @@ async function get_other_connections(socket_id, x, y, distance) {
     return await db.collection('user').find({
         lat: { $gt: x - distance, $lt: x + distance},
         long: { $gt: y - distance, $lt: y + distance},
-        socket_id: { $not: { $eq: socket_id }}
-    }, {lat: 1, long: 1, angle: 1, socket_id: 1, health: 1});
+        socket_id: { $not: { $eq: socket_id }},
+        last_cmd_ts: { $gt: new Date( Date.now() - 1000 * 60 )} // last did something a minute ago
+    }, {
+        lat: 1, long: 1, angle: 1,
+        socket_id: 1,
+        health: 1, energy: 1,
+        age: 1, tall: 1, weight: 1
+    });
 }
 
 async function get_active_user_count() {

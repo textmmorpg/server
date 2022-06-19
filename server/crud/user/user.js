@@ -1,9 +1,8 @@
-const db = require('./db').get_db();
-const crud_terrain = require('./terrain');
+const db = require('../db/db').get_db();
+const crud_look_around = require('../interact/look_around');
 
 module.exports = {
     get_login,
-    get_user,
     check_username,
     create_user,
     create_admin,
@@ -25,12 +24,6 @@ async function get_login(user, pass) {
     return await db.collection('user').count({
         username: user, password: pass
     });
-}
-  
-async function get_user(socket_id) {
-    return await db.collection('user').findOne({
-        socket_id: socket_id
-    }, {lat: 1, long: 1, socket_id: 1, energy: 1, posture: 1});
 }
 
 async function is_admin(socket_id) {
@@ -57,13 +50,18 @@ async function create_user(user, pass, socket, io) {
         db.collection('user').insertOne({
             username: user, password: pass,
             lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
-            angle: angle, socket_id:socket.id,
+            angle: angle,
+            socket_id:socket.id,
             age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights), 
-            posture: "standing", energy: 1, last_cmd_ts: new Date(),
+            posture: "standing",
+            energy: 1,
+            health: 1,
+            last_cmd_ts: new Date(),
             last_set_posture_ts: new Date(),
-            last_read_patch_notes: new Date(), admin: false, health: 1
+            last_read_patch_notes: new Date(),
+            admin: false
         }).catch(console.dir).then( () => {
-            crud_terrain.check_biomes(socket.id, io, angle, spawn["lat"], spawn["long"]);
+            crud_look_around.look_around(socket.id, io, angle, spawn["lat"], spawn["long"]);
         });
     })
 }
@@ -79,12 +77,15 @@ async function respawn(socket_id, io, reason_of_death) {
         }, {
             $set: {
                 lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
-                energy: 1, last_cmd_ts: new Date(), posture: "standing",
+                energy: 1,
+                health: 1,
+                last_cmd_ts: new Date(),
+                posture: "standing",
                 age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights),
-                angle: angle, health: 1
+                angle: angle
             }
         }).catch(console.dir).then( () => {
-            crud_terrain.check_biomes(socket_id, io, angle, spawn["lat"], spawn["long"]);
+            crud_look_around.look_around(socket_id, io, angle, spawn["lat"], spawn["long"]);
         });
     });
 }

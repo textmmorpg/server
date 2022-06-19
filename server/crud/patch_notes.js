@@ -1,4 +1,4 @@
-const db = require('./db').get_db();
+const db = require('./db/db').get_db();
 
 module.exports = {
     add_patch_note,

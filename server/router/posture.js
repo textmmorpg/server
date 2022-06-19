@@ -1,5 +1,5 @@
 const crud_move = require('../crud/move');
-const crud_interact = require('../crud/interact');
+const crud_interact = require('../crud/interact/interact');
 const config = require('../config');
 
 module.exports = {

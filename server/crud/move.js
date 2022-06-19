@@ -1,7 +1,8 @@
-const db = require('./db').get_db();
-const crud_user = require('./user');
+const db = require('./db/db').get_db();
+const crud_user = require('./user/user');
+const crud_user_basic = require('./user/basic');
 const crud_terrain = require('./terrain');
-const crud_interact = require('./interact');
+const crud_look_around = require('./interact/look_around');
 const config = require('../config');
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
 
 async function set_posture(socket, posture) {
     // TODO: is it possible to do this in one query?
-    await crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
+    await crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
 
         if(user['posture'] === posture) {
             socket.send({data: "You are already " + posture});
@@ -108,7 +109,7 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
     var move_distance = config.ONE_METER*distance
 
     // get user data of current position/angle/posture
-    await crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
+    await crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
 
         // calculate some variables based on the type of movement
         var movement_energy = 0.025 * Math.pow(distance, 2); // TODO: move to config
@@ -182,7 +183,7 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
                 }
             }).then( () => {
                 // afterwards, display the new location info to the user
-                crud_terrain.check_biomes(socket.id, io, new_angle, new_lat, new_long);
+                crud_look_around.look_around(socket.id, io, new_angle, new_lat, new_long);
             })
         })
     });

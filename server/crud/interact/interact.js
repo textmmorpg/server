@@ -1,14 +1,12 @@
-const crud_user = require('./user');
-const crud_connection = require('./connection');
-const crud_battle = require('./battle');
-const crud_terrain = require('./terrain');
-const config = require("../config");
-const { Vector, VectorConstants } = require("simplevectorsjs");
+const crud_user_basic = require('../user/basic');
+const crud_connection = require('../user/connection');
+const crud_attack = require('./attack')
+const config = require("../../config");
+const { Vector } = require("simplevectorsjs");
 
 module.exports = {
     announce,
-    attack_nearby,
-    look_around
+    attack_nearby
 }
 
 function within_distance(
@@ -40,7 +38,7 @@ function get_user_vectors(
 }
 
 function is_close(user1, user2, distance, only_in_field_of_view) {
-    // send a message if they can hear/see it
+
     var distance_ok = within_distance(
         user1["lat"], user1["long"],
         user2["lat"], user2["long"], distance
@@ -115,7 +113,7 @@ function maybe_send_message(user1, user2, distance, check_behind, io, message) {
 
 function announce(socket_id, io, message, distance, check_behind) {
     // get sockets of the close players
-    crud_user.get_user(socket_id).catch(console.dir).then( (user) => {
+    crud_user_basic.get_user(socket_id).catch(console.dir).then( (user) => {
         crud_connection.get_other_connections(
             socket_id, user["lat"], user["long"], config.ONE_METER*distance
         ).catch(console.dir).then( (other_users) => {
@@ -127,46 +125,11 @@ function announce(socket_id, io, message, distance, check_behind) {
     });
 }
 
-function perform_attack(socket, io, user, other_user, damage, energy) {
-    // notify attacker they hit their target
-    socket.send({data: 'Your punch hit the player in front of you!'})
-
-    // notify victim they were hit
-    io.to(other_user["socket_id"]).emit('message', {
-        // TODO: Add perspective of what angle you were hit at ("you were punched from behind")
-        data: 'You got punched!'
-    });
-
-    // TODO: notify player when their health drops too far (ex: "You are close to death")
-    // update health of victim and energy of attacker
-    crud_battle.attack(
-        user, other_user, damage, energy
-    ).catch(console.dir).then( () => {
-        // check if the attack killed them
-        if(other_user["health"] < damage) {
-            crud_user.respawn(other_user["socket_id"], io, 'a punch')
-            // TODO: don't send this to the player that died
-            // announce(socket.id, io, 'died from being punched', config.SEEING_DISTANCE, false);
-            socket.send({data: 'Your punch was fatal!'});
-        }
-    });
-    
-    // TODO: random chance that the attack knocked the player down
-
-    // TODO: announce to other players that the punch landed, but don't notify the victim
-    //       because they already know they were hit
-}
-
-function look_around(socket_id, io, angle, lat, long) {
-    crud_terrain.check_biomes(socket_id, io, angle, lat, long);
-    
-}
-
 function attack_nearby(socket, io, distance, energy, damage, only_in_field_of_view) {
     // TODO: generalize for attacks other than punching
     // TODO: filter out players that are logged off / idle for a long time
     // get sockets of the close players
-    return crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
+    crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
 
         if(user['energy'] < energy) {
             socket.send({data: "You don't have enough energy to punch! Sit or lay down to reset"});
@@ -180,7 +143,7 @@ function attack_nearby(socket, io, distance, energy, damage, only_in_field_of_vi
             var punched = false
             return other_users.forEach( (other_user) => {
                 if(is_close(user, other_user, config.ONE_METER*distance, only_in_field_of_view)) {
-                    perform_attack(socket, io, user, other_user, damage, energy);
+                    crud_attack.perform_attack(socket, io, user, other_user, damage, energy);
                     punched = true;
                     return;
                 }
