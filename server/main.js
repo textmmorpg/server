@@ -48,6 +48,10 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/../client/index.html");
 });
 
+app.get("/robots.txt", (req, res) => {
+  res.sendFile(__dirname + "/../client/robots.txt");
+});
+
 http.listen(3000, function () {
   console.log('listening on *:3000');
   console.log('Version: ' + package.version);
