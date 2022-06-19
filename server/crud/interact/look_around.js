@@ -1,6 +1,7 @@
 const crud_user_basic = require('../user/basic');
 const crud_connection = require('../user/connection');
 const crud_terrain = require('../terrain');
+const proximity = require('./proximity');
 const config = require('../../config');
 
 module.exports = {
@@ -16,7 +17,7 @@ function look_around(socket_id, io, angle, lat, long) {
         crud_connection.get_other_connections(
             socket_id, lat, long, config.SEEING_DISTANCE
         ).catch(console.dir).then( (other_users) => {
-            // if(is_close()) {
+            // if(proximity.is_close()) {
 
             // }
         });

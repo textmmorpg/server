@@ -1,67 +1,17 @@
 const crud_user_basic = require('../user/basic');
 const crud_connection = require('../user/connection');
-const crud_attack = require('./attack')
+const proximity = require('./proximity');
+const crud_attack = require('./attack');
 const config = require("../../config");
-const { Vector } = require("simplevectorsjs");
 
 module.exports = {
     announce,
     attack_nearby
 }
 
-function within_distance(
-        user1_x, user1_y,
-        user2_x, user2_y, distance_limit
-    ) {
-    // check if they are too far away
-    var distance = Math.sqrt(
-        Math.pow(user2_x - user1_x, 2) +
-        Math.pow(user2_y - user1_y, 2)
-    );
-
-    return distance < distance_limit
-}
-
-function get_user_vectors(
-        user2_x, user2_y, user2_angle,
-        user1_x, user1_y
-    ) {
-    var user1and2Vector = new Vector();
-    var user2Vector = new Vector();
-    user1and2Vector.fromTwoPoints([user2_x, user2_y, 0], [user1_x, user1_y, 0]);
-    user2Vector.fromTwoPoints([user2_x, user2_y, 0], [
-        user2_x + 1 * Math.cos(user2_angle),
-        user2_y + 1 * Math.sin(user2_angle),
-        0
-    ]);
-    return [user1and2Vector, user2Vector];
-}
-
-function is_close(user1, user2, distance, only_in_field_of_view) {
-
-    var distance_ok = within_distance(
-        user1["lat"], user1["long"],
-        user2["lat"], user2["long"], distance
-    )
-
-    if(!distance_ok) {
-        // too far away to hear/see the message
-        return false;
-    }
-    
-    var user_vectors = get_user_vectors(
-        user2["lat"], user2["long"], user2["angle"],
-        user1["lat"], user1["long"]
-    )
-
-    var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
-    var in_field_of_view = user_angle < config.FIELD_OF_VIEW/2
-    return !only_in_field_of_view || in_field_of_view;
-}
-
 function maybe_send_message(user1, user2, distance, check_behind, io, message) {
     // send a message if they can hear/see it
-    var distance_ok = within_distance(
+    var distance_ok = proximity.within_distance(
         user1["lat"], user1["long"],
         user2["lat"], user2["long"], distance
     )
@@ -71,7 +21,7 @@ function maybe_send_message(user1, user2, distance, check_behind, io, message) {
         return;
     }
     
-    var user_vectors = get_user_vectors(
+    var user_vectors = proximity.get_user_vectors(
         user2["lat"], user2["long"], user2["angle"],
         user1["lat"], user1["long"]
     )
@@ -142,7 +92,7 @@ function attack_nearby(socket, io, distance, energy, damage, only_in_field_of_vi
             // send the message to the socket of each close player
             var punched = false
             return other_users.forEach( (other_user) => {
-                if(is_close(user, other_user, config.ONE_METER*distance, only_in_field_of_view)) {
+                if(proximity.is_close(user, other_user, config.ONE_METER*distance, only_in_field_of_view)) {
                     crud_attack.perform_attack(socket, io, user, other_user, damage, energy);
                     punched = true;
                     return;
