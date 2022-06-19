@@ -14,4 +14,8 @@ function add_routes(socket, io) {
         announce.announce(socket.id, io, 'died', config.SEEING_DISTANCE, false);
         crud_user.respawn(socket);
     });
+
+    socket.on('punch', function(data) {
+        crud_battle.attack(socket, damage);
+    });
 }

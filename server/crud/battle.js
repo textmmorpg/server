@@ -2,7 +2,8 @@ const db = require('./db').get_db();
 const crud_user = require('./user');
 
 module.exports = {
-    create_corpse
+    create_corpse,
+    attack
 }
 
 async function create_corpse(socket) {
@@ -13,4 +14,8 @@ async function create_corpse(socket) {
             time_of_death: new Date()
         });
     });
+}
+
+async function attack(socket, damage) {
+    
 }

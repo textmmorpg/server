@@ -235,6 +235,8 @@ $(function() {
                 socket.emit('teleport to', {msg: input})
             } else if(input.startsWith('check patch notes')) {
                 socket.emit('check patch notes', {})
+            } else if(input.startsWith('punch')) {
+                socket.emit('punch', {});
             } else if(input.startsWith('?') || input.startsWith('help')) {
                 help_message();
             } else {
