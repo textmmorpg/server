@@ -1,9 +1,11 @@
 const crud_user = require('./crud/user');
 const crud_connection = require('./crud/connection');
+const config = require("./config");
 const { Vector, VectorConstants } = require("simplevectorsjs");
 
 module.exports = {
-    announce
+    announce,
+    get_close_player
 }
 
 function within_distance(
@@ -32,6 +34,10 @@ function get_user_vectors(
         0
     ]);
     return [user1and2Vector, user2Vector];
+}
+
+function is_close(user1, user2, distance, check_behind) {
+
 }
 
 function maybe_send_message(user1, user2, distance, check_behind, io, message) {
@@ -92,11 +98,26 @@ function announce(socket_id, io, message, distance, check_behind) {
     // get sockets of the close players
     crud_user.get_user(socket_id).catch(console.dir).then( (user) => {
         crud_connection.get_other_connections(
-            socket_id, user["lat"], user["long"], (Math.PI/300)*distance
+            socket_id, user["lat"], user["long"], config.ONE_METER*distance
         ).catch(console.dir).then( (other_users) => {
             // send the message to the socket of each close player
             other_users.forEach( (other_user) => {
-                maybe_send_message(user, other_user, (Math.PI/300)*distance, check_behind, io, message);
+                maybe_send_message(user, other_user, config.ONE_METER*distance, check_behind, io, message);
+            });
+        });
+    });
+}
+
+function get_close_player(socket, io, distance, check_behind) {
+    // TODO: filter out players that are logged off / idle for a long time
+    // get sockets of the close players
+    crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
+        crud_connection.get_other_connections(
+            socket.id, user["lat"], user["long"], config.ONE_METER*distance
+        ).catch(console.dir).then( (other_users) => {
+            // send the message to the socket of each close player
+            other_users.forEach( (other_user) => {
+                var is_close = is_close(user, other_user, config.ONE_METER*distance, check_behind);
             });
         });
     });

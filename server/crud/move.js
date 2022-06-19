@@ -1,7 +1,7 @@
 const db = require('./db').get_db();
 const crud_user = require('./user');
 const crud_terrain = require('./terrain');
-const announce = require('../announce');
+const interact = require('../interact');
 const config = require('../config');
 
 module.exports = {
@@ -105,7 +105,7 @@ async function check_swimming(socket, user, new_lat, new_long, move_type) {
 
 async function move(socket, io, distance, turn, move_type, set_angle) {
     // convert distance to lat/long degrees
-    var move_distance = (Math.PI/300)*distance
+    var move_distance = config.ONE_METER*distance
 
     // get user data of current position/angle/posture
     await crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
@@ -130,7 +130,7 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
         // check if user is drowning
         if(user['energy'] < movement_energy && distance !== 0 && move_type === "swim") {
             socket.send({data: "You ran out of energy swimming and drowned! You died."});
-            announce.announce(socket.id, io, 'drowned', config.SEEING_DISTANCE, false);
+            interact.announce(socket.id, io, 'drowned', config.SEEING_DISTANCE, false);
             crud_user.respawn(socket);
             return;
         }
