@@ -8,13 +8,9 @@ Install javascript dependencies
 npm install
 ```
 
-Setup mongodb tables (I'm using MongoDB server version: 4.4.13)
+Setup mongodb tables
 ```
-mongod
-use project_title_here_db // create db if it doesn't exist
-db.createCollection('user') // create user collection
-db.createCollection('world') // create environment collection
-db.createCollection('patchnotes') // create environment collection
+node server/scripts/run_migration.js init up DEV
 ```
 
 Generate world
@@ -34,7 +30,7 @@ Navigate to https://localhost:3000
 
 For details on gameplay, view the github wiki: https://github.com/beefy/project_title_here/wiki
 
-### Deployment (automation is a WIP)
+### Manual Deployment (also happens automatically on merging to the main branch)
 
 ```
 docker build -t textmmo .
