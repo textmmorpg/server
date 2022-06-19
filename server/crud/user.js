@@ -67,7 +67,7 @@ async function create_user(user, pass, socket, angle) {
     })
 }
 
-async function respawn(socket) {
+async function respawn(socket, io) {
     socket.send({data: "Respawning"});
     var angle = Math.random() * Math.PI * 2
     await get_spawn_location().catch(console.dir).then( (spawn) => {
