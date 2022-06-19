@@ -1,6 +1,8 @@
 const db = require('./db').get_db();
 const crud_user = require('./user');
 const crud_terrain = require('./terrain');
+const announce = require('../announce');
+const config = require('../config');
 
 module.exports = {
     set_posture,
@@ -101,7 +103,7 @@ async function check_swimming(socket, user, new_lat, new_long, move_type) {
     });
 }
 
-async function move(socket, distance, turn, move_type, set_angle) {
+async function move(socket, io, distance, turn, move_type, set_angle) {
     // convert distance to lat/long degrees
     var move_distance = (Math.PI/300)*distance
 
@@ -125,6 +127,14 @@ async function move(socket, distance, turn, move_type, set_angle) {
             return;
         }
 
+        // check if user is drowning
+        if(user['energy'] < movement_energy && distance !== 0 && move_type === "swim") {
+            socket.send({data: "You ran out of energy swimming and drowned! You died."});
+            announce.announce(socket.id, io, 'drowned', config.SEEING_DISTANCE, false);
+            crud_user.respawn(socket);
+            return;
+        }
+
         // prevent user from moving when they are out of energy
         if(user['energy'] < movement_energy && distance !== 0) {
             socket.send({data: "Not enough energy! Sit or lay down to rest"})
@@ -142,7 +152,7 @@ async function move(socket, distance, turn, move_type, set_angle) {
 
         // get swimming status so user does not walk on water or swim on land
         check_swimming(socket, user, new_lat, new_long, move_type).catch(console.dir).then( (swimming_status) => {
-            
+
             // swimming related checks
             var posture = user["posture"];
             if(swimming_status === "start_swimming") {

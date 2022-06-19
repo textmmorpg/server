@@ -2,10 +2,10 @@ const db = require('./db').get_db();
 const crud_user = require('./user');
 
 module.exports = {
-    death
+    create_corpse
 }
 
-async function death(socket) {
+async function create_corpse(socket) {
     await crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
         db.collection('corpse').insertOne({
             lat: user["lat"], long: user["long"], height: user["height"],
@@ -13,5 +13,4 @@ async function death(socket) {
             time_of_death: new Date()
         });
     });
-    socket.send({data: "You have died."});
 }

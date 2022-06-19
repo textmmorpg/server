@@ -12,49 +12,49 @@ function add_routes(socket, io) {
     // walking
 
     socket.on('walk forward', function (data) {
-        crud_move.move(socket, config.WALK_SPEED, 0, 'walk', false);
+        crud_move.move(socket, io, config.WALK_SPEED, 0, 'walk', false);
         announce.announce(socket.id, io, 'walked forward', config.SEEING_DISTANCE, true);
     });
 
     socket.on('walk left', function (data) {
-        crud_move.move(socket, config.WALK_SPEED, Math.PI/2, 'walk', false);
+        crud_move.move(socket, io, config.WALK_SPEED, Math.PI/2, 'walk', false);
         announce.announce(socket.id, io, 'walked left', config.SEEING_DISTANCE, true);
     });
 
     socket.on('walk right', function(data) {
-        crud_move.move(socket, config.WALK_SPEED, Math.PI/2 * -1, 'walk', false);
+        crud_move.move(socket, io, config.WALK_SPEED, Math.PI/2 * -1, 'walk', false);
         announce.announce(socket.id, io, 'walked right', config.SEEING_DISTANCE, true);
     });
 
     socket.on('run forward', function (data) {
-        crud_move.move(socket, config.RUN_SPEED, 0, 'walk', false);
+        crud_move.move(socket, io, config.RUN_SPEED, 0, 'walk', false);
         announce.announce(socket.id, io, 'ran forward', config.SEEING_DISTANCE, true);
     });
 
     socket.on('run left', function (data) {
-        crud_move.move(socket, config.RUN_SPEED, Math.PI/2, 'walk', false);
+        crud_move.move(socket, io, config.RUN_SPEED, Math.PI/2, 'walk', false);
         announce.announce(socket.id, io, 'ran left', config.SEEING_DISTANCE, true);
     });
 
     socket.on('run right', function(data) {
-        crud_move.move(socket, config.RUN_SPEED, Math.PI/2 * -1, 'walk', false);
+        crud_move.move(socket, io, config.RUN_SPEED, Math.PI/2 * -1, 'walk', false);
         announce.announce(socket.id, io, 'ran right', config.SEEING_DISTANCE, true);
     });
 
     // swimming
 
     socket.on('swim forward', function (data) {
-        crud_move.move(socket, config.SWIM_SPEED, 0, 'swim', false);
+        crud_move.move(socket, io, config.SWIM_SPEED, 0, 'swim', false);
         announce.announce(socket.id, io, 'swam forward', config.SEEING_DISTANCE, true);
     });
 
     socket.on('swim left', function (data) {
-        crud_move.move(socket, config.SWIM_SPEED, Math.PI/2, 'swim', false);
+        crud_move.move(socket, io, config.SWIM_SPEED, Math.PI/2, 'swim', false);
         announce.announce(socket.id, io, 'swam left', config.SEEING_DISTANCE, true);
     });
 
     socket.on('swim right', function(data) {
-        crud_move.move(socket, config.SWIM_SPEED, Math.PI/2 * -1, 'swim', false);
+        crud_move.move(socket, io, config.SWIM_SPEED, Math.PI/2 * -1, 'swim', false);
         announce.announce(socket.id, io, 'swam right', config.SEEING_DISTANCE, true);
     });
 
