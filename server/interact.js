@@ -6,7 +6,7 @@ const { Vector, VectorConstants } = require("simplevectorsjs");
 
 module.exports = {
     announce,
-    get_close_player
+    attack_nearby
 }
 
 function within_distance(
@@ -125,13 +125,13 @@ function announce(socket_id, io, message, distance, check_behind) {
     });
 }
 
-function get_close_player(socket, io, distance, only_in_field_of_view) {
+function attack_nearby(socket, io, distance, energy, damage, only_in_field_of_view) {
     // TODO: generalize for attacks other than punching
     // TODO: filter out players that are logged off / idle for a long time
     // get sockets of the close players
     return crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
 
-        if(user['energy'] < config.PUNCH_ENERGY) {
+        if(user['energy'] < energy) {
             socket.send({data: "You don't have enough energy to punch! Sit or lay down to reset"});
             return;
         }
@@ -143,27 +143,34 @@ function get_close_player(socket, io, distance, only_in_field_of_view) {
             var punched = false
             return other_users.forEach( (other_user) => {
                 if(is_close(user, other_user, config.ONE_METER*distance, only_in_field_of_view)) {
+
                     // notify attacker they hit their target
                     socket.send({data: 'Your punch hit the player in front of you!'})
+                    
                     // notify victim they were hit
                     io.to(other_user["socket_id"]).emit('message', {
                         // TODO: 'You *hear/see* the player to your left etc etc'
                         // instead of just 'the player to your left etc etc
                         data: 'You got punched!'
                     });
-                    // check if the attack killed them
-                    if(other_user["health"] < config.PUNCH_DAMAGE) {
-                        // TODO: update respawn and check biome to use io instead of
-                        //       socket object to send messages so we can reuse them here
-                        // crud_user.respawn(other_user["socket_id"])
-                        socket.send({data: 'The punch was fatal!'});
-                    }
+
                     // update health of victim and energy of attacker
                     crud_battle.attack(
-                        user, other_user,
-                        config.PUNCH_DAMAGE, config.PUNCH_ENERGY
-                    );
+                        user, other_user, damage, energy
+                    ).catch(console.dir).then( () => {
+                        // check if the attack killed them
+                        if(other_user["health"] < damage) {
+                            // TODO: update respawn and check biome to use io instead of
+                            //       socket object to send messages so we can reuse them here
+                            // crud_user.respawn(other_user["socket_id"])
+                            socket.send({data: 'The punch was fatal!'});
+                        }
+                    });
+                    
+                    // TODO: random chance that the attack knocked the player down
+
                     // TODO: announce to other players that the punch landed, but don't notify the victim
+                    //       because they already know they were hit
                     punched = true;
                     return;
                 }

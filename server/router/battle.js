@@ -11,12 +11,15 @@ function add_routes(socket, io) {
     socket.on('suicide', function(data) {
         socket.send({data: "You have died."});
         crud_battle.create_corpse(socket);
-        interact.announce(socket.id, io, 'died', config.SEEING_DISTANCE, false);
+        interact.announce(socket.id, io, 'committed suicide', config.SEEING_DISTANCE, false);
         crud_user.respawn(socket);
     });
 
     socket.on('punch', function(data) {
-        // TODO: lower energy on punching
-        interact.get_close_player(socket, io, config.ATTACK_DISTANCE, true);
+        interact.attack_nearby(
+            socket, io, 
+            config.ATTACK_DISTANCE,
+            config.PUNCH_ENERGY, config.PUNCH_DAMAGE, true
+        );
     });
 }

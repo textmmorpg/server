@@ -225,7 +225,7 @@ $(function() {
                 socket.emit('stand up', {});
             } else if(input.startsWith('vibe check')) {
                 socket.emit('vibe check')
-            } else if(input.startsWith('suicide')) {
+            } else if(input.startsWith('commit suicide')) {
                 socket.emit('suicide')
             } else if(input.startsWith('whisper')) {
                 socket.emit('whisper', {msg: input})
