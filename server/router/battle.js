@@ -12,7 +12,7 @@ function add_routes(socket, io) {
         socket.send({data: "You have died."});
         crud_battle.create_corpse(socket);
         interact.announce(socket.id, io, 'committed suicide', config.SEEING_DISTANCE, false);
-        crud_user.respawn(socket);
+        crud_user.respawn(socket.id, io, 'suicide');
     });
 
     socket.on('punch', function(data) {

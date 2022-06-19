@@ -59,7 +59,7 @@ async function get_biome(lat, long) {
     ); 
 }
 
-async function check_biomes(socket, angle, lat, long) {
+async function check_biomes(socket_id, io, angle, lat, long) {
         
     async function look_at_biome(angle) {
         var move_distance = config.ONE_METER
@@ -73,8 +73,12 @@ async function check_biomes(socket, angle, lat, long) {
     var biome_left = look_at_biome(angle + Math.PI/2);
     Promise.all([biome_ahead, biome_right, biome_left]).then(function(biomes) {
         get_biome(lat, long).catch(console.dir).then( (result) => {
-        socket.send({data: "You are in a " + result['biome'] + ". Ahead of you is " + biomes[0]["biome"] +
-        ". To the right you see " + biomes[1]["biome"] + " and to the left there is " + biomes[2]["biome"]});
+            io.to(socket_id).emit('message', {
+                data: "You are in a " + result['biome'] + 
+                ". Ahead of you is " + biomes[0]["biome"] +
+                ". To the right you see " + biomes[1]["biome"] + 
+                " and to the left there is " + biomes[2]["biome"]
+            });
         });
     });
 }

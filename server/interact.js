@@ -142,11 +142,10 @@ function perform_attack(socket, io, user, other_user, damage, energy) {
     ).catch(console.dir).then( () => {
         // check if the attack killed them
         if(other_user["health"] < damage) {
-            // io.to(other_user["socket_id"]).emit('message', {
-            //     data: 'You died.'
-            // });
-            // crud_user.respawn(other_user["socket_id"], io)
-            // socket.send({data: 'The punch was fatal!'});
+            crud_user.respawn(other_user["socket_id"], io, 'a punch')
+            // TODO: don't send this to the player that died
+            // announce(socket.id, io, 'died from being punched', config.SEEING_DISTANCE, false);
+            socket.send({data: 'Your punch was fatal!'});
         }
     });
     

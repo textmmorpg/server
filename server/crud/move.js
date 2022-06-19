@@ -129,9 +129,8 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
 
         // check if user is drowning
         if(user['energy'] < movement_energy && distance !== 0 && move_type === "swim") {
-            socket.send({data: "You ran out of energy swimming and drowned! You died."});
             interact.announce(socket.id, io, 'drowned', config.SEEING_DISTANCE, false);
-            crud_user.respawn(socket);
+            crud_user.respawn(socket.id, io, 'drowning');
             return;
         }
 
@@ -183,7 +182,7 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
                 }
             }).then( () => {
                 // afterwards, display the new location info to the user
-                crud_terrain.check_biomes(socket, new_angle, new_lat, new_long);
+                crud_terrain.check_biomes(socket.id, io, new_angle, new_lat, new_long);
             })
         })
     });

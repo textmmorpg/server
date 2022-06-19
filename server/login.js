@@ -9,21 +9,21 @@ module.exports = {
     reconnect
 }
 
-function login(data, socket) {
+function login(data, io, socket) {
     // check if credentials exist / are correct
     crud_user.get_login(
         data['username'], data['password']
     ).catch(console.dir).then( (user_count) => {
         if(user_count === 0) {
             // if the user doesn't exist, try to create one
-            signup(data, socket);
+            signup(data, socket, io);
         } else {
             // user found -> login successful
             crud_connection.add_connection(data['username'], socket.id).catch(console.dir).then( () => {
                 socket.send({login_success: true});
                 socket.send({data: "Welcome back!"});
                 crud_user.get_user(socket.id).catch(console.dir).then( (user) => {
-                    crud_terrain.check_biomes(socket, user["angle"], user["lat"], user["long"]);
+                    crud_terrain.check_biomes(socket.id, io, user["angle"], user["lat"], user["long"]);
                     crud_patch_notes.get_patch_notes_since_ts(user['last_read_patch_notes']).catch(console.dir).then((patch_notes) => {
                         write_patch_notes(patch_notes, socket);
                     })
@@ -37,7 +37,7 @@ function login(data, socket) {
     });
 }
 
-function signup(data, socket) {
+function signup(data, socket, io) {
     // check if that username already exists
     crud_user.check_username(data["username"]).catch(console.dir).then( (response) => {
         if(response > 0) {
@@ -46,7 +46,7 @@ function signup(data, socket) {
         } else {
         // username is not taken -> signup success
         crud_user.create_user(
-            data["username"], data["password"], socket
+            data["username"], data["password"], socket, io
         ).catch(console.dir);
         socket.send({login_success: true});
         socket.send({

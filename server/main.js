@@ -31,7 +31,7 @@ io.on('connection', function (socket){
 
   socket.on('login', function(data) {
     if(!data.reconnection) {
-      login.login(data, socket);
+      login.login(data, io, socket);
     } else {
       login.reconnect(data, socket)
     }
