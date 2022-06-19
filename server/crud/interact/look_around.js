@@ -17,9 +17,17 @@ function look_around(socket_id, io, angle, lat, long) {
         crud_connection.get_other_connections(
             socket_id, lat, long, config.SEEING_DISTANCE
         ).catch(console.dir).then( (other_users) => {
-            // if(proximity.is_close()) {
-
-            // }
+            other_users.forEach( (other_user) => {
+                if(proximity.is_close(
+                    {lat: lat, long: long}, other_user, config.SEEING_DISTANCE, true
+                )) {
+                    // TODO: add perspective (ex: to the right)
+                    io.to(socket_id).emit('message', {
+                        data: 'You see a ' + user['tall'] + ' ' + user['weight'] + 
+                        ' ' + user['age'] + ' human'
+                    });
+                }
+            })
         });
 
         // display corpses nearby
