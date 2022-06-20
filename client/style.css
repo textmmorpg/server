@@ -46,9 +46,16 @@ ul {
   width: 100%;
 }
 
+/* TODO: fix this, it is not applying to the ad container because it is being loaded dynamically */
+#amzn-native-ad-0 {
+  margin: auto;
+  display: block; 
+}
+
 /* Login Page */
 
 .login.page {
+  height: 85%;
   background-color: #000;
 }
 
@@ -113,6 +120,7 @@ ul {
 
 .chat.page {
   display: none;
+  height: 85%;
 }
 
 /* Font */
