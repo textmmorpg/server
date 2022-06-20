@@ -37,3 +37,14 @@ docker build -t textmmo .
 docker tag textmmo us-central1-docker.pkg.dev/project-title-here/textmmo/textmmo-image
 docker push us-central1-docker.pkg.dev/project-title-here/textmmo/textmmo-image
 ```
+
+### Other references
+
+- Issue Tracking: https://github.com/users/beefy/projects/1/v
+- Google Single Sign On: https://console.cloud.google.com/apis/credentials/consent?project=project-title-here
+- Build Automation: https://console.cloud.google.com/cloud-build/builds?project=project-title-here
+- Compute: https://console.cloud.google.com/run?project=project-title-here
+- Artifactory: https://console.cloud.google.com/gcr/images/project-title-here/us/textmmo/textmmo-image?project=project-title-here
+- DNS: https://console.cloud.google.com/net-services/dns/zones/textmmo-com/details?project=project-title-here
+- Database: https://cloud.mongodb.com/v2/
+- Amazon Advertising: https://affiliate-program.amazon.com/home
