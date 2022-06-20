@@ -1,18 +1,24 @@
 $(function() {
 
-
     // Initialize variables
     const $window = $(window);
     const $username = $('#username'); // Input for username
     const $password = $('#password'); // Input for username
-    const $isLogin = $('#isLogin')
     const $messages = $('.messages');           // Messages area
     const $inputMessage = $('.inputMessage');   // Input message input box
 
     const $loginPage = $('.login.page');        // The login page
     const $chatPage = $('.chat.page');          // The chatroom page
     // const $ad = $('#amzn-assoc-ad-8d6b661a-ffac-4406-8bff-1ab6935f8734');
-    
+
+    window.onload = function () {
+        google.accounts.id.initialize({
+          client_id: '797291709791-3u14qu9midq1pp234q5f3roo9h322bqe',
+          callback: setUsername
+        });
+        google.accounts.id.prompt();
+    };
+
     var socket;
     var username;
     var password;
@@ -32,7 +38,8 @@ $(function() {
     connect();
 
     // Sets the client's username
-    const setUsername = () => {
+    const setUsername = (data) => {
+        console.log(data);
         username = cleanInput($username.val().trim());
         password = cleanInput($password.val().trim());
 
@@ -140,20 +147,11 @@ $(function() {
             if (login_success) {
                 sendMessage();
                 typing = false;
-            } else {
-                setUsername();
             }
         }
     });
 
     // Click events
-
-    // Focus input when clicking anywhere on login page
-    $loginPage.click(() => {
-        if(login_success) {
-            $inputMessage.focus();
-        }
-    });
 
     // Focus input when clicking on the message input's border
     $inputMessage.click(() => {
