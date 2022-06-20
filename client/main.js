@@ -19,10 +19,10 @@ $(function() {
     };
 
     var socket;
-    var username;
-    var password;
     var connected = false;
     var login_success = false;
+
+    // SSO variables
     var sso_id;
     var email;
 

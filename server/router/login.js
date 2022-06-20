@@ -15,20 +15,7 @@ function add_routes(socket, io) {
     });
 }
 
-function verify_sso(sso_id) {
-    // TODO: verify google SSO ID
-    // if verify not successful, send failure to client and redo prompt for login
-    // otherwise:
-    return true;
-}
-
 function login(data, io, socket) {
-
-    if(!verify_sso(data["sso_id"])) {
-        socket.send({login_success: false});
-        return;
-    }
-
     socket.send({login_success: true});
 
     crud_connection.get_active_user_count().then( (count) => {
@@ -38,7 +25,9 @@ function login(data, io, socket) {
     crud_user.create_user(data["email"], socket).catch(console.dir).then( () => {
         crud_connection.add_connection(data["email"], socket.id).then( () => {
             crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
-                crud_look_around.look_around(socket.id, io, user["angle"], user["lat"], user["long"]);
+                crud_look_around.look_around(
+                    socket.id, io, user["angle"], user["lat"], user["long"]
+                );
                 crud_patch_notes.get_patch_notes_since_ts(
                     user['last_read_patch_notes']
                 ).catch(console.dir).then((patch_notes) => {
