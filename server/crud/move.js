@@ -189,12 +189,12 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
     });
 }
 
-async function teleport(socket, lat, long, height) {
+async function teleport(socket, lat, long) {
     await db.collection("user").updateOne({
         socket_id: socket.id
     }, {
         $set: {
-            lat: lat, long: long, height: height,
+            lat: lat, long: long,
             last_cmd_ts: new Date(),
         }
     })

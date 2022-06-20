@@ -27,7 +27,7 @@ async function is_admin(socket_id) {
 async function get_other_user(email) {
     return await db.collection('user').findOne({
         email: email
-    }, {lat: 1, long: 1, height: 1});
+    }, {lat: 1, long: 1});
 }
 
 async function create_user(email, socket) {
@@ -67,7 +67,7 @@ async function respawn(socket_id, io, reason_of_death) {
             socket_id: socket_id
         }, {
             $set: {
-                lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
+                lat: spawn["lat"], long: spawn["long"],
                 energy: 1,
                 health: 1,
                 last_cmd_ts: new Date(),
