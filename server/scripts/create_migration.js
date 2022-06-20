@@ -4,7 +4,7 @@ const fs = require('fs');
 var filename = __dirname + '/../migrations/' + new Date().valueOf() + '_' + process.argv[2] + ".js"
 var content = `
 
-const custom_db = require('../crud/custom_db')
+const custom_db = require('../crud/db/custom_db')
 
 module.exports = {
     up,

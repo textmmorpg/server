@@ -49,15 +49,11 @@ $(function() {
     const setUsername = (sso_response) => {
         const responsePayload = decodeJwtResponse(sso_response.credential);
 
-        // If the username is valid
-        if (username && password) {
-            // Tell the server your username
-            socket.emit('login', {
-                sso_id: responsePayload.sub,
-                email: responsePayload.email,
-                reconnection: false
-            })
-        }
+        socket.emit('login', {
+            sso_id: responsePayload.sub,
+            email: responsePayload.email,
+            reconnection: false
+        })
     }
 
     // Log a message

@@ -2,8 +2,6 @@ const db = require('../db/db').get_db();
 const crud_look_around = require('../interact/look_around');
 
 module.exports = {
-    get_login,
-    check_username,
     create_user,
     create_admin,
     get_other_user,
@@ -19,36 +17,23 @@ function getRandom(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-
-async function get_login(user, pass) {
-    return await db.collection('user').count({
-        username: user, password: pass
-    });
-}
-
 async function is_admin(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
     }, {admin: 1});
 }
 
-async function get_other_user(username) {
+async function get_other_user(email) {
     return await db.collection('user').findOne({
-        username: username
+        email: email
     }, {lat: 1, long: 1, height: 1});
 }
 
-async function check_username(username) {
-    return await db.collection('user').count({
-        username: username
-    });
-}
-
-async function create_user(user, pass, socket, io) {
+async function create_user(email, socket, io) {
     var angle = Math.random() * Math.PI * 2;
     await get_spawn_location().catch(console.dir).then( (spawn) => {
         db.collection('user').insertOne({
-            username: user, password: pass,
+            email: email,
             lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
             angle: angle,
             socket_id:socket.id,
@@ -60,7 +45,14 @@ async function create_user(user, pass, socket, io) {
             last_set_posture_ts: new Date(),
             last_read_patch_notes: new Date(),
             admin: false
-        }).catch(console.dir).then( () => {
+        }).catch( (error) => {
+            if(err.name === 'MongoError' && err.code === 11000) {
+                // duplicate email / returning user
+                socket.send({data: "Welcome back!"});
+            } else {
+                console.error(error);
+            }
+        }).then( () => {
             crud_look_around.look_around(socket.id, io, angle, spawn["lat"], spawn["long"]);
         });
     })
@@ -90,9 +82,9 @@ async function respawn(socket_id, io, reason_of_death) {
     });
 }
 
-async function create_admin(custom_db, user) {
+async function create_admin(custom_db, email) {
     await custom_db.collection('user').updateOne({
-        username: user
+        email: email
     }, {
         $set: {admin: true}
     });

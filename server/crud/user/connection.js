@@ -6,9 +6,9 @@ module.exports = {
     get_active_user_count
 };
 
-async function add_connection(username, socket_id) {
+async function add_connection(email, socket_id) {
     await db.collection('user').updateOne({
-        username: username
+        email: email
     }, {
         $set: {
             socket_id: socket_id,

@@ -12,6 +12,12 @@ module.exports = {
 
 function login(data, io, socket) {
 
+    // TODO: verify google SSO ID
+    // if verify not successful, send failure to client and redo prompt for login
+    // otherwise:
+
+    socket.send({login_success: true});
+    crud_user.create_user(data["email"], socket, io);
 }
 
 function reconnect(data, socket) {
