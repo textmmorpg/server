@@ -9,7 +9,7 @@ module.exports = {
 async function create_corpse(socket) {
     await crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
         db.collection('corpse').insertOne({
-            lat: user["lat"], long: user["long"], height: user["height"],
+            lat: user["lat"], long: user["long"],
             age: user["age"], tall: user["tall"], weight: user["weight"],
             time_of_death: new Date()
         });

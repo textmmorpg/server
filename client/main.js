@@ -1,23 +1,30 @@
 $(function() {
 
-
     // Initialize variables
     const $window = $(window);
-    const $username = $('#username'); // Input for username
-    const $password = $('#password'); // Input for username
-    const $isLogin = $('#isLogin')
     const $messages = $('.messages');           // Messages area
     const $inputMessage = $('.inputMessage');   // Input message input box
 
     const $loginPage = $('.login.page');        // The login page
-    const $chatPage = $('.chat.page');          // The chatroom page
-    // const $ad = $('#amzn-assoc-ad-8d6b661a-ffac-4406-8bff-1ab6935f8734');
-    
+
+    window.onload = function () {
+
+        help_message()
+        google.accounts.id.initialize({
+          client_id: '797291709791-3u14qu9midq1pp234q5f3roo9h322bqe',
+          callback: setUsername,
+          cancel_on_tap_outside: false
+        });
+        google.accounts.id.prompt();
+    };
+
     var socket;
-    var username;
-    var password;
     var connected = false;
     var login_success = false;
+
+    // SSO variables
+    var sso_id;
+    var email;
 
     function connect() {
         if(window.location.hostname === 'textmmo.com') {
@@ -31,20 +38,26 @@ $(function() {
 
     connect();
 
-    // Sets the client's username
-    const setUsername = () => {
-        username = cleanInput($username.val().trim());
-        password = cleanInput($password.val().trim());
+    function decodeJwtResponse(token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    
+        return JSON.parse(jsonPayload);
+    };
 
-        // If the username is valid
-        if (username && password) {
-            // Tell the server your username
-            socket.emit('login', {
-                username: username,
-                password: password,
-                reconnection: false
-            })
-        }
+    const setUsername = (sso_response) => {
+        const responsePayload = decodeJwtResponse(sso_response.credential);
+
+        sso_id = responsePayload.sub;
+        email = responsePayload.email;
+
+        socket.emit('login', {
+            sso_id: sso_id,
+            email: email
+        })
     }
 
     // Log a message
@@ -141,19 +154,15 @@ $(function() {
                 sendMessage();
                 typing = false;
             } else {
-                setUsername();
+                addChatMessage({
+                    username: 'Server',
+                    input: "Please log in first"
+                });
             }
         }
     });
 
     // Click events
-
-    // Focus input when clicking anywhere on login page
-    $loginPage.click(() => {
-        if(login_success) {
-            $inputMessage.focus();
-        }
-    });
 
     // Focus input when clicking on the message input's border
     $inputMessage.click(() => {
@@ -209,7 +218,7 @@ $(function() {
             } else if(input.startsWith('turn to face south')) {
                 socket.emit('turn to face south', {})
             } else if(input.startsWith('turn to face east')) {
-                socket.emit('turn to faceeast', {})
+                socket.emit('turn to face east', {})
             } else if(input.startsWith('turn to face west')) {
                 socket.emit('turn to face west', {})
             } else if(input.startsWith('turn a little to the right')) {
@@ -256,6 +265,10 @@ $(function() {
             "examine your immediate environment. For the full list of commands, " +
             "check the wiki: https://github.com/beefy/textmmo/wiki"
         });
+        addChatMessage({
+            username: 'Server',
+            input: "Login to get started (there should be a google prompt on the top right)."
+        });
     }
 
     socket.on('error', (error) => {console.log(error);});
@@ -264,11 +277,13 @@ $(function() {
         connected = true;
         log('Connected');
 
-        socket.emit('login', {
-            username: username,
-            password: password,
-            reconnection: true
-        });
+        if(login_success) {
+            // attempt reconnection
+            socket.emit('login', {
+                sso_id: sso_id,
+                email: email
+            })
+        }
     });
 
     socket.on('disconnect', function () {
@@ -280,11 +295,7 @@ $(function() {
         if(event.login_success) {
             log("Login Successful");
             // stop listening for login success
-
-            help_message()
             $loginPage.fadeOut();
-            $chatPage.show();
-            // $ad.show();
             $loginPage.off('click');
             login_success = true;
             socket.removeListener('message');
@@ -297,20 +308,15 @@ $(function() {
                     } catch {}
                 }
 
-                addChatMessage({
-                    input:event.data,
-                    username: 'Server'
-                })
+                if(event.data !== undefined) {
+                    addChatMessage({
+                        input:event.data,
+                        username: 'Server'
+                    })
+                }
             })
         } else {
-            // TODO: also check for username already taken on signup
-            console.log("Incorrect username/password");
-            $('#username').val('');
-            $('#password').val('');
-            $('#incorrectPassword').attr('hidden', false);
-            setTimeout(() => {
-                $('#incorrectPassword').attr('hidden', true);
-            }, 3000)
+            log("Authentication failure");
         }
     })
 
