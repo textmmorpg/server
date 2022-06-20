@@ -4,7 +4,6 @@ const cors = require("cors");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var package = require('../package.json');
-const login = require('./login');
 const path = require('path');
 
 const routers = [
@@ -14,7 +13,8 @@ const routers = [
   require('./router/turn'),
   require('./router/posture'),
   require('./router/patch_notes'),
-  require('./router/battle')
+  require('./router/battle'),
+  require('./router/login')
 ]
 
 app.use((req,res,next)=>{
@@ -28,14 +28,6 @@ app.use((req,res,next)=>{
 // setup socket.io routes
 io.on('connection', function (socket){
   console.log('new connection: ' + socket.id);
-
-  socket.on('login', function(data) {
-    if(!data.reconnection) {
-      login.login(data, io, socket);
-    } else {
-      login.reconnect(data, socket)
-    }
-  });
 
   routers.forEach( (router) => {
     router.add_routes(socket, io)

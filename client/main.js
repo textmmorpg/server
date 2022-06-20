@@ -23,6 +23,8 @@ $(function() {
     var password;
     var connected = false;
     var login_success = false;
+    var sso_id;
+    var email;
 
     function connect() {
         if(window.location.hostname === 'textmmo.com') {
@@ -49,10 +51,12 @@ $(function() {
     const setUsername = (sso_response) => {
         const responsePayload = decodeJwtResponse(sso_response.credential);
 
+        sso_id = responsePayload.sub;
+        email = responsePayload.email;
+
         socket.emit('login', {
-            sso_id: responsePayload.sub,
-            email: responsePayload.email,
-            reconnection: false
+            sso_id: sso_id,
+            email: email
         })
     }
 
@@ -273,11 +277,13 @@ $(function() {
         connected = true;
         log('Connected');
 
-        socket.emit('login', {
-            username: username,
-            password: password,
-            reconnection: true
-        });
+        if(login_success) {
+            // attempt reconnection
+            socket.emit('login', {
+                sso_id: sso_id,
+                email: email
+            })
+        }
     });
 
     socket.on('disconnect', function () {
@@ -302,20 +308,15 @@ $(function() {
                     } catch {}
                 }
 
-                addChatMessage({
-                    input:event.data,
-                    username: 'Server'
-                })
+                if(event.data !== undefined) {
+                    addChatMessage({
+                        input:event.data,
+                        username: 'Server'
+                    })
+                }
             })
         } else {
-            // TODO: also check for username already taken on signup
-            console.log("Incorrect username/password");
-            $('#username').val('');
-            $('#password').val('');
-            $('#incorrectPassword').attr('hidden', false);
-            setTimeout(() => {
-                $('#incorrectPassword').attr('hidden', true);
-            }, 3000)
+            log("Authentication failure");
         }
     })
 
