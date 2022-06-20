@@ -46,7 +46,7 @@ async function create_user(email, socket, io) {
             last_read_patch_notes: new Date(),
             admin: false
         }).catch( (error) => {
-            if(err.name === 'MongoError' && err.code === 11000) {
+            if(error.code === 11000) {
                 // duplicate email / returning user
                 socket.send({data: "Welcome back!"});
             } else {
