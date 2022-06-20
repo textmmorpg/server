@@ -218,7 +218,7 @@ $(function() {
             } else if(input.startsWith('turn to face south')) {
                 socket.emit('turn to face south', {})
             } else if(input.startsWith('turn to face east')) {
-                socket.emit('turn to faceeast', {})
+                socket.emit('turn to face east', {})
             } else if(input.startsWith('turn to face west')) {
                 socket.emit('turn to face west', {})
             } else if(input.startsWith('turn a little to the right')) {
