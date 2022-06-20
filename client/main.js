@@ -11,6 +11,7 @@ $(function() {
 
     const $loginPage = $('.login.page');        // The login page
     const $chatPage = $('.chat.page');          // The chatroom page
+    // const $ad = $('#amzn-assoc-ad-8d6b661a-ffac-4406-8bff-1ab6935f8734');
     
     var socket;
     var username;
@@ -283,6 +284,7 @@ $(function() {
             help_message()
             $loginPage.fadeOut();
             $chatPage.show();
+            // $ad.show();
             $loginPage.off('click');
             login_success = true;
             socket.removeListener('message');
