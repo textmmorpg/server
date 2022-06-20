@@ -29,14 +29,14 @@ async function get_other_user(email) {
     }, {lat: 1, long: 1, height: 1});
 }
 
-async function create_user(email, socket, io) {
+async function create_user(email, socket) {
     var angle = Math.random() * Math.PI * 2;
     await get_spawn_location().catch(console.dir).then( (spawn) => {
         db.collection('user').insertOne({
             email: email,
-            lat: spawn["lat"], long: spawn["long"], height: spawn["height"],
+            lat: spawn["lat"], long: spawn["long"],
             angle: angle,
-            socket_id:socket.id,
+            socket_id: socket.id,
             age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights), 
             posture: "standing",
             energy: 1,
@@ -49,11 +49,15 @@ async function create_user(email, socket, io) {
             if(error.code === 11000) {
                 // duplicate email / returning user
                 socket.send({data: "Welcome back!"});
+                // update socket id
+                db.collection('user').updateOne({
+                    email: email
+                }, {
+                    $set: {socket_id: socket.id}
+                });
             } else {
                 console.error(error);
             }
-        }).then( () => {
-            crud_look_around.look_around(socket.id, io, angle, spawn["lat"], spawn["long"]);
         });
     })
 }
