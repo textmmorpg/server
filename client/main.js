@@ -2,19 +2,18 @@ $(function() {
 
     // Initialize variables
     const $window = $(window);
-    const $username = $('#username'); // Input for username
-    const $password = $('#password'); // Input for username
     const $messages = $('.messages');           // Messages area
     const $inputMessage = $('.inputMessage');   // Input message input box
 
     const $loginPage = $('.login.page');        // The login page
-    const $chatPage = $('.chat.page');          // The chatroom page
-    // const $ad = $('#amzn-assoc-ad-8d6b661a-ffac-4406-8bff-1ab6935f8734');
 
     window.onload = function () {
+
+        help_message()
         google.accounts.id.initialize({
           client_id: '797291709791-3u14qu9midq1pp234q5f3roo9h322bqe',
-          callback: setUsername
+          callback: setUsername,
+          cancel_on_tap_outside: false
         });
         google.accounts.id.prompt();
     };
@@ -50,21 +49,12 @@ $(function() {
     const setUsername = (sso_response) => {
         const responsePayload = decodeJwtResponse(sso_response.credential);
 
-        console.log("ID: " + responsePayload.sub);
-        console.log('Full Name: ' + responsePayload.name);
-        console.log('Given Name: ' + responsePayload.given_name);
-        console.log('Family Name: ' + responsePayload.family_name);
-        console.log("Image URL: " + responsePayload.picture);
-        console.log("Email: " + responsePayload.email);
-        username = cleanInput($username.val().trim());
-        password = cleanInput($password.val().trim());
-
         // If the username is valid
         if (username && password) {
             // Tell the server your username
             socket.emit('login', {
-                username: username,
-                password: password,
+                sso_id: responsePayload.sub,
+                email: responsePayload.email,
                 reconnection: false
             })
         }
@@ -163,6 +153,11 @@ $(function() {
             if (login_success) {
                 sendMessage();
                 typing = false;
+            } else {
+                addChatMessage({
+                    username: 'Server',
+                    input: "Please log in first"
+                });
             }
         }
     });
@@ -270,6 +265,10 @@ $(function() {
             "examine your immediate environment. For the full list of commands, " +
             "check the wiki: https://github.com/beefy/textmmo/wiki"
         });
+        addChatMessage({
+            username: 'Server',
+            input: "Login to get started (there should be a google prompt on the top right)."
+        });
     }
 
     socket.on('error', (error) => {console.log(error);});
@@ -294,11 +293,7 @@ $(function() {
         if(event.login_success) {
             log("Login Successful");
             // stop listening for login success
-
-            help_message()
             $loginPage.fadeOut();
-            $chatPage.show();
-            // $ad.show();
             $loginPage.off('click');
             login_success = true;
             socket.removeListener('message');
