@@ -50,7 +50,6 @@ async function create_user(email, socket) {
             if(error.code === 11000) {
                 // duplicate email / returning user
                 socket.send({data: "Welcome back!"});
-                crud_connection.add_connection(email, socket.id);
             } else {
                 console.error(error);
             }
