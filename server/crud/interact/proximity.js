@@ -30,7 +30,7 @@ function get_perspective(user1, user2) {
         user1["lat"], user1["long"]
     )
 
-    var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
+    var user_angle = user_vectors[0].angle(user_vectors[1]);
 
     // TODO: if the other player is faceing towards you or away from you
     // their left and right are switched ("the player in front of you walked left vs right"
