@@ -47,4 +47,3 @@ docker push us-central1-docker.pkg.dev/project-title-here/textmmo/textmmo-image
 - Artifactory: https://console.cloud.google.com/gcr/images/project-title-here/us/textmmo/textmmo-image?project=project-title-here
 - DNS: https://console.cloud.google.com/net-services/dns/zones/textmmo-com/details?project=project-title-here
 - Database: https://cloud.mongodb.com/v2/
-- Amazon Advertising: https://affiliate-program.amazon.com/home
