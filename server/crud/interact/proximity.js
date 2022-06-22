@@ -60,8 +60,6 @@ function get_perspective_message(user1, user2) {
     var is_left =  cross_product_values[2] < 0;
     var direction_str = is_left? 'left': 'right';
 
-    console.log(user_angle);
-
     if ( user_angle < Math.PI/10 ) {
         return 'in front of you';
     } else if ( user_angle < Math.PI/4 ) {
