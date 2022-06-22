@@ -1,5 +1,6 @@
 const db = require('../db/db').get_db();
-const crud_look_around = require('../interact/look_around');
+
+const crud_interact = require('../interact/interact');
 const crud_connection = require('./connection');
 
 module.exports = {
@@ -82,7 +83,8 @@ async function respawn(socket_id, io, reason_of_death) {
         }).catch(console.dir).then( () => {
 
             // look around at the new spawn location
-            crud_look_around.look_around(socket_id, io);
+            
+crud_interact.look_around(socket_id, io);
         });
     });
 }

@@ -2,7 +2,7 @@ const db = require('./db/db').get_db();
 const crud_user = require('./user/user');
 const crud_user_basic = require('./user/basic');
 const crud_terrain = require('./terrain');
-const crud_look_around = require('./interact/look_around');
+const crud_interact = require('./interact/interact');
 const config = require('../config');
 
 module.exports = {
@@ -183,7 +183,8 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
                 }
             }).then( () => {
                 // afterwards, display the new location info to the user
-                crud_look_around.look_around(socket.id, io);
+                
+crud_interact.look_around(socket.id, io);
             })
         })
     });
