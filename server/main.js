@@ -14,7 +14,8 @@ const routers = [
   require('./router/posture'),
   require('./router/patch_notes'),
   require('./router/battle'),
-  require('./router/login')
+  require('./router/login'),
+  require('./router/admin')
 ]
 
 app.use((req,res,next)=>{

@@ -8,7 +8,7 @@ module.exports = {
 };
 
 async function check_banned(email) {
-    return await db.collection('user').find({
+    return await db.collection('user').findOne({
         email: email
     }, {banned: 1})
 }

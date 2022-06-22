@@ -243,6 +243,8 @@ $(function() {
                 socket.emit('yell', {msg: input})
             } else if(input.startsWith('teleport to')) {
                 socket.emit('teleport to', {msg: input})
+            } else if(input.startsWith('ban')) {
+                socket.emit('ban', {msg: input})
             } else if(input.startsWith('check patch notes')) {
                 socket.emit('check patch notes', {})
             } else if(input.startsWith('punch')) {
