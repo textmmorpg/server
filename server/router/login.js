@@ -24,10 +24,8 @@ function login(data, io, socket) {
 
     crud_user.create_user(data["email"], socket).catch(console.dir).then( () => {
         crud_connection.add_connection(data["email"], socket.id).then( () => {
+            crud_look_around.look_around(socket.id, io);
             crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
-                crud_look_around.look_around(
-                    socket.id, io, user["angle"], user["lat"], user["long"]
-                );
                 crud_patch_notes.get_patch_notes_since_ts(
                     user['last_read_patch_notes']
                 ).catch(console.dir).then((patch_notes) => {

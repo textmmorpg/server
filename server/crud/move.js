@@ -183,7 +183,7 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
                 }
             }).then( () => {
                 // afterwards, display the new location info to the user
-                crud_look_around.look_around(socket.id, io, new_angle, new_lat, new_long);
+                crud_look_around.look_around(socket.id, io);
             })
         })
     });

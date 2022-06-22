@@ -18,6 +18,7 @@ async function add_connection(email, socket_id) {
 }
 
 async function get_other_connections(socket_id, x, y, distance) {
+    // TODO: fix for spherical planet
     return await db.collection('user').find({
         lat: { $gt: x - distance, $lt: x + distance},
         long: { $gt: y - distance, $lt: y + distance},

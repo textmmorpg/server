@@ -45,8 +45,6 @@ function add_routes(socket, io) {
     })
 
     socket.on('look', function(data) {
-        crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
-            crud_look_around.look_around(socket.id, io, user['angle'], user['lat'], user['long']);
-        });
+        crud_look_around.look_around(socket.id, io);
     })
 }

@@ -9,32 +9,6 @@ module.exports = {
     attack_nearby
 }
 
-function maybe_send_message(user1, user2, distance, check_behind, io, message) {
-    // send a message if they can hear/see it
-    var distance_ok = proximity.within_distance(
-        user1["lat"], user1["long"],
-        user2["lat"], user2["long"], distance
-    )
-
-    if(!distance_ok) {
-        // too far away to hear/see the message
-        return;
-    }
-    
-    var perspective = proximity.get_perspective(user1, user2);
-
-    if(check_behind && perspective.startsWith("behind you")) {
-        // out of field of view so they cannot see it
-        return;
-    }
-
-    io.to(user2["socket_id"]).emit('message', {
-        // TODO: 'You *hear/see* the player to your left etc etc'
-        // instead of just 'the player to your left etc etc
-        data: 'The player ' + perspective + ' ' + message
-    });
-}
-
 function announce(socket_id, io, message, distance, check_behind) {
     // get sockets of the close players
     crud_user_basic.get_user(socket_id).catch(console.dir).then( (user) => {
@@ -43,13 +17,22 @@ function announce(socket_id, io, message, distance, check_behind) {
         ).catch(console.dir).then( (other_users) => {
             // send the message to the socket of each close player
             other_users.forEach( (other_user) => {
-                maybe_send_message(user, other_user, config.ONE_METER*distance, check_behind, io, message);
+                var perspective = proximity.get_perspective(
+                    user, other_user, config.ONE_METER*distance, check_behind
+                );
+                if(perspective) {
+                    io.to(other_user["socket_id"]).emit('message', {
+                        // TODO: 'You *hear/see* the player to your left etc etc'
+                        // instead of just 'the player to your left etc etc
+                        data: 'The human ' + perspective + ' ' + message
+                    });
+                }
             });
         });
     });
 }
 
-function attack_nearby(socket, io, distance, energy, damage, only_in_field_of_view) {
+function attack_nearby(socket, io, distance, energy, damage, check_behind) {
     // TODO: generalize for attacks other than punching
     // TODO: filter out players that are logged off / idle for a long time
     // get sockets of the close players
@@ -64,10 +47,13 @@ function attack_nearby(socket, io, distance, energy, damage, only_in_field_of_vi
             socket.id, user["lat"], user["long"], config.ONE_METER*distance
         ).catch(console.dir).then( (other_users) => {
             // send the message to the socket of each close player
-            var punched = false
+            var punched = false;
             return other_users.forEach( (other_user) => {
-                if(proximity.is_close(user, other_user, config.ONE_METER*distance, only_in_field_of_view)) {
-                    crud_attack.perform_attack(socket, io, user, other_user, damage, energy);
+                var perspective = proximity.get_perspective(
+                    user, other_user, config.ONE_METER*distance, check_behind
+                );
+                if(perspective) {
+                    crud_attack.perform_attack(socket, io, user, other_user, damage, energy, perspective);
                     punched = true;
                     return;
                 }

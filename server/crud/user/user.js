@@ -58,11 +58,15 @@ async function create_user(email, socket) {
 }
 
 async function respawn(socket_id, io, reason_of_death) {
+    // send message to user
     io.to(socket_id).emit('message', {
         data: 'You died from ' + reason_of_death + '. You are respawning'
     });
-    var angle = Math.random() * Math.PI * 2
+
+    // get spawn location
     await get_spawn_location().catch(console.dir).then( (spawn) => {
+
+        // update user location to spawn and reset energy/health
         db.collection('user').updateOne({
             socket_id: socket_id
         }, {
@@ -73,10 +77,12 @@ async function respawn(socket_id, io, reason_of_death) {
                 last_cmd_ts: new Date(),
                 posture: "standing",
                 age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights),
-                angle: angle
+                angle: Math.random() * Math.PI * 2
             }
         }).catch(console.dir).then( () => {
-            crud_look_around.look_around(socket_id, io, angle, spawn["lat"], spawn["long"]);
+
+            // look around at the new spawn location
+            crud_look_around.look_around(socket_id, io);
         });
     });
 }
