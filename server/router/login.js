@@ -16,21 +16,28 @@ function add_routes(socket, io) {
 }
 
 function login(data, io, socket) {
-    socket.send({login_success: true});
+    crud_connection.check_banned(data["email"]).catch(console.dir).then( (result) => {
+        if(!result["banned"]) {
+            socket.send({login_success: true});
+        } else {
+            socket.send({login_success: false});
+            return;
+        }
 
-    crud_connection.get_active_user_count().then( (count) => {
-        socket.send({active_users: count});
-    });
+        crud_connection.get_active_user_count().then( (count) => {
+            socket.send({active_users: count});
+        });
 
-    crud_user.create_user(data["email"], socket).catch(console.dir).then( () => {
-        crud_connection.add_connection(data["email"], socket.id).then( () => {
-            
-crud_interact.look_around(socket.id, io);
-            crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
-                crud_patch_notes.get_patch_notes_since_ts(
-                    user['last_read_patch_notes']
-                ).catch(console.dir).then((patch_notes) => {
-                    write_patch_notes(patch_notes, socket);
+        crud_user.create_user(data["email"], socket).catch(console.dir).then( () => {
+            crud_connection.add_connection(data["email"], socket.id).then( () => {
+                
+            crud_interact.look_around(socket.id, io);
+                crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
+                    crud_patch_notes.get_patch_notes_since_ts(
+                        user['last_read_patch_notes']
+                    ).catch(console.dir).then((patch_notes) => {
+                        write_patch_notes(patch_notes, socket);
+                    });
                 });
             });
         });

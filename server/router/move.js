@@ -57,35 +57,4 @@ function add_routes(socket, io) {
         crud_move.move(socket, io, config.SWIM_SPEED, Math.PI/2 * -1, 'swim', false);
         crud_interact.announce(socket.id, io, 'swam right', config.SEEING_DISTANCE, true);
     });
-
-    // teleporting (only for admins)
-    socket.on('teleport to', function(data) {
-        // TODO: cleanup nested callbacks
-        // TODO: teleport directly in front of them instead of at their exact location
-
-        var email_target = data["msg"].replace("teleport to", "").trim();
-
-        // check if current user is admin
-        crud_user.is_admin(socket.id).catch(console.dir).then( (user) => {
-            if(!user["admin"]) {
-                socket.send({data: "Only admin users can teleport"});
-                return;
-            }
-
-            // check if target user exists
-            crud_user.get_other_user(email_target).catch(console.dir).then( (user) => {
-                if(user === null) {
-                    socket.send({data: "User not found: " + email_target});
-                    return;
-                }
-
-                // move current user to target user
-                crud_move.teleport(socket, user["lat"], user["long"]).catch(console.dir).then( () => {
-                    socket.send({data: "Teleport successful"});
-                    // announce to players around target user that we teleported
-                    crud_interact.announce(socket.id, io, 'teleported', config.SEEING_DISTANCE, true);
-                });
-            });
-        });
-    })
 }
