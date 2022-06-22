@@ -38,11 +38,11 @@ function within_distance(
 function get_perspective_message(user1, user2) {
 
     var user_vectors = get_user_vectors(
-        user2["lat"], user2["long"], user2["angle"],
+        user2["lat"], user2["long"], user2["angle"] % (Math.PI * 2),
         user1["lat"], user1["long"]
     )
 
-    var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
+    var user_angle = user_vectors[0].angle(user_vectors[1]) % (Math.PI * 2);
 
     // TODO: if the other player is faceing towards you or away from you
     // their left and right are switched ("the player in front of you walked left vs right"
@@ -60,11 +60,13 @@ function get_perspective_message(user1, user2) {
     var is_left =  cross_product_values[2] < 0;
     var direction_str = is_left? 'left': 'right';
 
+    console.log(user_angle);
+
     if ( user_angle < Math.PI/10 ) {
         return 'in front of you';
     } else if ( user_angle < Math.PI/4 ) {
         return 'to the ' + direction_str + ' of you';
-    } else if ( user_angle < config.FIELD_OF_VIEW/2 ) {
+    } else if ( user_angle < config.FIELD_OF_VIEW ) {
         return 'to the far ' + direction_str + ' of you';
     } else if ( user_angle < (3*Math.PI)/4 ) {
         return 'behind you to the ' + direction_str;

@@ -63,7 +63,7 @@ function attack_nearby(socket, io, distance, energy, damage, check_behind) {
                 }
             }).then( () => {
                 if(!punched) {
-                    announce(socket.id, io, 'punched thin air', config.SEEING_DISTANCE, false);
+                    announce(socket.id, io, 'punched thin air', config.SEEING_DISTANCE, true);
                     socket.send({data: 'You missed'});
                     return;
                 }
