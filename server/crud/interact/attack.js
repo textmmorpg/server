@@ -7,6 +7,7 @@ module.exports = {
 
 function perform_attack(socket, io, user, other_user, damage, energy, perspective) {
     // notify attacker they hit their target
+    // TODO: add perspective of the other player
     socket.send({data: 'Your punch hit the player in front of you!'})
 
     // notify victim they were hit
