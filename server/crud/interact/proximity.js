@@ -3,8 +3,6 @@ const config = require("../../config");
 const { Vector } = require("simplevectorsjs");
 
 module.exports = {
-    is_close,
-    within_distance,
     get_perspective
 }
 
@@ -23,14 +21,28 @@ function get_user_vectors(
     return [user1and2Vector, user2Vector];
 }
 
-function get_perspective(user1, user2) {
+function within_distance(
+    user1_x, user1_y,
+    user2_x, user2_y, distance_limit
+) {
+    // TODO: fix for spherical planet / modulus
+    // check if they are too far away
+    var distance = Math.sqrt(
+        Math.pow(user2_x - user1_x, 2) +
+        Math.pow(user2_y - user1_y, 2)
+    );
+
+    return distance < distance_limit
+}
+
+function get_perspective_message(user1, user2) {
 
     var user_vectors = get_user_vectors(
-        user2["lat"], user2["long"], user2["angle"],
+        user2["lat"], user2["long"], user2["angle"] % (Math.PI * 2),
         user1["lat"], user1["long"]
     )
 
-    var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
+    var user_angle = user_vectors[0].angle(user_vectors[1]) % (Math.PI * 2);
 
     // TODO: if the other player is faceing towards you or away from you
     // their left and right are switched ("the player in front of you walked left vs right"
@@ -47,11 +59,12 @@ function get_perspective(user1, user2) {
     var cross_product_values = direction_vector.toString();
     var is_left =  cross_product_values[2] < 0;
     var direction_str = is_left? 'left': 'right';
+
     if ( user_angle < Math.PI/10 ) {
         return 'in front of you';
     } else if ( user_angle < Math.PI/4 ) {
         return 'to the ' + direction_str + ' of you';
-    } else if ( user_angle < config.FIELD_OF_VIEW/2 ) {
+    } else if ( user_angle < config.FIELD_OF_VIEW ) {
         return 'to the far ' + direction_str + ' of you';
     } else if ( user_angle < (3*Math.PI)/4 ) {
         return 'behind you to the ' + direction_str;
@@ -60,20 +73,7 @@ function get_perspective(user1, user2) {
     }
 }
 
-function within_distance(
-    user1_x, user1_y,
-    user2_x, user2_y, distance_limit
-) {
-    // check if they are too far away
-    var distance = Math.sqrt(
-        Math.pow(user2_x - user1_x, 2) +
-        Math.pow(user2_y - user1_y, 2)
-    );
-
-    return distance < distance_limit
-}
-
-function is_close(user1, user2, distance, only_in_field_of_view) {
+function get_perspective(user1, user2, distance, check_behind) {
 
     var distance_ok = within_distance(
         user1["lat"], user1["long"],
@@ -85,12 +85,12 @@ function is_close(user1, user2, distance, only_in_field_of_view) {
         return false;
     }
     
-    var user_vectors = get_user_vectors(
-        user2["lat"], user2["long"], user2["angle"],
-        user1["lat"], user1["long"]
-    )
+    var perspective = get_perspective_message(user1, user2);
 
-    var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
-    var in_field_of_view = user_angle < config.FIELD_OF_VIEW/2
-    return !only_in_field_of_view || in_field_of_view;
+    if(check_behind && perspective.startsWith("behind you")) {
+        // out of field of view so they cannot see it
+        return false;
+    }
+
+    return perspective;
 }
