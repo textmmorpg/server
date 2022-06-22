@@ -19,7 +19,7 @@ function add_routes(socket, io) {
         crud_interact.attack_nearby(
             socket, io, 
             config.ATTACK_DISTANCE,
-            config.PUNCH_ENERGY, config.PUNCH_DAMAGE, false
+            config.PUNCH_ENERGY, config.PUNCH_DAMAGE, true
         );
     });
 }
