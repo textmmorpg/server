@@ -42,7 +42,7 @@ function get_perspective_message(user1, user2) {
         user1["lat"], user1["long"]
     )
 
-    var user_angle = user_vectors[0].angle(user_vectors[1]);
+    var user_angle = user_vectors[0].angle(user_vectors[1]) % Math.PI;
 
     // TODO: if the other player is faceing towards you or away from you
     // their left and right are switched ("the player in front of you walked left vs right"
@@ -59,6 +59,7 @@ function get_perspective_message(user1, user2) {
     var cross_product_values = direction_vector.toString();
     var is_left =  cross_product_values[2] < 0;
     var direction_str = is_left? 'left': 'right';
+
     if ( user_angle < Math.PI/10 ) {
         return 'in front of you';
     } else if ( user_angle < Math.PI/4 ) {

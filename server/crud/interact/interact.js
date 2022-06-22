@@ -17,6 +17,7 @@ function announce(socket_id, io, message, distance, check_behind) {
         ).catch(console.dir).then( (other_users) => {
             // send the message to the socket of each close player
             other_users.forEach( (other_user) => {
+                // check if "other_user" can see "user"
                 var perspective = proximity.get_perspective(
                     user, other_user, config.ONE_METER*distance, check_behind
                 );
@@ -49,8 +50,9 @@ function attack_nearby(socket, io, distance, energy, damage, check_behind) {
             // send the message to the socket of each close player
             var punched = false;
             return other_users.forEach( (other_user) => {
+                // check if "user" can see "other_user"
                 var perspective = proximity.get_perspective(
-                    user, other_user, config.ONE_METER*distance, check_behind
+                    other_user, user, config.ONE_METER*distance, check_behind
                 );
                 if(perspective) {
                     crud_attack.perform_attack(socket, io, user, other_user, damage, energy, perspective);
