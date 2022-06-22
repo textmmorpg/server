@@ -86,7 +86,6 @@ function get_perspective(user1, user2, distance, check_behind) {
     }
     
     var perspective = get_perspective_message(user1, user2);
-
     if(check_behind && perspective.startsWith("behind you")) {
         // out of field of view so they cannot see it
         return false;

@@ -61,7 +61,6 @@ function add_routes(socket, io) {
     // teleporting (only for admins)
     socket.on('teleport to', function(data) {
         // TODO: cleanup nested callbacks
-        // TODO: teleport directly in front of them instead of at their exact location
 
         var email_target = data["msg"].replace("teleport to", "").trim();
 
@@ -79,11 +78,18 @@ function add_routes(socket, io) {
                     return;
                 }
 
+                // calculate place to teleport (directly in front of the target user)
+                var target_lat = config.ONE_METER * Math.cos(user["angle"]);
+                var target_long = config.ONE_METER * Math.sin(user["angle"]);
+                var target_angle = (user["angle"] + Math.PI) // turn to face them
+
                 // move current user to target user
-                crud_move.teleport(socket, user["lat"], user["long"]).catch(console.dir).then( () => {
+                crud_move.teleport(socket, target_lat, target_long, target_angle).catch(console.dir).then( () => {
                     socket.send({data: "Teleport successful"});
                     // announce to players around target user that we teleported
                     crud_interact.announce(socket.id, io, 'teleported', config.SEEING_DISTANCE, true);
+                    // look around new environment
+                    crud_interact.look_around(socket.id, io);
                 });
             });
         });

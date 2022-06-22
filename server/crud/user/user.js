@@ -28,7 +28,7 @@ async function is_admin(socket_id) {
 async function get_other_user(email) {
     return await db.collection('user').findOne({
         email: email
-    }, {lat: 1, long: 1});
+    }, {lat: 1, long: 1, angle: 1});
 }
 
 async function create_user(email, socket) {

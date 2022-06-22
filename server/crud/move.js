@@ -183,19 +183,18 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
                 }
             }).then( () => {
                 // afterwards, display the new location info to the user
-                
-crud_interact.look_around(socket.id, io);
+                crud_interact.look_around(socket.id, io);
             })
         })
     });
 }
 
-async function teleport(socket, lat, long) {
+async function teleport(socket, lat, long, angle) {
     await db.collection("user").updateOne({
         socket_id: socket.id
     }, {
         $set: {
-            lat: lat, long: long,
+            lat: lat, long: long, angle: angle,
             last_cmd_ts: new Date(),
         }
     })
