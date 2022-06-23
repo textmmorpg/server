@@ -27,9 +27,11 @@ function add_routes(socket, io) {
                 }
 
                 // calculate place to teleport (directly in front of the target user)
-                var target_lat = config.ONE_METER * Math.cos(user["angle"]);
-                var target_long = config.ONE_METER * Math.sin(user["angle"]);
-                var target_angle = (user["angle"] + Math.PI) // turn to face them
+                var target_lat = user["lat"] + config.WALK_SPEED*config.ONE_METER * Math.cos(user["angle"]);
+                var target_long = user["long"] + config.WALK_SPEED*config.ONE_METER * Math.sin(user["angle"]);
+                // added a little bit of randomness because if you are at
+                // exactly the same angle, you cannot see them
+                var target_angle = (user["angle"] + Math.PI + Math.random()/100) // turn to face them
 
                 // move current user to target user
                 crud_admin.teleport(

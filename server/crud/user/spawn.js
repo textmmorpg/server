@@ -76,5 +76,5 @@ async function get_spawn_location() {
         {
             biome: "forest"
         }, {lat: 1, long: 1, height: 1, biome: 1}
-    ).limit(1).skip(Math.round(Math.random()*50)).next();
+    ).limit(1).skip(Math.round(Math.random()*100)).next();
 }
