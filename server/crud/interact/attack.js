@@ -1,4 +1,4 @@
-const crud_user = require('../user/user');
+const crud_spawn = require('../user/spawn');
 const crud_battle = require('../battle');
 
 module.exports = {
@@ -23,7 +23,7 @@ function perform_attack(socket, io, user, other_user, damage, energy, perspectiv
     ).catch(console.dir).then( () => {
         // check if the attack killed them
         if(other_user["health"] < damage) {
-            crud_user.respawn(other_user["socket_id"], io, 'a punch')
+            crud_spawn.respawn(other_user["socket_id"], io, 'a punch')
             // TODO: don't send this to the player that died
             // announce(socket.id, io, 'died from being punched', config.SEEING_DISTANCE, false);
             socket.send({data: 'Your punch was fatal!'});

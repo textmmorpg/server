@@ -3,15 +3,8 @@ const db = require('../db/db').get_db();
 module.exports = {
     add_connection,
     get_other_connections,
-    get_active_user_count,
-    check_banned
+    get_active_user_count
 };
-
-async function check_banned(email) {
-    return await db.collection('user').findOne({
-        email: email
-    }, {banned: 1})
-}
 
 async function add_connection(email, socket_id) {
     await db.collection('user').updateOne({

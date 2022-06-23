@@ -1,5 +1,5 @@
 const crud_battle = require('../crud/battle');
-const crud_user = require('../crud/user/user');
+const crud_spawn = require('../crud/user/spawn');
 const crud_interact = require('../crud/interact/interact');
 const config = require('../config');
 
@@ -12,7 +12,7 @@ function add_routes(socket, io) {
         socket.send({data: "You have died."});
         crud_battle.create_corpse(socket);
         crud_interact.announce(socket.id, io, 'committed suicide', config.SEEING_DISTANCE, false);
-        crud_user.respawn(socket.id, io, 'suicide');
+        crud_spawn.respawn(socket.id, io, 'suicide');
     });
 
     socket.on('punch', function(data) {

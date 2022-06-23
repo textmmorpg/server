@@ -1,16 +1,9 @@
 const db = require('../db/db').get_db();
-
 const crud_interact = require('../interact/interact');
-const crud_user_basic = require('./basic');
 
 module.exports = {
     create_user,
-    create_admin,
-    get_other_user,
-    is_admin,
-    respawn,
-    ban,
-    unban
+    respawn
 };
 
 const ages = ["young", "middle aged", "old"];
@@ -19,41 +12,6 @@ const weights = ["skinny", "average", "fat"];
 
 function getRandom(array) {
     return array[Math.floor(Math.random() * array.length)];
-}
-
-async function is_admin(socket_id) {
-    return await db.collection('user').findOne({
-        socket_id: socket_id
-    }, {admin: 1});
-}
-
-async function ban(email, io) {
-    // set banned to true
-    await db.collection('user').updateOne({
-        email: email
-    }, {
-        $set: {banned: true}
-    }).catch(console.dir).then( () => {
-        // end that users conncetion
-        // if they are currently playing
-        crud_user_basic.get_user_by_email(email).catch(console.dir).then( (user) => {
-            io.in(user['socket_id']).disconnectSockets(true);
-        })
-    })
-}
-
-async function unban(custom_db, email) {
-    await custom_db.collection('user').updateOne({
-        email: email
-    }, {
-        $set: {banned: false}
-    });
-}
-
-async function get_other_user(email) {
-    return await db.collection('user').findOne({
-        email: email
-    }, {lat: 1, long: 1, angle: 1});
 }
 
 async function create_user(email, socket) {
@@ -110,14 +68,6 @@ async function respawn(socket_id, io, reason_of_death) {
             // look around at the new spawn location
             crud_interact.look_around(socket_id, io);
         });
-    });
-}
-
-async function create_admin(custom_db, email) {
-    await custom_db.collection('user').updateOne({
-        email: email
-    }, {
-        $set: {admin: true}
     });
 }
 
