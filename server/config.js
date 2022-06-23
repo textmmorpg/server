@@ -13,7 +13,7 @@ const NORTH = Math.PI/2;
 const SOUTH = Math.PI*1.5;
 const EAST = 0;
 const WEST = Math.PI;
-const FIELD_OF_VIEW = 1.178097; // 135 degrees (half of that in each direction)
+const FIELD_OF_VIEW = Math.PI/2;
 
 module.exports = {
     SEEING_DISTANCE,
