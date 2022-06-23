@@ -9,7 +9,8 @@ module.exports = {
     get_other_user,
     is_admin,
     respawn,
-    ban
+    ban,
+    unban
 };
 
 const ages = ["young", "middle aged", "old"];
@@ -39,6 +40,14 @@ async function ban(email, io) {
             io.in(user['socket_id']).disconnectSockets(true);
         })
     })
+}
+
+async function unban(custom_db, email) {
+    await custom_db.collection('user').updateOne({
+        email: email
+    }, {
+        $set: {banned: false}
+    });
 }
 
 async function get_other_user(email) {
