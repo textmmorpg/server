@@ -8,7 +8,8 @@ module.exports = {
     unban,
     check_banned,
     add_message,
-    teleport
+    teleport,
+    report
 }
 
 async function create_admin(custom_db, email) {
@@ -72,7 +73,16 @@ async function add_message(socket, message) {
     await crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
         db.collection('message').insertOne({
             sender: user['email'],
-            message: message
+            message: message,
+            ts: new Date()
         });
     });
+}
+
+async function report(email_reporter, email_reported) {
+    await db.collection('report').insertOne({
+        reporter: email_reporter,
+        reported: email_reported,
+        ts: new Date()
+    })
 }

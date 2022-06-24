@@ -1,6 +1,7 @@
 const crud_user_basic = require('../crud/user/basic');
 const crud_admin = require('../crud/admin');
 const crud_interact = require('../crud/interact/interact');
+const crud_connection = require('../crud/user/connection');
 const config = require('../config');
 
 module.exports = {
@@ -47,7 +48,6 @@ function add_routes(socket, io) {
         });
     })
 
-
     socket.on('ban', function(data) {
         var email_target = data["msg"].replace("ban", "").trim();
 
@@ -67,6 +67,22 @@ function add_routes(socket, io) {
 
                 crud_admin.ban(email_target, io).catch(console.dir).then( () => {
                     socket.send({data: "User banned"});
+                });
+            });
+        });
+    });
+
+    socket.on('report', function(data) {
+        crud_user_basic.get_user(socket.id).catch(console.dir).then( (user) => {
+            crud_connection.get_other_connections(
+                socket.id, user["lat"], user["long"], config.ONE_METER*config.REPORT_DISTANCE
+            ).catch(console.dir).then( (other_users) => {
+                other_users.forEach( (other_user) => {
+                    crud_admin.report(
+                        user['email'], other_user['email']
+                    ).catch(console.dir).then( () => {
+                        socket.send({data: "User reported"});
+                    });
                 });
             });
         });
