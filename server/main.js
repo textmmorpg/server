@@ -41,6 +41,20 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/../client/index.html");
 });
 
+// this will be called regularly by a gcloud cron job
+app.get("/ttl", (req, res) => {
+  res.sendStatus(200);
+  console.log("Running TTL");
+
+  // TODO
+
+  // delete old corpses
+
+  // delete old messages in the message table
+
+  // delete old reports
+});
+
 app.get("/robots.txt", (req, res) => {
   res.sendFile(__dirname + "/../client/robots.txt");
 });

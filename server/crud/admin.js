@@ -79,6 +79,8 @@ async function add_message(socket, message) {
     });
 }
 
+// todo: send email to admins for each report with that users
+// recent messages
 async function report(email_reporter, email_reported) {
     await db.collection('report').insertOne({
         reporter: email_reporter,
