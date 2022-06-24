@@ -10,7 +10,8 @@ async function get_user(socket_id) {
         socket_id: socket_id
     }, {
         lat: 1, long: 1, socket_id: 1, energy: 1,
-        posture: 1, angle: 1, last_read_patch_notes: 1
+        posture: 1, angle: 1, last_read_patch_notes: 1,
+        email: 1
     });
 }
 

@@ -1,5 +1,4 @@
 const crud_move = require('../crud/move');
-const crud_user = require('../crud/user/user');
 const crud_interact = require('../crud/interact/interact');
 const config = require('../config');
 

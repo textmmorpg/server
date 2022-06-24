@@ -1,5 +1,5 @@
 const db = require('./db/db').get_db();
-const crud_user = require('./user/user');
+const crud_spawn = require('./user/spawn');
 const crud_user_basic = require('./user/basic');
 const crud_terrain = require('./terrain');
 const crud_interact = require('./interact/interact');
@@ -8,8 +8,7 @@ const config = require('../config');
 module.exports = {
     set_posture,
     get_vibe,
-    move,
-    teleport
+    move
 };
 
 async function set_posture(socket, posture) {
@@ -131,7 +130,7 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
         // check if user is drowning
         if(user['energy'] < movement_energy && distance !== 0 && move_type === "swim") {
             crud_crud_interact.announce(socket.id, io, 'drowned', config.SEEING_DISTANCE, false);
-            crud_user.respawn(socket.id, io, 'drowning');
+            crud_spawn.respawn(socket.id, io, 'drowning');
             return;
         }
 
@@ -187,15 +186,4 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
             })
         })
     });
-}
-
-async function teleport(socket, lat, long, angle) {
-    await db.collection("user").updateOne({
-        socket_id: socket.id
-    }, {
-        $set: {
-            lat: lat, long: long, angle: angle,
-            last_cmd_ts: new Date(),
-        }
-    })
 }

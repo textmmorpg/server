@@ -1,5 +1,4 @@
 const crud_move = require('../crud/move');
-const crud_user_basic = require('../crud/user/basic');
 const crud_interact = require('../crud/interact/interact');
 
 module.exports = {
@@ -45,7 +44,6 @@ function add_routes(socket, io) {
     })
 
     socket.on('look', function(data) {
-        
-crud_interact.look_around(socket.id, io);
+        crud_interact.look_around(socket.id, io);
     })
 }

@@ -249,6 +249,8 @@ $(function() {
                 socket.emit('check patch notes', {})
             } else if(input.startsWith('punch')) {
                 socket.emit('punch', {});
+            } else if(input.startsWith('report')) {
+                socket.emit('report', {});
             } else if(input.startsWith('?') || input.startsWith('help')) {
                 help_message();
             } else {

@@ -1,4 +1,5 @@
-const crud_user = require('../crud/user/user');
+const crud_spawn = require('../crud/user/spawn');
+const crud_admin = require('../crud/admin');
 const crud_user_basic = require('../crud/user/basic');
 const crud_connection = require('../crud/user/connection');
 const crud_interact = require('../crud/interact/interact');
@@ -16,7 +17,7 @@ function add_routes(socket, io) {
 }
 
 function login(data, io, socket) {
-    crud_connection.check_banned(data["email"]).catch(console.dir).then( (result) => {
+    crud_admin.check_banned(data["email"]).catch(console.dir).then( (result) => {
         if(!result["banned"]) {
             socket.send({login_success: true});
         } else {
@@ -28,7 +29,7 @@ function login(data, io, socket) {
             socket.send({active_users: count});
         });
 
-        crud_user.create_user(data["email"], socket).catch(console.dir).then( () => {
+        crud_spawn.create_user(data["email"], socket).catch(console.dir).then( () => {
             crud_connection.add_connection(data["email"], socket.id).then( () => {
                 
             crud_interact.look_around(socket.id, io);

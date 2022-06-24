@@ -2,6 +2,7 @@ const SEEING_DISTANCE = 5;
 const HEARING_DISTANCE = 5;
 const HEARING_DISTANCE_QUIET = 2;
 const HEARING_DISTANCE_LOUD = 15;
+const REPORT_DISTANCE = HEARING_DISTANCE_LOUD;
 const ATTACK_DISTANCE = 5;
 const PUNCH_DAMAGE = 0.1;
 const PUNCH_ENERGY = 0.05
@@ -13,13 +14,14 @@ const NORTH = Math.PI/2;
 const SOUTH = Math.PI*1.5;
 const EAST = 0;
 const WEST = Math.PI;
-const FIELD_OF_VIEW = 1.178097; // 135 degrees (half of that in each direction)
+const FIELD_OF_VIEW = Math.PI/2;
 
 module.exports = {
     SEEING_DISTANCE,
     HEARING_DISTANCE,
     HEARING_DISTANCE_QUIET,
     HEARING_DISTANCE_LOUD,
+    REPORT_DISTANCE,
     ATTACK_DISTANCE,
     PUNCH_DAMAGE,
     PUNCH_ENERGY,
