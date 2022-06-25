@@ -3,7 +3,7 @@ const crud_spawn = require('../user/spawn');
 const crud_user_basic = require('../user/basic');
 const crud_connection = require('../user/connection');
 const config = require('../../config');
-const proximity = require('./proximity');
+const proximity = require('../../utils/proximity');
 
 module.exports = {
     attack_nearby,

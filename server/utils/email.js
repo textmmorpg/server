@@ -15,16 +15,16 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-function send_email(email, text) {
+function send_email(email, subject, text) {
     user.check_mailing_list(email).catch(console.dir).then( (user) => {
-        if(!user[mailing_list]) return;
+        if(!user["mailing_list"]) return;
 
         var mailOptions = {
-            from: 'youremail@gmail.com',
+            from: 'updates.textmmo@gmail.com',
             to: email,
-            subject: 'TextMMO Patch Notes: ' + new Date(),
-            text: text + 
-            "\n\n\nTo unsubscribe, click [here](https://textmmo.com/unsubscribe?email="+email+"@gmail.com&code="+user["unsubscribe_code"]
+            subject: subject,
+            html: text + 
+            "\n\n\nTo unsubscribe from all future emails, click <a href='https://textmmo.com/unsubscribe?email="+email+"@gmail.com&code="+user["unsubscribe_code"]+"'>here</a>"
         };
     
         transporter.sendMail(mailOptions, function(error, info){
