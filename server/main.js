@@ -8,6 +8,7 @@ const path = require('path');
 const rateLimit = require('express-rate-limit')
 const user = require('./crud/user/basic');
 const metrics = require('./crud/metrics');
+const admin = require('./crud/admin');
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
@@ -59,13 +60,8 @@ app.get("/ttl", (req, res) => {
   res.sendStatus(200);
   console.log("Running TTL");
   metrics.email_metrics().then( () => {
-    // TODO
-
-    // delete old corpses
-
-    // delete old messages in the message table
-
-    // delete old reports
+    admin.email_admins_messages();
+    admin.email_admins_reports();
   })
 });
 

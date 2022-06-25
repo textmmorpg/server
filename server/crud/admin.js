@@ -10,7 +10,9 @@ module.exports = {
     check_banned,
     add_message,
     teleport,
-    report
+    report,
+    email_admins_messages,
+    email_admins_reports,
 }
 
 async function create_admin(custom_db, email) {
@@ -25,6 +27,57 @@ async function is_admin(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
     }, {admin: 1});
+}
+
+async function get_all_admins() {
+    return await db.collection('user').find({
+        admin: true
+    }, {email: 1});
+}
+
+async function email_admins_reports() {
+    // TODO
+}
+
+async function email_admins_messages() {
+    get_all_messages().catch(console.dir).then( (messages) => {
+
+        var message_data = `
+        <table>
+        <tbody>
+        <tr>
+        <td>Sender</td>
+        <td>Message</td>
+        <td>Date</td>
+        </tr>
+        `
+        messages.forEach( (message) => {
+            message_data += `
+            <tr>
+            <td>`+message['sender']+`</td>
+            <td>`+message['message']+`</td>
+            <td>`+message['ts']+`</td>
+            </tr>
+            `
+        }).then( () => {
+            message_data += `
+            </tbody>
+            </table>
+            `
+
+            get_all_admins().catch(console.dir).then( (admins) => {
+                admins.forEach( (admin) => {
+                    email_util.send_email(
+                        admin['email'],
+                        'Please review in game messages',
+                        message_data
+                    );
+                }).then( () => {
+                    delete_messages();
+                });
+            })
+        })
+    })
 }
 
 async function ban(email, io) {
@@ -84,6 +137,16 @@ async function add_message(socket, message) {
             ts: new Date()
         });
     });
+}
+
+async function get_all_messages() {
+    return await db.collection('message').find({}, {
+        sender: 1, message: 1, ts: 1
+    });
+}
+
+async function delete_messages() {
+    await db.collection('message').deleteMany({});
 }
 
 // todo: send email to admins for each report with that users
