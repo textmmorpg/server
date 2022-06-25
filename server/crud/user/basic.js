@@ -23,3 +23,11 @@ async function get_user_by_email(email) {
         posture: 1, angle: 1, last_read_patch_notes: 1
     });
 }
+
+async function check_mailing_list(email) {
+    return await db.collection('user').findOne({
+        email: email
+    }, {
+        mailing_list: 1
+    })
+}
