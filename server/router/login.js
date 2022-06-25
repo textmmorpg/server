@@ -18,7 +18,7 @@ function add_routes(socket, io) {
 
 function login(data, io, socket) {
     crud_admin.check_banned(data["email"]).catch(console.dir).then( (result) => {
-        if(!result["banned"]) {
+        if(result === null || !result["banned"]) {
             socket.send({login_success: true});
         } else {
             socket.send({login_success: false});

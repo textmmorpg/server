@@ -1,6 +1,6 @@
 const crud_user_basic = require('../user/basic');
 const crud_connection = require('../user/connection');
-const proximity = require('./proximity');
+const proximity = require('../../utils/proximity');
 const crud_terrain = require('../terrain');
 const config = require("../../config");
 

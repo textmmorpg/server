@@ -1,5 +1,6 @@
 const db = require('./db/db').get_db();
 const crud_user_basic = require('./user/basic');
+const email_util = require('../utils/email');
 
 module.exports = {
     create_admin,
@@ -38,6 +39,12 @@ async function ban(email, io) {
         crud_user_basic.get_user_by_email(email).catch(console.dir).then( (user) => {
             io.in(user['socket_id']).disconnectSockets(true);
         })
+
+        // email the banned user to inform them they are banned
+        email_util.send_email(
+            email, 'You are banned',
+            'You are banned from textmmo.com indefinitely. Bye!'
+        );
     })
 }
 
@@ -79,6 +86,8 @@ async function add_message(socket, message) {
     });
 }
 
+// todo: send email to admins for each report with that users
+// recent messages
 async function report(email_reporter, email_reported) {
     await db.collection('report').insertOne({
         reporter: email_reporter,
