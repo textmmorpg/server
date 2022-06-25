@@ -36,7 +36,43 @@ async function get_all_admins() {
 }
 
 async function email_admins_reports() {
-    // TODO
+    get_reports().catch(console.dir).then( (reports) => {
+
+        var report_data = `
+        <table>
+        <tbody>
+        <tr>
+        <td>Reporter</td>
+        <td>Reported</td>
+        <td>Date</td>
+        </tr>
+        `
+        reports.forEach( (report) => {
+            report_data += `
+            <tr>
+            <td>`+report['reporter']+`</td>
+            <td>`+report['reported']+`</td>
+            <td>`+report['ts']+`</td>
+            </tr>
+            `
+        }).then( () => {
+            report_data += `
+            </tbody>
+            </table>
+            `
+            get_all_admins().catch(console.dir).then( (admins) => {
+                admins.forEach( (admin) => {
+                    email_util.send_email(
+                        admin['email'],
+                        'Please review reported users',
+                        report_data
+                    );
+                }).then( () => {
+                    delete_reports();
+                });
+            });
+        });
+    });
 }
 
 async function email_admins_messages() {
@@ -75,7 +111,7 @@ async function email_admins_messages() {
                 }).then( () => {
                     delete_messages();
                 });
-            })
+            });
         })
     })
 }
@@ -157,4 +193,12 @@ async function report(email_reporter, email_reported) {
         reported: email_reported,
         ts: new Date()
     })
+}
+
+async function get_reports() {
+    return await db.collection('report').find({});
+}
+
+async function delete_reports() {
+    await db.collection('report').deleteMany({});
 }
