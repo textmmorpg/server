@@ -36,84 +36,35 @@ async function get_all_admins() {
 }
 
 async function email_admins_reports() {
-    get_reports().catch(console.dir).then( (reports) => {
-
-        var report_data = `
-        <table>
-        <tbody>
-        <tr>
-        <td>Reporter</td>
-        <td>Reported</td>
-        <td>Date</td>
-        </tr>
-        `
-        reports.forEach( (report) => {
-            report_data += `
-            <tr>
-            <td>`+report['reporter']+`</td>
-            <td>`+report['reported']+`</td>
-            <td>`+report['ts']+`</td>
-            </tr>
-            `
-        }).then( () => {
-            report_data += `
-            </tbody>
-            </table>
-            `
-            get_all_admins().catch(console.dir).then( (admins) => {
-                admins.forEach( (admin) => {
-                    email_util.send_email(
-                        admin['email'],
-                        'Please review reported users',
-                        report_data
-                    );
-                }).then( () => {
-                    delete_reports();
-                });
-            });
-        });
+    Promise.all([
+        get_reports(),
+        get_all_admins()
+    ]).then(function(results) {
+        email_util.email_list(
+            results[1],
+            'Please review reported users',
+            ['Reporter', 'Reported', 'Date'],
+            ['reporter', 'reported', 'ts'],
+            results[0],
+            delete_reports
+        );
     });
 }
 
 async function email_admins_messages() {
-    get_all_messages().catch(console.dir).then( (messages) => {
-
-        var message_data = `
-        <table>
-        <tbody>
-        <tr>
-        <td>Sender</td>
-        <td>Message</td>
-        <td>Date</td>
-        </tr>
-        `
-        messages.forEach( (message) => {
-            message_data += `
-            <tr>
-            <td>`+message['sender']+`</td>
-            <td>`+message['message']+`</td>
-            <td>`+message['ts']+`</td>
-            </tr>
-            `
-        }).then( () => {
-            message_data += `
-            </tbody>
-            </table>
-            `
-
-            get_all_admins().catch(console.dir).then( (admins) => {
-                admins.forEach( (admin) => {
-                    email_util.send_email(
-                        admin['email'],
-                        'Please review in game messages',
-                        message_data
-                    );
-                }).then( () => {
-                    delete_messages();
-                });
-            });
-        })
-    })
+    Promise.all([
+        get_all_messages(),
+        get_all_admins()
+    ]).then(function(results) {
+        email_util.email_list(
+            results[1],
+            'Please review in game message',
+            ['Sender', 'Message', 'Date'],
+            ['sender', 'message', 'ts'],
+            results[0],
+            delete_messages
+        );
+    });
 }
 
 async function ban(email, io) {

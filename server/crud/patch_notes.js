@@ -37,11 +37,18 @@ async function update_user_ts(socket_id) {
 }
 
 async function email_patch_notes() {
-    get_patch_notes_since_ts(
-        new Date(new Date() - config.ONE_WEEK)
-    ).catch(console.dir).then( (patches) => {
-        user.get_mailing_list().catch(console.dir).then( (users) => {
-            
-        });
+    Promise.all([
+        get_patch_notes_since_ts(new Date(new Date() - config.ONE_WEEK)),
+        user.get_mailing_list()
+    ]).then(function(results) {
+        if(results[0].length === 0) return;
+        email_util.email_list(
+            results[1],
+            'Here is what changed on TextMMO',
+            ['Patch Note', 'Date'],
+            ['note', 'ts'],
+            results[0],
+            false
+        );
     });
 }

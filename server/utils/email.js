@@ -38,21 +38,21 @@ function send_email(email, subject, text) {
     })
 }
 
-function email_list(recipients, subject, table_headers, table_data, callback) {
+function email_list(recipients, subject, headers_text, headers, table_data, callback) {
     // build table
     var email_table = "<table><tbody><tr>";
 
     // add header row
-    for(var i = 0; i < table_headers.length; i++) {
-        email_table += "<td>" + table_headers[i] + "</td>";
+    for(var i = 0; i < headers_text.length; i++) {
+        email_table += "<td>" + headers_text[i] + "</td>";
     }
     email_table += "</tr>";
 
     // add data rows
     for(var i = 0; i < table_data.length; i++) {
         email_table += "<tr>";
-        for(var ii = 0; ii < table_headers.length; ii++) {
-            email_table += "<td>" + table_data[i][table_headers[ii]] + "</td>";
+        for(var ii = 0; ii < headers.length; ii++) {
+            email_table += "<td>" + table_data[i][headers[ii]] + "</td>";
         }
         email_table += "<\tr>";
     }
