@@ -4,7 +4,8 @@ module.exports = {
     get_user,
     get_user_by_email,
     check_mailing_list,
-    unsubscribe
+    unsubscribe,
+    subscribe
 }
 
 async function get_user(socket_id) {
@@ -39,5 +40,13 @@ async function unsubscribe(email, code) {
         email: email, unsubscribe_code: code
     }, {
         $set: {mailing_list: false}
+    })
+}
+
+async function subscribe(custom_db, email) {
+    return await custom_db.collection('user').updateOne({
+        email: email
+    }, {
+        $set: {mailing_list: true}
     })
 }

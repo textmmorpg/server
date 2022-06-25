@@ -12,7 +12,8 @@ function up(env) {
     db.collection('user').updateMany({}, {
         $set: {
             mailing_list: true,
-            unsubscribe_code: Math.random().toString(36).slice(2)
+            unsubscribe_code: Math.random().toString(36).slice(2),
+            signup_ts: new Date()
         }
     }).then( () => {
         console.log("done");
@@ -26,7 +27,8 @@ function down(env) {
     db.collection('user').updateMany({}, {
         $set: {
             mailing_list: null,
-            unsubscribe_code: null
+            unsubscribe_code: null,
+            signup_ts: null
         }
     }).then( () => {
         console.log("done");
