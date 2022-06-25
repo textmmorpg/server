@@ -15,6 +15,7 @@ const SOUTH = Math.PI*1.5;
 const EAST = 0;
 const WEST = Math.PI;
 const FIELD_OF_VIEW = Math.PI/2;
+const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 
 module.exports = {
     SEEING_DISTANCE,
@@ -33,5 +34,6 @@ module.exports = {
     SOUTH,
     EAST,
     WEST,
-    FIELD_OF_VIEW
+    FIELD_OF_VIEW,
+    ONE_WEEK
 }
