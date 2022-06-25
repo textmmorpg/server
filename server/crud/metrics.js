@@ -9,37 +9,29 @@ module.exports = {
 async function email_metrics() {
 
     Promise.all([
-        total_users_count(),
-        mailing_list_count(),
-        new_users_count(),
-        active_users_count(),
-        messages_count(),
-        corpse_count()
-    ]).then(function(metrics) {
-        var metrics = `
-            <table>
-            <tbody>
-            <tr>
-            <td>Total Users</td>
-            <td>Users on the Mailing List</td>
-            <td>New Users This Week</td>
-            <td>Active Users This Week</td>
-            <td>Messages Sent This Week</td>
-            <td>Corpses Created This Week</td>
-            </tr>
-            <tr>
-            <td>`+metrics[0]+`</td>
-            <td>`+metrics[1]+`</td>
-            <td>`+metrics[2]+`</td>
-            <td>`+metrics[3]+`</td>
-            <td>`+metrics[4]+`</td>
-            <td>`+metrics[5]+`</td>
-            </tr>
-            </tbody>
-            </table>
-        `
-
-        email_util.send_email('updates.textmmo@gmail.com', 'Weekly Metrics', metrics);
+        total_users_count(), mailing_list_count(), new_users_count(),
+        active_users_count(), messages_count(), corpse_count()
+    ]).then( (results) => {
+        email_util.email_list_2(
+            [{email:'updates.textmmo@gmail.com'}],
+            'Weekly Metrics',
+            [
+                'Total Users', 'Users on the Mailing List', 'New Users This Week',
+                'Active Users This Week', 'Messages Sent This Week', 'Corpses Created This Week'
+            ],
+            [0,1,2,3,4,5],
+            [
+                {
+                    0: results[0],
+                    1: results[1],
+                    2: results[2],
+                    3: results[3],
+                    4: results[4],
+                    5: results[5]
+                }
+            ],
+            false
+        );
     });
 }
 

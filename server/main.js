@@ -8,6 +8,10 @@ const path = require('path');
 const rateLimit = require('express-rate-limit')
 const user = require('./crud/user/basic');
 const metrics = require('./crud/metrics');
+const admin = require('./crud/admin');
+const patch_notes = require('./crud/patch_notes');
+const cron = require('./crud/cron');
+const { config } = require('dotenv');
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
@@ -57,16 +61,19 @@ app.get("/", (req, res) => {
 // this will be called regularly by a gcloud cron job
 app.get("/ttl", (req, res) => {
   res.sendStatus(200);
-  console.log("Running TTL");
-  metrics.email_metrics().then( () => {
-    // TODO
-
-    // delete old corpses
-
-    // delete old messages in the message table
-
-    // delete old reports
-  })
+  cron.last_ran_recently().then( (last_ran_recently) => {
+    if(last_ran_recently) {
+      console.log("Running TTL");
+      metrics.email_metrics().then( () => {
+        admin.email_admins_messages();
+        admin.email_admins_reports();
+        patch_notes.email_patch_notes();
+      })
+      cron.update_cron_ts();
+    } else {
+      console.log("TTL ran recently, skipping");
+    }
+  });
 });
 
 app.get("/unsubscribe", (req, res) => {

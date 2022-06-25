@@ -5,7 +5,8 @@ module.exports = {
     get_user_by_email,
     check_mailing_list,
     unsubscribe,
-    subscribe
+    subscribe,
+    get_mailing_list
 }
 
 async function get_user(socket_id) {
@@ -33,6 +34,12 @@ async function check_mailing_list(email) {
     }, {
         mailing_list: 1, unsubscribe_code: 1
     })
+}
+
+async function get_mailing_list() {
+    return await db.collection('user').find({
+        mailing_list: true
+    }, {email: 1});
 }
 
 async function unsubscribe(email, code) {

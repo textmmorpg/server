@@ -10,7 +10,9 @@ module.exports = {
     check_banned,
     add_message,
     teleport,
-    report
+    report,
+    email_admins_messages,
+    email_admins_reports,
 }
 
 async function create_admin(custom_db, email) {
@@ -25,6 +27,42 @@ async function is_admin(socket_id) {
     return await db.collection('user').findOne({
         socket_id: socket_id
     }, {admin: 1});
+}
+
+async function get_all_admins() {
+    return await db.collection('user').find({
+        admin: true
+    }, {email: 1});
+}
+
+async function email_admins_reports() {
+    get_all_admins().then( (admins) => {
+        get_reports().then( (reports) => {
+            email_util.email_list(
+                admins,
+                'Please review reported users',
+                ['Reporter', 'Reported', 'Date'],
+                ['reporter', 'reported', 'ts'],
+                reports,
+                delete_reports
+            );
+        });
+    });
+}
+
+async function email_admins_messages() {
+    get_all_admins().then( (admins) => {
+        get_all_messages().then( (messages) => {
+            email_util.email_list(
+                admins,
+                'Please review in game message',
+                ['Sender', 'Message', 'Date'],
+                ['sender', 'message', 'ts'],
+                messages,
+                delete_messages
+            );
+        });
+    });
 }
 
 async function ban(email, io) {
@@ -86,6 +124,16 @@ async function add_message(socket, message) {
     });
 }
 
+async function get_all_messages() {
+    return await db.collection('message').find({}, {
+        sender: 1, message: 1, ts: 1
+    });
+}
+
+async function delete_messages() {
+    await db.collection('message').deleteMany({});
+}
+
 // todo: send email to admins for each report with that users
 // recent messages
 async function report(email_reporter, email_reported) {
@@ -94,4 +142,12 @@ async function report(email_reporter, email_reported) {
         reported: email_reported,
         ts: new Date()
     })
+}
+
+async function get_reports() {
+    return await db.collection('report').find({});
+}
+
+async function delete_reports() {
+    await db.collection('report').deleteMany({});
 }
