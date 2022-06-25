@@ -6,6 +6,7 @@ var io = require('socket.io')(http);
 var package = require('../package.json');
 const path = require('path');
 const rateLimit = require('express-rate-limit')
+const user = require('./crud/user/basic');
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
@@ -67,7 +68,9 @@ app.get("/ttl", (req, res) => {
 });
 
 app.get("/unsubscribe", (req, res) => {
-  res.status(200).send("You have been unsubscribed! Sorry for bothering you. Have a good day :)");
+  user.unsubscribe(req.query.email, req.query.code).catch(console.dir).then( () => {
+    res.status(200).send("You have been unsubscribed! Sorry for bothering you. Have a good day :)");
+  })
 });
 
 app.get("/robots.txt", (req, res) => {

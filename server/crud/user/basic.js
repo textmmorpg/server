@@ -3,7 +3,8 @@ const db = require('../db/db').get_db();
 module.exports = {
     get_user,
     get_user_by_email,
-    check_mailing_list
+    check_mailing_list,
+    unsubscribe
 }
 
 async function get_user(socket_id) {
@@ -30,5 +31,13 @@ async function check_mailing_list(email) {
         email: email
     }, {
         mailing_list: 1, unsubscribe_code: 1
+    })
+}
+
+async function unsubscribe(email, code) {
+    return await db.collection('user').updateOne({
+        email: email, unsubscribe_code: code
+    }, {
+        $set: {mailing_list: false}
     })
 }

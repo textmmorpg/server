@@ -29,7 +29,9 @@ async function create_user(email, socket) {
             last_cmd_ts: new Date(),
             last_set_posture_ts: new Date(),
             last_read_patch_notes: new Date(),
-            admin: false
+            admin: false,
+            mailing_list: true,
+            unsubscribe_code: Math.random().toString(36).slice(2)
         }).catch( (error) => {
             if(error.code === 11000) {
                 // duplicate email / returning user
