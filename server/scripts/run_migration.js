@@ -13,7 +13,7 @@ const migration = require("../migrations/" + migration_file[0]);
 if(process.argv[3] === "up") {
     migration.up(process.argv[4]);
 } else if(process.argv[3] === "down") {
-    migrataion.down(process.argv[4]);
+    migration.down(process.argv[4]);
 } else {
     console.log("Error! Call this script like this: node run_migration.js <migration_name> <up|down> <prod|dev>");
 }
