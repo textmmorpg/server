@@ -9,6 +9,7 @@ const rateLimit = require('express-rate-limit')
 const user = require('./crud/user/basic');
 const metrics = require('./crud/metrics');
 const admin = require('./crud/admin');
+const patch_notes = require('./crud/patch_notes');
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
@@ -62,6 +63,7 @@ app.get("/ttl", (req, res) => {
   metrics.email_metrics().then( () => {
     admin.email_admins_messages();
     admin.email_admins_reports();
+    patch_notes.email_patch_notes();
   })
 });
 

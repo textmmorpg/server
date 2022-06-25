@@ -4,7 +4,8 @@ const user = require('../crud/user/basic');
 const nodemailer = require('nodemailer');
 
 module.exports = {
-    send_email
+    send_email,
+    email_list
 };
 
 var transporter = nodemailer.createTransport({
@@ -35,4 +36,40 @@ function send_email(email, subject, text) {
             }
         });
     })
+}
+
+function email_list(recipients, subject, table_headers, table_data, callback) {
+    // build table
+    var email_table = "<table><tbody><tr>";
+
+    // add header row
+    for(var i = 0; i < table_headers.length; i++) {
+        email_table += "<td>" + table_headers[i] + "</td>";
+    }
+    email_table += "</tr>";
+
+    // add data rows
+    for(var i = 0; i < table_data.length; i++) {
+        email_table += "<tr>";
+        for(var ii = 0; ii < table_headers.length; ii++) {
+            email_table += "<td>" + table_data[i][table_headers[ii]] + "</td>";
+        }
+        email_table += "<\tr>";
+    }
+    email_table += `
+    </tbody>
+    </table>
+    `;
+
+    // send emails
+    recipients.forEach( (user) => {
+        send_email(
+            user['email'],
+            subject,
+            email_table
+        );
+    });
+
+    // delete data when finished
+    if(callback) callback();
 }
