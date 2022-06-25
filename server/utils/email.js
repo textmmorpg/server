@@ -1,6 +1,12 @@
 
 require('dotenv').config();
+const user = require('../crud/user/basic');
 const nodemailer = require('nodemailer');
+
+module.exports = {
+    send_email
+};
+
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -10,21 +16,23 @@ var transporter = nodemailer.createTransport({
 });
 
 function send_email(email, text) {
-    var mailOptions = {
-        from: 'youremail@gmail.com',
-        to: 'myfriend@yahoo.com',
-        subject: 'TextMMO Patch Notes: ' + new Date(),
-        text: process.argv[3] +
-        "For the full list of patch notes, check https://github.com/beefy/textmmo/releases" + 
-        "\n\n\nTo unsubscribe, click [here](https://textmmo.com/unsubscribe?email=project.title.here@gmail.com"
+    user.check_mailing_list(email).catch(console.dir).then( (user) => {
+        if(!user[mailing_list]) return;
 
-    };
-
-    transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-        console.log(error);
-        } else {
-        console.log('Email sent: ' + info.response);
-        }
-    });
+        var mailOptions = {
+            from: 'youremail@gmail.com',
+            to: email,
+            subject: 'TextMMO Patch Notes: ' + new Date(),
+            text: text + 
+            "\n\n\nTo unsubscribe, click [here](https://textmmo.com/unsubscribe?email="+email+"@gmail.com&code="+user["unsubscribe_code"]
+        };
+    
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+    })
 }
