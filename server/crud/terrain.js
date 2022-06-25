@@ -71,7 +71,7 @@ async function check_biomes(socket_id, io, angle, lat, long) {
     var biome_ahead = look_at_biome(angle);
     var biome_right = look_at_biome(angle - Math.PI/2);
     var biome_left = look_at_biome(angle + Math.PI/2);
-    Promise.all([biome_ahead, biome_right, biome_left]).then(function(biomes) {
+    Promise.all([biome_ahead, biome_right, biome_left]).then( (biomes) => {
         get_biome(lat, long).catch(console.dir).then( (result) => {
             io.to(socket_id).emit('message', {
                 data: "You are in a " + result['biome'] + 

@@ -36,34 +36,32 @@ async function get_all_admins() {
 }
 
 async function email_admins_reports() {
-    Promise.all([
-        get_reports(),
-        get_all_admins()
-    ]).then(function(results) {
-        email_util.email_list(
-            results[1],
-            'Please review reported users',
-            ['Reporter', 'Reported', 'Date'],
-            ['reporter', 'reported', 'ts'],
-            results[0],
-            delete_reports
-        );
+    get_all_admins().then( (admins) => {
+        get_reports().then( (reports) => {
+            email_util.email_list(
+                admins,
+                'Please review reported users',
+                ['Reporter', 'Reported', 'Date'],
+                ['reporter', 'reported', 'ts'],
+                reports,
+                delete_reports
+            );
+        });
     });
 }
 
 async function email_admins_messages() {
-    Promise.all([
-        get_all_messages(),
-        get_all_admins()
-    ]).then(function(results) {
-        email_util.email_list(
-            results[1],
-            'Please review in game message',
-            ['Sender', 'Message', 'Date'],
-            ['sender', 'message', 'ts'],
-            results[0],
-            delete_messages
-        );
+    get_all_admins().then( (admins) => {
+        get_all_messages().then( (messages) => {
+            email_util.email_list(
+                admins,
+                'Please review in game message',
+                ['Sender', 'Message', 'Date'],
+                ['sender', 'message', 'ts'],
+                messages,
+                delete_messages
+            );
+        });
     });
 }
 
