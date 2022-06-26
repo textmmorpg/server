@@ -3,7 +3,8 @@ const crud_interact = require('../interact/interact');
 
 module.exports = {
     create_user,
-    respawn
+    respawn,
+    respawn_from_email
 };
 
 const ages = ["young", "middle aged", "old"];
@@ -71,6 +72,27 @@ async function respawn(socket_id, io, reason_of_death) {
 
             // look around at the new spawn location
             crud_interact.look_around(socket_id, io);
+        });
+    });
+}
+
+async function respawn_from_email(email) {
+    // get spawn location
+    await get_spawn_location().catch(console.dir).then( (spawn) => {
+
+        // update user location to spawn and reset energy/health
+        db.collection('user').updateOne({
+            email: email
+        }, {
+            $set: {
+                lat: spawn["lat"], long: spawn["long"],
+                energy: 1,
+                health: 1,
+                last_cmd_ts: new Date(),
+                posture: "standing",
+                age: getRandom(ages), tall: getRandom(heights), weight: getRandom(weights),
+                angle: Math.random() * Math.PI * 2
+            }
         });
     });
 }
