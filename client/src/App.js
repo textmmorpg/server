@@ -7,7 +7,8 @@ import {
   Grommet,
   Layer,
   ResponsiveContext,
-  TextInput
+  TextInput,
+  Tag
 } from 'grommet';
 import { FormClose, Notification } from 'grommet-icons';
 
@@ -38,12 +39,24 @@ const AppBar = (props) => (
   />
 );
 
+const Messages = () => {
+  var message_count = 50;
+  var ret;
+  for(var i = 0; i < message_count; i++) {
+    ret = [ret,
+      <Box pad={{horizontal: "xlarge", top: "large"}}>
+        <Tag name="name" value="value" />
+      </Box>
+    ];
+  }
+  return ret;
+}
+
 const InputBox = () => {
   const [value, setValue] = React.useState('');
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      console.log('do validate');
       setValue('');
     }
   }
@@ -74,8 +87,13 @@ function App() {
               />
               </AppBar>
               <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
-                <Box flex align='center' justify='center'>
-                  <InputBox />
+                <Box fill>
+                  <Box overflow={{vertical: "scroll"}}>
+                    <Messages />
+                  </Box>
+                  <Box pad={{horizontal: "medium", bottom: "large"}}>
+                    <InputBox />
+                  </Box>
                 </Box>
                 {(!showSidebar || size !== 'small') ? (
                   <Collapsible direction="horizontal" open={showSidebar}>
