@@ -3,6 +3,7 @@ const db = require('../db/db').get_db();
 module.exports = {
     get_user,
     get_user_by_email,
+    get_all_users,
     check_mailing_list,
     unsubscribe,
     subscribe,
@@ -26,6 +27,10 @@ async function get_user_by_email(email) {
         lat: 1, long: 1, socket_id: 1, energy: 1,
         posture: 1, angle: 1, last_read_patch_notes: 1
     });
+}
+
+async function get_all_users() {
+    return await db.collection('user').find({}, {email: 1});
 }
 
 async function check_mailing_list(email) {

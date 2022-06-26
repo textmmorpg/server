@@ -74,10 +74,10 @@ async function get_vibe(socket_id) {
         age: 1, tall: 1, weight: 1,
         posture: 1, angle: 1, lat: 1, long: 1, height: 1,
         energy: 1
-    })
+    });
 }
 
-async function check_swimming(socket, user, new_lat, new_long, move_type) {
+async function check_swimming(user, new_lat, new_long) {
     var old_biome = crud_terrain.get_biome(user['lat'], user['long']);
     var new_biome = crud_terrain.get_biome(new_lat, new_long);
     return Promise.all([old_biome, new_biome]).then(function(biomes) {
@@ -150,7 +150,7 @@ async function move(socket, io, distance, turn, move_type, set_angle) {
         }
 
         // get swimming status so user does not walk on water or swim on land
-        check_swimming(socket, user, new_lat, new_long, move_type).catch(console.dir).then( (swimming_status) => {
+        check_swimming(user, new_lat, new_long).catch(console.dir).then( (swimming_status) => {
 
             // swimming related checks
             var posture = user["posture"];

@@ -1,4 +1,5 @@
 const db = require('../db/db').get_db();
+const sphere_calcs = require('../../utils/sphere_calcs');
 
 module.exports = {
     add_connection,
@@ -18,10 +19,9 @@ async function add_connection(email, socket_id) {
 }
 
 async function get_other_connections(socket_id, x, y, distance) {
-    // TODO: fix for spherical planet
+
     return await db.collection('user').find({
-        lat: { $gt: x - distance, $lt: x + distance},
-        long: { $gt: y - distance, $lt: y + distance},
+        $and: sphere_calcs.query_location(x, y, distance),
         socket_id: { $not: { $eq: socket_id }},
         last_cmd_ts: { $gt: new Date( Date.now() - 1000 * 60 )} // last did something a minute ago
     }, {

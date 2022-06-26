@@ -1,5 +1,6 @@
 const db = require('./db/db').get_db();
 const config = require('../config');
+const sphere_calcs = require('../utils/sphere_calcs');
 
 module.exports = {
     reset_world,
@@ -19,42 +20,11 @@ async function add_terrain(docs, custom_db) {
 async function get_biome(lat, long) {
 
     var size = config.ONE_METER;
-    var max_lat = lat + size;
-    var min_lat = lat - size;
-    var max_long = long + size;
-    var min_long = long - size;
-  
-    var agg_lat = "$and";
-    var agg_long = "$and";
-
-    // extra logic for getting biomes looping around the world
-    if(max_lat > Math.PI) {
-        max_lat -= Math.PI;
-        agg_lat = "$or";
-    } else if(min_lat < 0) {
-        min_lat += Math.PI;
-        agg_lat = "$or";
-    }
-
-    if(max_long > Math.PI*2) {
-        max_long -= Math.PI*2;
-        agg_long = "$or";
-    } else if(min_long < 0) {
-        min_long += Math.PI*2;
-        agg_long = "$or";
-    }
+    var query = sphere_calcs.query_location(lat, long, size);
 
     return await db.collection('world').findOne(
         {
-            $and: [
-                {[agg_lat]: [
-                    {lat: {$gte: min_lat}},
-                    {lat: {$lte: max_lat}},
-                ]}, {[agg_long]: [
-                    {long: {$gte: min_long}},
-                    {long: {$lte: max_long}},
-                ]}
-            ]
+            $and: query
         }, {height: 1, biome: 1}
     ); 
 }
