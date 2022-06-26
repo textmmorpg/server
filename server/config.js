@@ -17,6 +17,7 @@ const WEST = Math.PI;
 const FIELD_OF_VIEW = Math.PI/2;
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 const ALMOST_ONE_WEEK = 7 * 20 * 60 * 60 * 1000;
+const SPAWN_BIOME = "forest";
 
 module.exports = {
     SEEING_DISTANCE,
@@ -37,5 +38,6 @@ module.exports = {
     WEST,
     FIELD_OF_VIEW,
     ONE_WEEK,
-    ALMOST_ONE_WEEK
+    ALMOST_ONE_WEEK,
+    SPAWN_BIOME
 }
