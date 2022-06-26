@@ -6,7 +6,8 @@ import {
   Heading,
   Grommet,
   Layer,
-  ResponsiveContext
+  ResponsiveContext,
+  TextInput
 } from 'grommet';
 import { FormClose, Notification } from 'grommet-icons';
 
@@ -37,6 +38,26 @@ const AppBar = (props) => (
   />
 );
 
+const InputBox = () => {
+  const [value, setValue] = React.useState('');
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      console.log('do validate');
+      setValue('');
+    }
+  }
+
+  return (
+    <TextInput
+      placeholder="type here"
+      value={value}
+      onChange={event => setValue(event.target.value)}
+      onKeyDown={handleKeyDown}
+    />
+  );
+}
+
 function App() {
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -46,7 +67,7 @@ function App() {
         {size => (
           <Box fill>
             <AppBar>
-              <Heading level='3' margin='none'>My App</Heading>
+              <Heading level='3' margin='none'>TextMMO</Heading>
               <Button
                 icon={<Notification />}
                 onClick={() => setShowSidebar(!showSidebar)}
@@ -54,7 +75,7 @@ function App() {
               </AppBar>
               <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
                 <Box flex align='center' justify='center'>
-                  app body
+                  <InputBox />
                 </Box>
                 {(!showSidebar || size !== 'small') ? (
                   <Collapsible direction="horizontal" open={showSidebar}>
