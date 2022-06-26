@@ -45,7 +45,7 @@ async function generate() {
     })
     await crud_terrain.add_terrain(docs, db).catch(console.dir).then( () => {
         console.log("respawning users");
-        await crud_user.get_all_users().catch(console.dir).then( (users) => {
+        crud_user.get_all_users().catch(console.dir).then( (users) => {
             users.forEach( (user) => {
                 crud_spawn.respawn_from_email(user['email']);
             }).then( () => {
