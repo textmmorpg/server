@@ -24,6 +24,15 @@ npm run new_world_dev
 npm run start
 ```
 
+## Running the client
+
+```
+cd client
+npm install
+npm run start
+```
+Note for vulnerabilities, run `npm audit --production` per https://github.com/facebook/create-react-app/issues/11174
+
 ### Using the client
 
 Navigate to https://localhost:3000
