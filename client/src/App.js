@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button,
@@ -40,28 +40,22 @@ const AppBar = (props) => (
 );
 
 function App() {
-  const [showSidebar, setShowSidebar] = useState('');
-  const [value, setValue] = useState('');
+  const [showSidebar, setShowSidebar] = useState();
+  const [value, setValue] = useState();
+  const divRef = useRef();
   const [messages, setMessages] = useState(() => {
-    return [{
-      name:"Server", value:"This is a multiplayer text adventure game! " +
-      "Type commands to interact with the world and other players. " +
-      "For example, type 'walk forward' to walk, 'turn right' to turn, etc. " +
-      "Use 'say hello' to say hello to players around you. Use 'look' or 'vibe check' to " + 
-      "examine your immediate environment. For the full list of commands, " +
-      "check the wiki: https://github.com/beefy/textmmo/wiki"
-    }];
+    return [];
   });
 
   useEffect(() => {
-    console.log(messages)
-  });
+    divRef.current.scrollIntoView({ behavior: 'smooth' });
+  })
 
   const Messages = () => {
     var ret;
     for(var i = 0; i < messages.length; i++) {
       ret = [ret,
-        <Box pad={{horizontal: "xlarge", top: "large"}}>
+        <Box key={i} pad={{horizontal: "xlarge", top: "large"}}>
           <Tag border={false} name={messages[i]['name']} value={messages[i]["value"]} />
         </Box>
       ];
@@ -81,6 +75,7 @@ function App() {
       <TextInput
         key="input"
         placeholder="type here"
+        pad={{top: "large"}}
         value={value}
         onChange={event => setValue(event.target.value)}
         onKeyDown={handleKeyDown}
@@ -103,10 +98,10 @@ function App() {
               </AppBar>
               <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
                 <Box fill>
-                  <Box overflow={{vertical: "scroll"}}>
+                  <Box ref={divRef} overflow={{vertical: "scroll"}}>
                     <Messages/>
                   </Box>
-                  <Box pad={{horizontal: "medium", bottom: "large"}}>
+                  <Box as="footer" flex={false} pad={{horizontal: "medium", bottom: "large"}}>
                     {InputBox()}
                   </Box>
                 </Box>
