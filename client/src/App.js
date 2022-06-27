@@ -47,8 +47,15 @@ function App() {
     return [];
   });
 
+  const scrollToBottom = () => {
+    const scrollHeight = divRef.scrollHeight;
+    const height = divRef.clientHeight;
+    const maxScrollTop = scrollHeight - height;
+    divRef.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+  }
+
   useEffect(() => {
-    divRef.current.scrollIntoView({ behavior: 'smooth' });
+    scrollToBottom();
   })
 
   const Messages = () => {
@@ -98,7 +105,7 @@ function App() {
               </AppBar>
               <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
                 <Box fill>
-                  <Box ref={divRef} overflow={{vertical: "scroll"}}>
+                  <Box fill ref={divRef} overflow={{vertical: "scroll"}}>
                     <Messages/>
                   </Box>
                   <Box as="footer" flex={false} pad={{horizontal: "medium", bottom: "large"}}>
