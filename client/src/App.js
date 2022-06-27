@@ -42,21 +42,15 @@ const AppBar = (props) => (
 function App() {
   const [showSidebar, setShowSidebar] = useState();
   const [value, setValue] = useState();
-  const divRef = useRef();
+  const bottomRef = useRef(null);
   const [messages, setMessages] = useState(() => {
     return [];
   });
 
-  const scrollToBottom = () => {
-    const scrollHeight = divRef.scrollHeight;
-    const height = divRef.clientHeight;
-    const maxScrollTop = scrollHeight - height;
-    divRef.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
-  }
-
   useEffect(() => {
-    scrollToBottom();
-  })
+    // scroll to bottom every time messages change
+    bottomRef.current?.scrollIntoView({behavior: 'smooth'});
+  }, [messages]);
 
   const Messages = () => {
     var ret;
@@ -105,8 +99,9 @@ function App() {
               </AppBar>
               <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
                 <Box fill>
-                  <Box fill ref={divRef} overflow={{vertical: "scroll"}}>
+                  <Box fill overflow={{vertical: "scroll"}}>
                     <Messages/>
+                    <div ref={bottomRef} />
                   </Box>
                   <Box as="footer" flex={false} pad={{horizontal: "medium", bottom: "large"}}>
                     {InputBox()}
