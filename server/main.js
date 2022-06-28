@@ -54,9 +54,6 @@ io.on('connection', function (socket){
 
 // serve client template
 app.use(express.static(path.join(__dirname, '/../client')));
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/../client/index.html");
-});
 
 // this will be called regularly by a gcloud cron job
 app.get("/ttl", (req, res) => {
@@ -82,11 +79,7 @@ app.get("/unsubscribe", (req, res) => {
   })
 });
 
-app.get("/robots.txt", (req, res) => {
-  res.sendFile(__dirname + "/../client/robots.txt");
-});
-
-http.listen(3000, function () {
-  console.log('listening on *:3000');
+http.listen(8080, function () {
+  console.log('listening on *:8080');
   console.log('Version: ' + package.version);
 });
