@@ -11,6 +11,7 @@ import {
   Tag
 } from 'grommet';
 import { FormClose, Notification } from 'grommet-icons';
+import { GoogleLogin } from 'react-google-login';
 
 const theme = {
   global: {
@@ -46,24 +47,7 @@ function App() {
   const [messages, setMessages] = useState(() => {
     return [];
   });
-
-  const useScript = url => {
-    useEffect(() => {
-      const script = document.createElement('script');
   
-      script.src = url;
-      script.async = true;
-  
-      document.body.appendChild(script);
-  
-      return () => {
-        document.body.removeChild(script);
-      }
-    }, [url]);
-  };
-  
-  useScript('https://accounts.google.com/gsi/client');
-
   useEffect(() => {
     // scroll to bottom every time messages change
     bottomRef.current?.scrollIntoView({behavior: 'smooth'});
@@ -100,6 +84,33 @@ function App() {
       />
     );
   }
+
+  const LoginPage = () => {
+    //setShow(false) on successful login
+
+    const responseGoogle = (response) => {
+      console.log(response);
+    }
+
+    return (
+      <Layer hidden full animate={false}>
+        <Box pad={{horizontal: "xlarge", bottom: "xlarge"}}>
+          <Box pad={{horizontal: "xlarge", vertical: "xlarge"}}>
+            <Heading>Sign in to play</Heading>
+          </Box>
+          <Box pad={{horizontal: "xlarge"}}>
+            <GoogleLogin
+              clientId="797291709791-3u14qu9midq1pp234q5f3roo9h322bqe"
+              buttonText="Login"
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle}
+              cookiePolicy={'single_host_origin'}
+            />
+          </Box>
+        </Box>
+      </Layer>
+    );
+  }
   
 
   return (
@@ -116,29 +127,9 @@ function App() {
               </AppBar>
               <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
                 <Box fill>
-                  <Layer>
-                    <Box pad={{horizontal: "xlarge", bottom: "xlarge"}}>
-                      <Heading>Sign In</Heading>
-                      <div id="g_id_onload"
-                          data-client_id="797291709791-3u14qu9midq1pp234q5f3roo9h322bqe"
-                          data-context="signin"
-                          data-ux_mode="popup"
-                          data-callback="login"
-                          data-auto_prompt="false">
-                      </div>
-
-                      <div class="g_id_signin"
-                          data-type="standard"
-                          data-shape="pill"
-                          data-theme="outline"
-                          data-text="signin_with"
-                          data-size="large"
-                          data-logo_alignment="left">
-                      </div>
-                    </Box>
-                  </Layer>
+                  <LoginPage />
                   <Box fill overflow={{vertical: "scroll"}}>
-                    <Messages/>
+                    {/* {Messages()} */}
                     <div ref={bottomRef} />
                   </Box>
                   <Box as="footer" flex={false} pad={{horizontal: "medium", bottom: "large"}}>
