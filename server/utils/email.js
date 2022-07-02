@@ -26,7 +26,7 @@ function send_email(email, subject, text) {
             to: email,
             subject: subject,
             html: text + 
-            "<br><br><br>To unsubscribe from all future emails, click <a href='https://textmmo.com/unsubscribe?email="+email+"@gmail.com&code="+user["unsubscribe_code"]+"'>here</a>"
+            "<br><br><br>To unsubscribe from all future emails, click <a href='https://server.textmmo.com/unsubscribe?email="+email+"@gmail.com&code="+user["unsubscribe_code"]+"'>here</a>"
         };
     
         transporter.sendMail(mailOptions, function(error, info){
