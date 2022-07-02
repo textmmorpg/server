@@ -1,8 +1,14 @@
+require('dotenv').config();
 const express = require('express')
 const app = express();
 const cors = require("cors");
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var io = require('socket.io')(http, {
+  cors: {
+    origin: process.env.ENV === 'DEV'? "http://localhost:3000": "https://textmmo.com:3000",
+    methods: ["GET", "POST"]
+  }
+});
 var package = require('../package.json');
 const path = require('path');
 const rateLimit = require('express-rate-limit')
@@ -52,12 +58,6 @@ io.on('connection', function (socket){
   });
 });
 
-// serve client template
-app.use(express.static(path.join(__dirname, '/../client')));
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/../client/index.html");
-});
-
 // this will be called regularly by a gcloud cron job
 app.get("/ttl", (req, res) => {
   res.sendStatus(200);
@@ -82,10 +82,7 @@ app.get("/unsubscribe", (req, res) => {
   })
 });
 
-app.get("/robots.txt", (req, res) => {
-  res.sendFile(__dirname + "/../client/robots.txt");
-});
-
+// start socket server
 http.listen(3000, function () {
   console.log('listening on *:3000');
   console.log('Version: ' + package.version);
