@@ -3,19 +3,9 @@ const config = require('../config');
 const sphere_calcs = require('../utils/sphere_calcs');
 
 module.exports = {
-    reset_world,
-    add_terrain,
     get_biome,
     check_biomes
 };
-
-async function reset_world() {
-    await db.collection('world').deleteMany({});
-}
-
-async function add_terrain(docs, custom_db) {
-    await custom_db.collection('world').insertMany(docs)
-}
 
 async function get_biome(lat, long) {
 
