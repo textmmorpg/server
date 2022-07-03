@@ -3,21 +3,21 @@ const express = require('express')
 const app = express();
 const cors = require("cors");
 var http = require('http').Server(app);
+var client_port = process.env.CLIENT_PORT? process.env.CLIENT_PORT: 3001
+var port = process.env.PORT? process.env.PORT: 3000
 var io = require('socket.io')(http, {
   cors: {
-    origin: process.env.ENV === 'DEV'? "http://localhost:3000": "https://textmmo.com:3000",
+    origin: process.env.ENV === 'DEV'? "http://localhost:"+client_port: "https://textmmo.com:"+client_port,
     methods: ["GET", "POST"]
   }
 });
 var package = require('../package.json');
-const path = require('path');
 const rateLimit = require('express-rate-limit')
 const user = require('./crud/user/basic');
 const metrics = require('./crud/metrics');
 const admin = require('./crud/admin');
 const patch_notes = require('./crud/patch_notes');
 const cron = require('./crud/cron');
-const { config } = require('dotenv');
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
@@ -83,7 +83,7 @@ app.get("/unsubscribe", (req, res) => {
 });
 
 // start socket server
-http.listen(3000, function () {
-  console.log('listening on *:3000');
+http.listen(port, function () {
+  console.log('listening on *:'+port);
   console.log('Version: ' + package.version);
 });
