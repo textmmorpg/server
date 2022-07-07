@@ -51,7 +51,7 @@ function look_around(socket_id, io) {
                 if(perspective) {
                     io.to(socket_id).emit('message', {
                         data: 'You see a ' + other_user['tall'] + ' ' + other_user['weight'] + 
-                        ' ' + other_user['age'] + ' human ' +  perspective,
+                        ' ' + other_user['age'] + ' human ' +  perspective
                     });
                 }
             })
