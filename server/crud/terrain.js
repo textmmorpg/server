@@ -15,7 +15,7 @@ async function get_biome(lat, long) {
     return await db.collection('world').findOne(
         {
             $and: query
-        }, {height: 1, biome: 1}
+        }, {height: 1, biome: 1, lat: 1, long: 1}
     ); 
 }
 
@@ -37,7 +37,12 @@ async function check_biomes(socket_id, io, angle, lat, long) {
                 data: "You are in a " + result['biome'] + 
                 ". Ahead of you is " + biomes[0]["biome"] +
                 ". To the right you see " + biomes[1]["biome"] + 
-                " and to the left there is " + biomes[2]["biome"]
+                " and to the left there is " + biomes[2]["biome"],
+                position: {
+                    lat: result['lat'],
+                    long: result['long'],
+                    rotation: 0
+                }
             });
         });
     });
