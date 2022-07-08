@@ -33,7 +33,6 @@ async function check_biomes(socket_id, io, angle, lat, long) {
     var biome_left = look_at_biome(angle + Math.PI/2);
     Promise.all([biome_ahead, biome_right, biome_left]).then( (biomes) => {
         get_biome(lat, long).catch(console.dir).then( (result) => {
-            console.log(result)
             io.to(socket_id).emit('message', {
                 data: "You are in a " + result['biome'] + 
                 ". Ahead of you is " + biomes[0]["biome"] +
