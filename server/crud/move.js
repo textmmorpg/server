@@ -82,20 +82,14 @@ async function check_swimming(user, new_lat, new_long) {
     var new_biome = crud_terrain.get_biome(new_lat, new_long);
     return Promise.all([old_biome, new_biome]).then(function(biomes) {
         // check for starting/stopping swimming
-        if(
-            (biomes[0]["biome"] !== "deep water" && biomes[0]["biome"] !== "shallow water") && 
-            (biomes[1]["biome"] === "deep water" || biomes[1]["biome"] === "shallow water")
-        ) {
+        if(biomes[0]["is_land"] && !biomes[1]["is_land"]) {
             return "start_swimming";
-        } else if(
-            (biomes[0]["biome"] === "deep water" || biomes[0]["biome"] === "shallow water") && 
-            (biomes[1]["biome"] !== "deep water" && biomes[1]["biome"] !== "shallow water")
-        ) {
+        } else if(!biomes[0]["is_land"] && biomes[1]["is_land"]) {
             return "stop_swimming";
         }
 
         // check for swimming from water biome to water biome
-        if(biomes[1]["biome"] === "deep water" || biomes[1]["biome"] === "shallow water") {
+        if(!biomes[1]["is_land"]) {
             return "keep_swimming";
         } else {
             return "keep_walking"

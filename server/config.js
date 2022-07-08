@@ -6,7 +6,7 @@ const REPORT_DISTANCE = HEARING_DISTANCE_LOUD;
 const ATTACK_DISTANCE = 5;
 const PUNCH_DAMAGE = 0.1;
 const PUNCH_ENERGY = 0.05
-const ONE_METER = Math.PI/300
+const ONE_METER = Math.PI/250
 const WALK_SPEED = 1;
 const SWIM_SPEED = 1;
 const RUN_SPEED = 2;
@@ -17,7 +17,6 @@ const WEST = Math.PI;
 const FIELD_OF_VIEW = Math.PI/2;
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 const ALMOST_ONE_WEEK = 7 * 20 * 60 * 60 * 1000;
-const SPAWN_BIOME = "forest";
 
 module.exports = {
     SEEING_DISTANCE,
@@ -39,5 +38,4 @@ module.exports = {
     FIELD_OF_VIEW,
     ONE_WEEK,
     ALMOST_ONE_WEEK,
-    SPAWN_BIOME
 }

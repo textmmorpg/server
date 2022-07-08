@@ -107,13 +107,13 @@ async function respawn_from_email(email) {
 async function get_spawn_location(count) {
     return await db.collection('world').find(
         {
-            biome: "forest"
+            is_land: true
         }, {lat: 1, long: 1, height: 1, biome: 1}
     ).skip(Math.round(Math.random()*count)).limit(1).next();
 }
 
 async function count_biome() {
     return db.collection('world').count({
-        biome: config.SPAWN_BIOME
+        is_land: true
     });
 }
