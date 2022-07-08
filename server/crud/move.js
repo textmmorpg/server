@@ -84,7 +84,7 @@ async function check_swimming(user, new_lat, new_long) {
         // check for starting/stopping swimming
         if(biomes[0]["is_land"] && !biomes[1]["is_land"]) {
             return "start_swimming";
-        } else if(!biome[0]["is_land"] && biomes[1]["is_land"]) {
+        } else if(!biomes[0]["is_land"] && biomes[1]["is_land"]) {
             return "stop_swimming";
         }
 
